@@ -2,7 +2,7 @@
 
 A signed, offline-verifiable receipt recording **what was checked before an agent acted**, so a gate can refuse to proceed and a later examiner can recompute the decision.
 
-**Version 0.3 — in production.** The v0.3 envelope and its decision mapping (`agentoracle-v0.3-2026-05-30`) have been serving live traffic since May 2026. This document is normative for v0.3. Extension work for v0.4 is an open draft and is **not** normative — see [Extension draft](#extension-draft-v04).
+**Version 0.3 — in production use since May 2026 (the issuing service is in free beta).** The v0.3 envelope and its decision mapping (`agentoracle-v0.3-2026-05-30`) have been serving live traffic since May 2026. This document is normative for v0.3. Extension work for v0.4 is an open draft and is **not** normative — see [Extension draft](#extension-draft-v04).
 
 | | |
 |---|---|
@@ -322,7 +322,7 @@ Acknowledgement is not endorsement. None of the above has reviewed this revision
 
 ## Contributing
 
-Issues and pull requests: [this repository](https://github.com/TKCollective/agentoracle-receipt-spec/issues).
+Issues and pull requests: [this repository](https://github.com/TKCollective/tanilo-receipt-spec/issues).
 
 Particularly wanted:
 
