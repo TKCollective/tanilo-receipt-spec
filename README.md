@@ -38,11 +38,11 @@ jwks = json.load(urllib.request.urlopen(jwks_url))
 result = verify(envelope, jwks_by_issuer={jwks_url: jwks})
 
 if result.status == "valid":
-    print("verified — canonical:", result.canonical_sha256)
+    print("signature valid — canonical:", result.canonical_sha256)
 ```
 
 Run from the root of this repository, this prints
-`verified — canonical: sha256-baac7b814e66e90d729a51d7337fa3ea24d57daf623d8d545a0778f838447aff`.
+`signature valid — canonical: sha256-baac7b814e66e90d729a51d7337fa3ea24d57daf623d8d545a0778f838447aff`.
 
 **`jwks_by_issuer` is required to reach a verdict.** `result.status` is one of `"valid"`,
 `"invalid"` or `"indeterminate"`. Called as `verify(envelope)` with no key material on a signed
