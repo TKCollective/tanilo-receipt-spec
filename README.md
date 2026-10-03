@@ -10,7 +10,7 @@ A signed, offline-verifiable receipt recording **what was checked before an agen
 | Canonicalization | JCS ([RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)) |
 | Signature | Ed25519 over JWS ([RFC 7515](https://datatracker.ietf.org/doc/html/rfc7515)), `alg: EdDSA` |
 | Multi-issuer | Yes — `signatures[]` accepts additional co-signers over identical canonical bytes |
-| IETF draft | [`draft-krausz-verification-state-01`](https://datatracker.ietf.org/doc/draft-krausz-verification-state) |
+| IETF draft | [`draft-krausz-verification-state-03`](https://datatracker.ietf.org/doc/draft-krausz-verification-state) (filed 2026-10-01; working repo [`tanilo-ietf-id`](https://github.com/TKCollective/tanilo-ietf-id)) |
 | Independent implementations | 1 byte-identical, built from this spec text alone — see [Implementations](#implementations) |
 | Conformance vectors | Published — see [Conformance](#conformance) |
 
@@ -21,31 +21,37 @@ A signed, offline-verifiable receipt recording **what was checked before an agen
 You do not need to contact any verifier's service to check a receipt. Install the verifier and run it against the canonical bytes:
 
 ```bash
-pip install agentoracle-receipt-verify
+pip install tanilo-receipt-verify
 ```
 
 ```python
 import json, urllib.request
-from agentoracle_receipt_verify import verify
+from tanilo_receipt_verify import verify
 
-# The JWKS URL is carried in the receipt payload's `signature_meta`.
-jwks_url = "https://agentoracle.co/.well-known/jwks.json"
+# A real receipt from this repository, issued by /evaluate on 2026-10-02.
+envelope = json.load(open("examples/live-receipts/evaluate-demo-2026-10-02.json"))
+
+# The key set. New receipts name this URL in the payload's `signature_meta.jwks_url`.
+jwks_url = "https://tanilo.io/.well-known/jwks.json"
 jwks = json.load(urllib.request.urlopen(jwks_url))
 
-result = verify(receipt_json, {jwks_url: jwks})
-print(result.valid)                # True only if every signature verified
-print(result.checks)               # includes all_signatures_verified
-print(result.canonical_sha256)     # recompute this yourself from the payload
-print(result.signers)              # issuer + kid for every signature present
+result = verify(envelope, jwks_by_issuer={jwks_url: jwks})
+
+if result.status == "valid":
+    print("verified — canonical:", result.canonical_sha256)
 ```
 
-**The second argument is required to check signatures.** Called as `verify(receipt_json)`
-with no JWKS map, the verifier checks only recompute-invariants: it returns
-`valid: True` with an empty `signers` list and no `all_signatures_verified` check,
-having verified no signature at all. Always pass the JWKS map, and assert on
-`result.checks["all_signatures_verified"]` rather than on `result.valid` alone.
+Run from the root of this repository, this prints
+`verified — canonical: sha256-baac7b814e66e90d729a51d7337fa3ea24d57daf623d8d545a0778f838447aff`.
 
-The verifier recomputes JCS canonical bytes from the payload and checks each Ed25519 signature against the JWKS you supply. It does not fetch JWKS for you. **It does not call the issuing service.** Signing keys are published at the issuer's JWKS URL, named in `signature_meta`.
+**`jwks_by_issuer` is required to reach a verdict.** `result.status` is one of `"valid"`,
+`"invalid"` or `"indeterminate"`. Called as `verify(envelope)` with no key material on a signed
+envelope, the verifier returns `"indeterminate"`, not `"valid"`: the canonical bytes recomputed,
+but no signature was checked. Branch on `result.status`.
+
+The verifier recomputes JCS canonical bytes from the payload and checks each signature against the JWKS you supply. It does not fetch JWKS for you. **It does not call the issuing service.** The key set is published at `https://tanilo.io/.well-known/jwks.json`; the same set is served at `https://api.tanilo.io/.well-known/jwks.json` and `https://agentoracle.co/.well-known/jwks.json`. Receipts issued since 2026-10-02 name the key set URL in `signature_meta.jwks_url`; older receipts name it in `signature_meta.agentoracle_jwks_url`.
+
+A valid signature shows which key signed these bytes. It does not show that the claim is true — see the next section.
 
 To confirm the canonical bytes independently, canonicalize the `payload` object with any RFC 8785 implementation and SHA-256 the result. It must equal `canonical_sha256`.
 
@@ -59,7 +65,7 @@ This section is normative for how implementers describe the format, and it is th
 
 1. **Issuance** — a specific key, resolvable from published JWKS, committed to this exact content.
 2. **Integrity** — the content has not been altered since signing; any change breaks the canonical hash and every signature over it.
-3. **Non-repudiation** — the issuer cannot later deny having made this determination, or claim it made a different one.
+3. **Non-repudiation** — the issuer cannot later deny having made this determination, or claim it made a different one. This holds for keys whose issuance paths are documented, and only as far as that documentation goes. One key in the reference implementation's set does not meet it: `ao-composed-2026-06-ed25519-c3abfce3` also signed caller-supplied bytes from 2026-06-23 until 2026-08-28, so a signature under it does not, on its own, establish that the issuer made the determination. See the [incident record](https://tanilo.io/incidents/2026-08-25-canned-verdicts) and the [trust page](https://tanilo.io/trust). Receipts issued since 2026-10-02 are signed by a key with no earlier signing history and carry `role: evaluated` in the protected header, an issuance-path role stating that the issuer evaluated the claim itself.
 4. **Recomputability** — the receipt carries the decision inputs and the identifier and hash of the ruleset applied, so a third party can re-derive the decision rather than accept it.
 
 **A receipt does not prove the verified claim is true.**
@@ -96,11 +102,14 @@ The receipt is a JWS with a JCS-canonicalized JSON payload. Additional serializa
 
 ### JWS header
 
+The protected header of a receipt issued on 2026-10-02 ([`examples/live-receipts/evaluate-demo-2026-10-02.json`](examples/live-receipts/evaluate-demo-2026-10-02.json)):
+
 ```json
 {
   "alg": "EdDSA",
-  "kid": "ao-composed-2026-06-ed25519-c3abfce3",
-  "typ": "application/vnd.verification.v0.3+composed+jws"
+  "kid": "tanilo-2026-10-ed25519-7d885da9",
+  "typ": "application/vnd.verification.v0.3+composed+jws",
+  "role": "evaluated"
 }
 ```
 
@@ -109,8 +118,13 @@ The receipt is a JWS with a JCS-canonicalized JSON payload. Additional serializa
 | `alg` | yes | `EdDSA` (Ed25519) |
 | `kid` | yes | Resolves via the issuer's published JWKS |
 | `typ` | yes | `application/vnd.verification.v0.3+composed+jws` |
+| `role` | no | Issuance-path role. `evaluated` on receipts the reference implementation has issued since 2026-10-02. Not part of the v0.3 envelope as first published; a header without it is still a v0.3 header. |
+
+Historical: until 2026-10-02 the reference implementation signed with `kid` `ao-composed-2026-06-ed25519-c3abfce3` and the header carried no `role`. That key is retired; its public key stays in the published set so receipts already issued can still be checked. See [What a receipt proves](#what-a-receipt-proves-and-what-it-does-not) for what a signature under it does and does not establish.
 
 ### Payload
+
+Historical example, in the shape issued in June 2026. Receipts issued since 2026-10-02 carry `"signature_meta": {"jwks_url": "https://tanilo.io/.well-known/jwks.json"}` and `"issuer": "tanilo.io"` in `v_gate`.
 
 ```json
 {
@@ -153,7 +167,7 @@ The receipt is a JWS with a JCS-canonicalized JSON payload. Additional serializa
 | `subject.skill_hash` | yes | SHA-256 of the ruleset document that reduced signals to a verdict |
 | `timestamp` / `timestamp_ms` | yes | RFC 3339 UTC with exactly 3 fractional digits, and its integer form. Derived from one source so identical inputs yield byte-identical canonical bytes |
 | `v_gate` | yes | The verification decision block — see below |
-| `signature_meta` | yes | JWKS URLs for the signers, so a consumer can resolve keys without out-of-band configuration |
+| `signature_meta` | yes | JWKS URLs for the signers, so a consumer can resolve keys without out-of-band configuration. `jwks_url` on receipts issued since 2026-10-02; `agentoracle_jwks_url` on older ones |
 
 Sibling blocks other than `v_gate` (for example an independent skill or screening block from a different issuer) MAY be present. `composed_decision` is computed over all of them.
 
@@ -238,7 +252,9 @@ The `leaf-screen-halt` reject vector for `delegation-chain-ref-v1` (a payment-au
 
 ## Standards position
 
-The `verification.*` constraint family is specified in [`draft-krausz-verification-state-01`](https://datatracker.ietf.org/doc/draft-krausz-verification-state), *"The verification.\* Constraint Family: Pre-Action Fail-Closed …"*. The draft is filed with the IETF and uses generic terminology throughout; this document is its implementation-facing companion.
+The `verification.*` constraint family is specified in [`draft-krausz-verification-state-03`](https://datatracker.ietf.org/doc/draft-krausz-verification-state) (filed 2026-10-01), *"The verification.\* Constraint Family: Pre-Action Fail-Closed …"*. It is an individual Internet-Draft, a work in progress, and uses generic terminology throughout; its working repository is [`tanilo-ietf-id`](https://github.com/TKCollective/tanilo-ietf-id). This document is its implementation-facing companion.
+
+**The verdict vocabulary differs between this envelope and -03.** The v0.3 envelope specified here carries `v_verdict` as one of `supported`, `refuted`, `unverifiable`, `unknown`, the raw verdict domain of -01. -03 replaces that domain with a four-state vocabulary, `verified`, `contradicted`, `indeterminate` and `not_evaluated`, together with a reason-code mechanism. Its Section 6.1 restates the decision table against the four states, one-for-one in declaration order, and leaves the recommendation and gate vocabulary unchanged. Receipts in the v0.3 envelope use the four values in this document. Nothing here should be read as a claim that the v0.3 envelope carries -03's vocabulary.
 
 **Why a sibling family rather than an existing constraint namespace.** Environment-state constraint families evaluate boolean predicates with oracle-fixed semantics and a single uniform TTL, and gating against them is trivial. Claim verification is probabilistic, its threshold belongs to the consumer's policy rather than the oracle, and its freshness is not one-dimensional — a signing key can rotate without invalidating prior determinations, and underlying evidence can age without invalidating the verifier's calibration. Folding a probabilistic predicate into a boolean family loses exactly the distinctions a gate needs.
 
@@ -254,10 +270,10 @@ The format is not specific to any implementation. Known implementations:
 
 | Implementation | Status | Notes |
 |---|---|---|
-| **AgentOracle** (`agentoracle.co`) | Production since May 2026 | Reference implementation. Pre-action claim verification with self-serve and pay-per-call access, on-chain settlement, and a deterministic verification mode with no model in the trust chain. JWKS at [`/.well-known/jwks.json`](https://agentoracle.co/.well-known/jwks.json) |
+| **Tanilo** (formerly AgentOracle) | Live, in free beta | Reference implementation. Pre-action claim verification, live in free beta at `api.tanilo.io` and `agentoracle.co`. Self-serve accounts are not open. x402 pay-per-call is not available. A deterministic verification mode with no model in the trust chain is live. JWKS at [`tanilo.io/.well-known/jwks.json`](https://tanilo.io/.well-known/jwks.json); the same set is served at `api.tanilo.io` and `agentoracle.co` |
 | **AgentTrust** | Independent | Built from this spec text without access to the reference code. Produces **byte-identical** canonical bytes on the shared fixture set. Co-signs composed envelopes |
 
-An offline verifier is published independently of any issuer: [`agentoracle-receipt-verify`](https://pypi.org/project/agentoracle-receipt-verify/) on PyPI.
+An offline verifier is published on PyPI: [`tanilo-receipt-verify`](https://pypi.org/project/tanilo-receipt-verify/). It runs without contacting any issuer.
 
 The reference implementation is a provider under the [Mycelium provider protocol](https://github.com/giskard09/argentum-core/blob/main/docs/mycelium-provider-protocol.md). When composed with a post-action attestation flow, a returned trail identifier can be carried at envelope level as a sibling pointer to `v_gate`.
 
@@ -287,6 +303,9 @@ Corrections are kept permanently. Nothing in this section is removed once entere
 **2026-08-27 — the verification walkthrough in this document failed open.** The Python example called `verify(receipt_json)` with no JWKS map. In that form the verifier checks recompute-invariants only and returns `valid: True` with an empty `signers` list, having verified no signature. This document also stated that the verifier fetches published JWKS; it does not. Anyone who followed the previous text believing they had checked a signature had not. Both statements are corrected in [Verify a receipt yourself](#verify-a-receipt-yourself); the format, the published keys, and the canonical-bytes recomputation were unaffected.
 
 **2026-08-28 — the correction above described a superseded release.** The entry dated 2026-08-27 stated that `verify(receipt_json)` returns `valid: True` with an empty `signers` list. That was the behaviour of version 0.0.1 only. The current release at the time of that entry was 0.1.0, whose three-outcome API returns `status: "indeterminate"` and `valid: None` on a signed envelope called without `jwks_by_issuer`, and populates `indeterminate_reason` explaining that canonicalization recomputed but no key material was supplied. `None` is falsy, so `if result.valid:` on 0.1.0 fails closed. The fail-open path — `valid: True` on an unverified signature — was 0.0.1-only. The 2026-08-27 entry was written from a locally installed 0.0.1 without checking it against PyPI's current release. Both substantive corrections from that entry still stand on 0.1.0: signatures are checked only when `jwks_by_issuer` is supplied, and this document's earlier claim that the verifier fetches published JWKS was false. 0.1.0 documents these behaviours directly.
+
+**2026-10-03 — the implementation row overstated access, and this document referenced a superseded package and draft.** Until this revision the Implementations table described the reference implementation as offering "self-serve and pay-per-call access, on-chain settlement". Self-serve accounts were not open and pay-per-call was not available. The row now states the current status: live in free beta, self-serve accounts not open, x402 pay-per-call not available. This document also pointed readers to the superseded verifier package `agentoracle-receipt-verify` and to `draft-krausz-verification-state-01`. The current package is `tanilo-receipt-verify`, and the current draft is -03, filed 2026-10-01. In the same revision the reference implementation is named Tanilo (formerly AgentOracle), the non-repudiation statement is qualified for `ao-composed-2026-06-ed25519-c3abfce3`, and the header example shows the key in use since 2026-10-02.
+
 ---
 
 ## Acknowledgements
