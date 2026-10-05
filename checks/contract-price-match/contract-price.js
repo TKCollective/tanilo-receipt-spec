@@ -320,23 +320,25 @@ export function evaluateContractPrice(input) {
   const standing = effective.filter((t) => !superseded.has(t.index));
   steps.push({ step: "declared_precedence", rule: "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates", terms_remaining: standing.map(ref) });
 
-  // 4. currency, then unit (no conversion)
-  const sameCurrency = standing.filter((t) => t.currency === offer.currency);
-  steps.push({ step: "currency", rule: "term.currency equals offer.currency; no conversion", terms_remaining: sameCurrency.map(ref) });
-  if (sameCurrency.length === 0) {
-    return done("indeterminate", "currency_mismatch", { ...none, offer_currency: offer.currency, term_currencies: [...new Set(standing.map((t) => t.currency))].sort(), terms_considered: standing.map(ref) });
+  // 4. exactly one term must remain BEFORE currency or unit is looked at.
+  //    Two terms that both apply are unresolved even when only one of them
+  //    is in the offer's currency or unit: picking that one would be a guess
+  //    about which agreement governs.
+  steps.push({ step: "exactly_one_term", rule: "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms", terms_remaining: standing.map(ref) });
+  if (standing.length > 1) {
+    return done("indeterminate", "precedence_unresolved", { ...none, competing_terms: standing.map((t) => ({ ...ref(t), effective_from: t.effective_from, effective_to: t.effective_to, currency: t.currency, unit: t.unit })) });
   }
-  const sameUnit = sameCurrency.filter((t) => t.unit === offer.unit);
-  steps.push({ step: "unit", rule: "term.unit equals offer.unit (exact string); no conversion", terms_remaining: sameUnit.map(ref) });
-  if (sameUnit.length === 0) {
-    return done("indeterminate", "unit_mismatch", { ...none, offer_unit: offer.unit, term_units: [...new Set(sameCurrency.map((t) => t.unit))].sort(), terms_considered: sameCurrency.map(ref) });
-  }
+  const term = standing[0];
 
-  // 5. exactly one term must remain
-  if (sameUnit.length > 1) {
-    return done("indeterminate", "precedence_unresolved", { ...none, competing_terms: sameUnit.map((t) => ({ ...ref(t), effective_from: t.effective_from, effective_to: t.effective_to })) });
+  // 5. currency, then unit, of that one term (no conversion)
+  steps.push({ step: "currency", rule: "term.currency equals offer.currency; no conversion", matches: term.currency === offer.currency });
+  if (term.currency !== offer.currency) {
+    return done("indeterminate", "currency_mismatch", { ...none, term_considered: ref(term), offer_currency: offer.currency, term_currency: term.currency });
   }
-  const term = sameUnit[0];
+  steps.push({ step: "unit", rule: "term.unit equals offer.unit (exact string); no conversion", matches: term.unit === offer.unit });
+  if (term.unit !== offer.unit) {
+    return done("indeterminate", "unit_mismatch", { ...none, term_considered: ref(term), offer_unit: offer.unit, term_unit: term.unit });
+  }
 
   // 6. the term's price for this quantity
   let expected, tier = null;

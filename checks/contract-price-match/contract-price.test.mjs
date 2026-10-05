@@ -84,19 +84,34 @@ const CASES = [
   ["amendment: chain of three, latest wins by declaration", { offer: offer({ unit_price: "0.85" }), terms: [V1, V2, V3] }, { state: "verified", expected: "0.85", term: ["MSA-2026-014", "3"] }],
   ["amendment: order of the supplied terms does not matter", { offer: offer({ unit_price: "0.85" }), terms: [V3, V1, V2] }, { state: "verified", expected: "0.85", term: ["MSA-2026-014", "3"] }],
   ["amendment: superseding term changes the unit; the old unit is not matched", { offer: offer({ offered_at: "2026-08-01T00:00:00Z" }), terms: [V1, term({ version: "2", unit: "thousand calls", price_per_unit: "900.00", effective_from: "2026-07-01T00:00:00Z", effective_to: undefined, supersedes: "1" })] }, { state: "indeterminate", reason: "unit_mismatch" }],
+  ["amendment: the superseding term has ended; the original applies again", { offer: offer(), terms: [V1, term({ version: "2", price_per_unit: "0.90", effective_from: "2026-07-01T00:00:00Z", effective_to: "2026-09-01T00:00:00Z", supersedes: "1" })] }, { state: "verified", expected: "1.00", term: ["MSA-2026-014", "1"] }],
+  ["amendment: chain whose middle term has ended is not bridged", { offer: offer({ unit_price: "0.85" }), terms: [V1, term({ version: "2", price_per_unit: "0.90", effective_from: "2026-07-01T00:00:00Z", effective_to: "2026-09-01T00:00:00Z", supersedes: "1" }), V3] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
+  ["amendment: superseding term is in another currency; the old term is not used", { offer: offer({ offered_at: "2026-08-01T00:00:00Z" }), terms: [V1, term({ version: "2", currency: "EUR", price_per_unit: "0.90", effective_from: "2026-07-01T00:00:00Z", effective_to: undefined, supersedes: "1" })] }, { state: "indeterminate", reason: "currency_mismatch" }],
   ["amendment: supersedes a version that was not supplied", { offer: offer({ unit_price: "0.90", offered_at: "2026-08-01T00:00:00Z" }), terms: [V2] }, { state: "verified", expected: "0.90", term: ["MSA-2026-014", "2"] }],
 
   // ── overlapping terms across agreements ──
   ["overlap: two agreements cover the product, same price", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
   ["overlap: two agreements cover the product, different prices", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88", price_per_unit: "0.95" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
   ["overlap: supersedes does not reach across agreements", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88", supersedes: "1", version: "2" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
-  ["two terms, different units: the term in the offer's unit applies", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88", unit: "thousand calls", price_per_unit: "900.00" })] }, { state: "verified", expected: "1.00", term: ["MSA-2026-014", "1"] }],
+  ["overlap: two agreements, one priced in another unit: unit does not choose between them", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88", unit: "thousand calls", price_per_unit: "900.00" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
+  ["overlap: two agreements, one in USD and one in EUR: currency does not choose between them", { offer: offer(), terms: [FLAT, term({ agreement_id: "PO-88", currency: "EUR", price_per_unit: "0.92" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
+  ["overlap: two agreements, both in another currency: still precedence, not currency", { offer: offer(), terms: [term({ currency: "EUR" }), term({ agreement_id: "PO-88", currency: "EUR" })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
+  ["overlap: two versions, one in EUR, no declared precedence", { offer: offer({ offered_at: "2026-08-01T00:00:00Z" }), terms: [V1, term({ version: "2", currency: "EUR", price_per_unit: "0.90", effective_from: "2026-07-01T00:00:00Z", effective_to: undefined })] }, { state: "indeterminate", reason: "precedence_unresolved", competing: 2 }],
 
   // ── unit and currency ──
   ["currency: term in EUR, offer in USD", { offer: offer(), terms: [term({ currency: "EUR" })] }, { state: "indeterminate", reason: "currency_mismatch" }],
   ["unit: term per thousand calls, offer per call", { offer: offer(), terms: [term({ unit: "thousand calls", price_per_unit: "900.00" })] }, { state: "indeterminate", reason: "unit_mismatch" }],
   ["unit: spelling differs only by case", { offer: offer({ unit: "Call" }), terms: [FLAT] }, { state: "indeterminate", reason: "unit_mismatch" }],
   ["currency and unit both differ: currency is reported", { offer: offer(), terms: [term({ currency: "EUR", unit: "thousand calls" })] }, { state: "indeterminate", reason: "currency_mismatch" }],
+
+  // ── which reason is reported when several would apply: the first step that stops ──
+  ["order: wrong seller and outside the dates: scope is reported", { offer: offer({ seller: "other.example", offered_at: "2025-06-01T00:00:00Z" }), terms: [FLAT] }, { state: "indeterminate", reason: "no_applicable_term" }],
+  ["order: outside the dates and another currency: dates are reported", { offer: offer({ offered_at: "2025-06-01T00:00:00Z" }), terms: [term({ currency: "EUR" })] }, { state: "indeterminate", reason: "effective_interval_unresolved" }],
+  ["order: another unit and no matching tier: unit is reported", { offer: woffer({ unit: "case", quantity: "0.5" }), terms: [TIERED] }, { state: "indeterminate", reason: "unit_mismatch" }],
+
+  // ── time precision ──
+  ["time: one fractional digit is accepted", { offer: offer({ offered_at: "2026-10-01T12:00:00.5Z" }), terms: [FLAT] }, { state: "verified" }],
+  ["time: whole seconds and milliseconds name the same instant", { offer: offer({ offered_at: "2026-01-01T00:00:00.000Z" }), terms: [FLAT] }, { state: "verified" }],
 
   // ── missing terms ──
   ["missing: no terms supplied", { offer: offer(), terms: [] }, { state: "indeterminate", reason: "no_applicable_term" }],
@@ -111,6 +126,8 @@ const CASES = [
   ["invalid: date without a time", { offer: offer(), terms: [term({ effective_from: "2026-01-01" })] }, { invalid: "terms[0].effective_from" }],
   ["invalid: local time without Z", { offer: offer({ offered_at: "2026-10-01T12:00:00" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
   ["invalid: time with an offset instead of Z", { offer: offer({ offered_at: "2026-10-01T12:00:00+02:00" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
+  ["invalid: more than three fractional digits in a time", { offer: offer({ offered_at: "2026-10-01T12:00:00.1234Z" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
+  ["invalid: time without seconds", { offer: offer({ offered_at: "2026-10-01T12:00Z" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
   ["invalid: impossible calendar date", { offer: offer({ offered_at: "2026-02-30T00:00:00Z" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
   ["invalid: unknown member on a term (a discount)", { offer: offer(), terms: [term({ discount_percent: "10" })] }, { invalid: "terms[0].discount_percent" }],
   ["invalid: unknown member on the offer", { offer: offer({ note: "rush" }), terms: [FLAT] }, { invalid: "offer.note" }],
@@ -171,6 +188,12 @@ console.log("\nproperties");
   check("matched term hash is the SHA-256 of the term's canonical JSON", a.evidence.matched_term.term_sha256 === sha(jcs(FLAT)), a.evidence.matched_term.term_sha256);
   check("terms hash is the SHA-256 of the supplied terms' canonical JSON", a.evidence.terms_sha256 === sha(jcs([FLAT])));
   check("offer hash is the SHA-256 of the offer's canonical JSON", a.evidence.offer_sha256 === sha(jcs(input.offer)));
+  const ab = evaluateContractPrice({ offer: offer({ unit_price: "0.85" }), terms: [V1, V2, V3] }), ba = evaluateContractPrice({ offer: offer({ unit_price: "0.85" }), terms: [V3, V2, V1] });
+  check("the terms hash is over the array in the order supplied: reordering changes the hash", ab.evidence.terms_sha256 !== ba.evidence.terms_sha256);
+  check("reordering the terms does not change the state or the matched term", ab.state === ba.state && ab.evidence.matched_term.term_sha256 === ba.evidence.matched_term.term_sha256);
+  check("member order inside a term does not change its hash", evaluateContractPrice({ offer: input.offer, terms: [Object.fromEntries(Object.entries(FLAT).reverse())] }).evidence.terms_sha256 === a.evidence.terms_sha256);
+  const steps = a.evidence.steps.map((x) => x.step).join(" > ");
+  check("steps run in the published order", steps === "scope > effective_at_offer_time > declared_precedence > exactly_one_term > currency > unit > price > compare", steps);
   const changed = evaluateContractPrice({ offer: input.offer, terms: [term({ price_per_unit: "1.01" })] });
   check("changing a term changes the terms hash", changed.evidence.terms_sha256 !== a.evidence.terms_sha256);
   const big = Array.from({ length: 200 }, (_, i) => term({ agreement_id: "A-" + i, product_scope: { skus: ["other-" + i] } }));

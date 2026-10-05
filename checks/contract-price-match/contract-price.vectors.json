@@ -109,8 +109,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -120,15 +120,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -252,8 +251,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -263,15 +262,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -395,8 +393,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -406,15 +404,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -536,8 +533,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -547,15 +544,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -677,8 +673,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -688,15 +684,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -820,8 +815,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -831,15 +826,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -961,8 +955,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -972,15 +966,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-455cbafbcacebeea98ac660fa71e6611746569dc48cae4c93b65c1dfa009a4e5"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -1104,8 +1097,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -1115,15 +1108,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-455cbafbcacebeea98ac660fa71e6611746569dc48cae4c93b65c1dfa009a4e5"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -1245,8 +1237,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -1256,15 +1248,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-4aa18f3014c0792a11347cdde79d966bc4b12aaea6e468152fa6d15a71ce5cf5"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -1388,8 +1379,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -1399,15 +1390,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-197cd5dbe023c5ceb2943ab526cedfda5f4da9381872b57e5c60a3f0f0f4cb12"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -1546,8 +1536,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -1557,15 +1547,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -1711,8 +1700,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -1722,15 +1711,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -1878,8 +1866,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -1889,15 +1877,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2043,8 +2030,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2054,15 +2041,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2208,8 +2194,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2219,15 +2205,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2375,8 +2360,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2386,15 +2371,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2522,8 +2506,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2533,15 +2517,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-75d90646734a0a742b1dc1f703e186ac49d349cf60c0691ce4fea1304ed23889"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2671,8 +2654,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2682,15 +2665,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-7d11a173097a65677d534744f80a170fc4a44f569b655af06d8b5d54f62c0676"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -2824,8 +2806,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "SUP-77",
@@ -2835,15 +2817,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "SUP-77",
-                  "version": "1",
-                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "tier",
@@ -3046,8 +3027,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3057,15 +3038,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -3271,8 +3251,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3282,15 +3262,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -3411,8 +3390,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3422,15 +3401,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -3655,8 +3633,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3666,15 +3644,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "2",
-                  "term_sha256": "sha256-eda6b47fd770a75c096418adb6e942287d60f0dea87f16447f0b8772269fe6f9"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -3815,8 +3792,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3826,15 +3803,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-33845d5553b8a48315813deddfad0b3e1584c4c573b221e0b29718045631d191"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -3982,8 +3958,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -3993,15 +3969,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "2",
-                  "term_sha256": "sha256-c5e2bbc480a94b473d6e1f6dae9e3efc46d411843f4dcc5ae4943bc942a8bc50"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -4147,8 +4122,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -4158,15 +4133,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "2",
-                  "term_sha256": "sha256-c5e2bbc480a94b473d6e1f6dae9e3efc46d411843f4dcc5ae4943bc942a8bc50"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -4307,8 +4281,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -4318,15 +4292,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -4414,14 +4387,18 @@
               "version": "1",
               "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": null
+              "effective_to": null,
+              "currency": "USD",
+              "unit": "call"
             },
             {
               "agreement_id": "MSA-2026-014",
               "version": "2",
               "term_sha256": "sha256-eda6b47fd770a75c096418adb6e942287d60f0dea87f16447f0b8772269fe6f9",
               "effective_from": "2026-07-01T00:00:00Z",
-              "effective_to": null
+              "effective_to": null,
+              "currency": "USD",
+              "unit": "call"
             }
           ],
           "steps": [
@@ -4474,24 +4451,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
-                },
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "2",
-                  "term_sha256": "sha256-eda6b47fd770a75c096418adb6e942287d60f0dea87f16447f0b8772269fe6f9"
-                }
-              ]
-            },
-            {
-              "step": "unit",
-              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -4665,8 +4626,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -4676,15 +4637,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "3",
-                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -4855,8 +4815,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -4866,15 +4826,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "3",
-                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -4957,17 +4916,13 @@
           "reason_text": "the applicable term is priced in a different unit; no conversion is made",
           "matched_term": null,
           "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "term_sha256": "sha256-790f28b51ba1f1678138aa3a3ad49c5bd41d7740a1b7f2ca957523c996ea7116"
+          },
           "offer_unit": "call",
-          "term_units": [
-            "thousand calls"
-          ],
-          "terms_considered": [
-            {
-              "agreement_id": "MSA-2026-014",
-              "version": "2",
-              "term_sha256": "sha256-790f28b51ba1f1678138aa3a3ad49c5bd41d7740a1b7f2ca957523c996ea7116"
-            }
-          ],
+          "term_unit": "thousand calls",
           "steps": [
             {
               "step": "scope",
@@ -5013,8 +4968,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5024,9 +4979,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": []
+              "matches": false
             }
           ]
         }
@@ -5034,6 +4994,483 @@
     },
     {
       "id": "cpm-035",
+      "name": "amendment: the superseding term has ended; the original applies again",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "0.90",
+            "effective_from": "2026-07-01T00:00:00Z",
+            "effective_to": "2026-09-01T00:00:00Z",
+            "supersedes": "1"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 2,
+          "terms_sha256": "sha256-0490627b07f33d5174dccf6d2756887da58755d5889a4703514a264bce7e5517",
+          "offer_sha256": "sha256-3ce1da537566b1a8ec214719a731086b8a7371099b4179e1e30db50bfb9e4402",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": null,
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-2e4ea81559d356ebe84243206fa325330c87f8fe0f543eca607d71f61fe99704"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-036",
+      "name": "amendment: chain whose middle term has ended is not bridged",
+      "input": {
+        "offer": {
+          "unit_price": "0.85",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "0.90",
+            "effective_from": "2026-07-01T00:00:00Z",
+            "effective_to": "2026-09-01T00:00:00Z",
+            "supersedes": "1"
+          },
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "3",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "0.85",
+            "effective_from": "2026-09-01T00:00:00Z",
+            "supersedes": "2"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "precedence_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 3,
+          "terms_sha256": "sha256-3cb96f672cd83521d5d31ffdd4049f2a66fbd8bbd99a7ab0d0f2701ebdafec71",
+          "offer_sha256": "sha256-42b3e4847791d79576a5b59f2e680b2a904850ea23120b814aa0d99569d4af12",
+          "offer": {
+            "unit_price": "0.85",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "precedence_unresolved",
+          "reason_text": "more than one supplied term applies and no declared precedence settles which",
+          "matched_term": null,
+          "expected": null,
+          "competing_terms": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": null,
+              "currency": "USD",
+              "unit": "call"
+            },
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "3",
+              "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd",
+              "effective_from": "2026-09-01T00:00:00Z",
+              "effective_to": null,
+              "currency": "USD",
+              "unit": "call"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-2e4ea81559d356ebe84243206fa325330c87f8fe0f543eca607d71f61fe99704"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "3",
+                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "3",
+                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "3",
+                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "3",
+                  "term_sha256": "sha256-0cc5d8fd7ff818e685f1ac7ccfe951ad27a318f0244a67bfa5bb9e19219c1cfd"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-037",
+      "name": "amendment: superseding term is in another currency; the old term is not used",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-08-01T00:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "0.90",
+            "effective_from": "2026-07-01T00:00:00Z",
+            "supersedes": "1"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "currency_mismatch",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 2,
+          "terms_sha256": "sha256-3be89638019d04efa25fc30c0519e88005958d58b19fdd266f13dda965dfd021",
+          "offer_sha256": "sha256-b5d3688653804cc15ff3ee1b09e4a369977a599a5713d95934709f78180ce5d4",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-08-01T00:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "currency_mismatch",
+          "reason_text": "the applicable term is priced in a different currency; no conversion is made",
+          "matched_term": null,
+          "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "term_sha256": "sha256-91d3748c9638ba1c37e8482a7bf60a91b3d4ee7ea6d9637191a0136b5c85b6c5"
+          },
+          "offer_currency": "USD",
+          "term_currency": "EUR",
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-91d3748c9638ba1c37e8482a7bf60a91b3d4ee7ea6d9637191a0136b5c85b6c5"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-91d3748c9638ba1c37e8482a7bf60a91b3d4ee7ea6d9637191a0136b5c85b6c5"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-91d3748c9638ba1c37e8482a7bf60a91b3d4ee7ea6d9637191a0136b5c85b6c5"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-91d3748c9638ba1c37e8482a7bf60a91b3d4ee7ea6d9637191a0136b5c85b6c5"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-038",
       "name": "amendment: supersedes a version that was not supplied",
       "input": {
         "offer": {
@@ -5139,8 +5576,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5150,15 +5587,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "2",
-                  "term_sha256": "sha256-c5e2bbc480a94b473d6e1f6dae9e3efc46d411843f4dcc5ae4943bc942a8bc50"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -5174,7 +5610,7 @@
       }
     },
     {
-      "id": "cpm-036",
+      "id": "cpm-039",
       "name": "overlap: two agreements cover the product, same price",
       "input": {
         "offer": {
@@ -5248,14 +5684,18 @@
               "version": "1",
               "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             },
             {
               "agreement_id": "PO-88",
               "version": "1",
               "term_sha256": "sha256-8d5c657c0b0aec6be3ea5c5bf7c1f832b74b123f4f32397eefd8cdd5d43398bc",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             }
           ],
           "steps": [
@@ -5308,24 +5748,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                },
-                {
-                  "agreement_id": "PO-88",
-                  "version": "1",
-                  "term_sha256": "sha256-8d5c657c0b0aec6be3ea5c5bf7c1f832b74b123f4f32397eefd8cdd5d43398bc"
-                }
-              ]
-            },
-            {
-              "step": "unit",
-              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5344,7 +5768,7 @@
       }
     },
     {
-      "id": "cpm-037",
+      "id": "cpm-040",
       "name": "overlap: two agreements cover the product, different prices",
       "input": {
         "offer": {
@@ -5418,14 +5842,18 @@
               "version": "1",
               "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             },
             {
               "agreement_id": "PO-88",
               "version": "1",
               "term_sha256": "sha256-2a2af4b7a9213706216c0d28e71a8f9e75f5bc70d708aba17645c1ee38d4eaa8",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             }
           ],
           "steps": [
@@ -5478,24 +5906,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                },
-                {
-                  "agreement_id": "PO-88",
-                  "version": "1",
-                  "term_sha256": "sha256-2a2af4b7a9213706216c0d28e71a8f9e75f5bc70d708aba17645c1ee38d4eaa8"
-                }
-              ]
-            },
-            {
-              "step": "unit",
-              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5514,7 +5926,7 @@
       }
     },
     {
-      "id": "cpm-038",
+      "id": "cpm-041",
       "name": "overlap: supersedes does not reach across agreements",
       "input": {
         "offer": {
@@ -5589,14 +6001,18 @@
               "version": "1",
               "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             },
             {
               "agreement_id": "PO-88",
               "version": "2",
               "term_sha256": "sha256-1a0a87681c7642f240741af2d0e8d855370c380142c90eddc98d7da86287a5e2",
               "effective_from": "2026-01-01T00:00:00Z",
-              "effective_to": "2027-01-01T00:00:00Z"
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
             }
           ],
           "steps": [
@@ -5649,24 +6065,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                },
-                {
-                  "agreement_id": "PO-88",
-                  "version": "2",
-                  "term_sha256": "sha256-1a0a87681c7642f240741af2d0e8d855370c380142c90eddc98d7da86287a5e2"
-                }
-              ]
-            },
-            {
-              "step": "unit",
-              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5685,8 +6085,8 @@
       }
     },
     {
-      "id": "cpm-039",
-      "name": "two terms, different units: the term in the offer's unit applies",
+      "id": "cpm-042",
+      "name": "overlap: two agreements, one priced in another unit: unit does not choose between them",
       "input": {
         "offer": {
           "unit_price": "1.00",
@@ -5731,8 +6131,8 @@
         ]
       },
       "result": {
-        "state": "verified",
-        "reason": null,
+        "state": "indeterminate",
+        "reason": "precedence_unresolved",
         "evidence": {
           "rule_id": "contract-price-match/v0.1",
           "terms_source": "caller_supplied",
@@ -5748,29 +6148,31 @@
             "sku": "api.weather.v1",
             "offered_at": "2026-10-01T12:00:00Z"
           },
-          "state": "verified",
-          "reason": null,
-          "reason_text": null,
-          "matched_term": {
-            "agreement_id": "MSA-2026-014",
-            "version": "1",
-            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
-            "effective_from": "2026-01-01T00:00:00Z",
-            "effective_to": "2027-01-01T00:00:00Z",
-            "pricing": "flat",
-            "tier": null
-          },
-          "expected": {
-            "price_per_unit": "1.00",
-            "currency": "USD",
-            "unit": "call"
-          },
-          "offered": {
-            "unit_price": "1.00",
-            "currency": "USD",
-            "unit": "call",
-            "quantity": "1"
-          },
+          "state": "indeterminate",
+          "reason": "precedence_unresolved",
+          "reason_text": "more than one supplied term applies and no declared precedence settles which",
+          "matched_term": null,
+          "expected": null,
+          "competing_terms": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
+            },
+            {
+              "agreement_id": "PO-88",
+              "version": "1",
+              "term_sha256": "sha256-872431b7548b88c5aa290fcc5413e62358b124597d86655eff2e5aa62f8f5eb3",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "thousand calls"
+            }
+          ],
           "steps": [
             {
               "step": "scope",
@@ -5821,8 +6223,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -5835,33 +6237,485 @@
                   "term_sha256": "sha256-872431b7548b88c5aa290fcc5413e62358b124597d86655eff2e5aa62f8f5eb3"
                 }
               ]
-            },
-            {
-              "step": "unit",
-              "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-                }
-              ]
-            },
-            {
-              "step": "price",
-              "rule": "the term carries one price for every quantity",
-              "pricing": "flat"
-            },
-            {
-              "step": "compare",
-              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
             }
           ]
         }
       }
     },
     {
-      "id": "cpm-040",
+      "id": "cpm-043",
+      "name": "overlap: two agreements, one in USD and one in EUR: currency does not choose between them",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "PO-88",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "0.92",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "precedence_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 2,
+          "terms_sha256": "sha256-a556c9712b7ba37b7471227969c087f516948cdf3bd22bcbf5c0baacddf4c093",
+          "offer_sha256": "sha256-3ce1da537566b1a8ec214719a731086b8a7371099b4179e1e30db50bfb9e4402",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "precedence_unresolved",
+          "reason_text": "more than one supplied term applies and no declared precedence settles which",
+          "matched_term": null,
+          "expected": null,
+          "competing_terms": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "USD",
+              "unit": "call"
+            },
+            {
+              "agreement_id": "PO-88",
+              "version": "1",
+              "term_sha256": "sha256-36d19166189861bb102bd53b0f022952e106fbbf6d60849dd1b68a18223a87c0",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "EUR",
+              "unit": "call"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-36d19166189861bb102bd53b0f022952e106fbbf6d60849dd1b68a18223a87c0"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-36d19166189861bb102bd53b0f022952e106fbbf6d60849dd1b68a18223a87c0"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-36d19166189861bb102bd53b0f022952e106fbbf6d60849dd1b68a18223a87c0"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-36d19166189861bb102bd53b0f022952e106fbbf6d60849dd1b68a18223a87c0"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-044",
+      "name": "overlap: two agreements, both in another currency: still precedence, not currency",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "PO-88",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "precedence_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 2,
+          "terms_sha256": "sha256-6755cbc6c4dedfe4cd0d288bd639ddf32914dc6d8413b87cdd800bda15aae0fa",
+          "offer_sha256": "sha256-3ce1da537566b1a8ec214719a731086b8a7371099b4179e1e30db50bfb9e4402",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "precedence_unresolved",
+          "reason_text": "more than one supplied term applies and no declared precedence settles which",
+          "matched_term": null,
+          "expected": null,
+          "competing_terms": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "EUR",
+              "unit": "call"
+            },
+            {
+              "agreement_id": "PO-88",
+              "version": "1",
+              "term_sha256": "sha256-00b66fe18eb975730e45ccf54876d8e69fdee70700b8661c6f9bf0e4f020e8b5",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z",
+              "currency": "EUR",
+              "unit": "call"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-00b66fe18eb975730e45ccf54876d8e69fdee70700b8661c6f9bf0e4f020e8b5"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-00b66fe18eb975730e45ccf54876d8e69fdee70700b8661c6f9bf0e4f020e8b5"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-00b66fe18eb975730e45ccf54876d8e69fdee70700b8661c6f9bf0e4f020e8b5"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                },
+                {
+                  "agreement_id": "PO-88",
+                  "version": "1",
+                  "term_sha256": "sha256-00b66fe18eb975730e45ccf54876d8e69fdee70700b8661c6f9bf0e4f020e8b5"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-045",
+      "name": "overlap: two versions, one in EUR, no declared precedence",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-08-01T00:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z"
+          },
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "2",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "0.90",
+            "effective_from": "2026-07-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "precedence_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 2,
+          "terms_sha256": "sha256-90492c1503e5be534c340cca46df1e86b02f83f470c3071fcffc7fad6564cf26",
+          "offer_sha256": "sha256-b5d3688653804cc15ff3ee1b09e4a369977a599a5713d95934709f78180ce5d4",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-08-01T00:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "precedence_unresolved",
+          "reason_text": "more than one supplied term applies and no declared precedence settles which",
+          "matched_term": null,
+          "expected": null,
+          "competing_terms": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": null,
+              "currency": "USD",
+              "unit": "call"
+            },
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "2",
+              "term_sha256": "sha256-813062292ae8a5fd42d516d2587b846f2e16ce3d237a08ba35554a6eb3dae846",
+              "effective_from": "2026-07-01T00:00:00Z",
+              "effective_to": null,
+              "currency": "EUR",
+              "unit": "call"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-813062292ae8a5fd42d516d2587b846f2e16ce3d237a08ba35554a6eb3dae846"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-813062292ae8a5fd42d516d2587b846f2e16ce3d237a08ba35554a6eb3dae846"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-813062292ae8a5fd42d516d2587b846f2e16ce3d237a08ba35554a6eb3dae846"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1"
+                },
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "2",
+                  "term_sha256": "sha256-813062292ae8a5fd42d516d2587b846f2e16ce3d237a08ba35554a6eb3dae846"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-046",
       "name": "currency: term in EUR, offer in USD",
       "input": {
         "offer": {
@@ -5914,17 +6768,13 @@
           "reason_text": "the applicable term is priced in a different currency; no conversion is made",
           "matched_term": null,
           "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+          },
           "offer_currency": "USD",
-          "term_currencies": [
-            "EUR"
-          ],
-          "terms_considered": [
-            {
-              "agreement_id": "MSA-2026-014",
-              "version": "1",
-              "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
-            }
-          ],
+          "term_currency": "EUR",
           "steps": [
             {
               "step": "scope",
@@ -5960,16 +6810,27 @@
               ]
             },
             {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                }
+              ]
+            },
+            {
               "step": "currency",
               "rule": "term.currency equals offer.currency; no conversion",
-              "terms_remaining": []
+              "matches": false
             }
           ]
         }
       }
     },
     {
-      "id": "cpm-041",
+      "id": "cpm-047",
       "name": "unit: term per thousand calls, offer per call",
       "input": {
         "offer": {
@@ -6022,17 +6883,13 @@
           "reason_text": "the applicable term is priced in a different unit; no conversion is made",
           "matched_term": null,
           "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-67b64bb496055d439e1051e72415b36582f0894e3334651aeb720b2d37d746ac"
+          },
           "offer_unit": "call",
-          "term_units": [
-            "thousand calls"
-          ],
-          "terms_considered": [
-            {
-              "agreement_id": "MSA-2026-014",
-              "version": "1",
-              "term_sha256": "sha256-67b64bb496055d439e1051e72415b36582f0894e3334651aeb720b2d37d746ac"
-            }
-          ],
+          "term_unit": "thousand calls",
           "steps": [
             {
               "step": "scope",
@@ -6068,8 +6925,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -6079,16 +6936,21 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": []
+              "matches": false
             }
           ]
         }
       }
     },
     {
-      "id": "cpm-042",
+      "id": "cpm-048",
       "name": "unit: spelling differs only by case",
       "input": {
         "offer": {
@@ -6141,17 +7003,13 @@
           "reason_text": "the applicable term is priced in a different unit; no conversion is made",
           "matched_term": null,
           "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+          },
           "offer_unit": "Call",
-          "term_units": [
-            "call"
-          ],
-          "terms_considered": [
-            {
-              "agreement_id": "MSA-2026-014",
-              "version": "1",
-              "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
-            }
-          ],
+          "term_unit": "call",
           "steps": [
             {
               "step": "scope",
@@ -6187,8 +7045,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -6198,16 +7056,21 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": []
+              "matches": false
             }
           ]
         }
       }
     },
     {
-      "id": "cpm-043",
+      "id": "cpm-049",
       "name": "currency and unit both differ: currency is reported",
       "input": {
         "offer": {
@@ -6260,17 +7123,13 @@
           "reason_text": "the applicable term is priced in a different currency; no conversion is made",
           "matched_term": null,
           "expected": null,
+          "term_considered": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-208c11742a53dd38e67e004c9b1c101c38c97c65c9a79cd9ff2351f9a308903e"
+          },
           "offer_currency": "USD",
-          "term_currencies": [
-            "EUR"
-          ],
-          "terms_considered": [
-            {
-              "agreement_id": "MSA-2026-014",
-              "version": "1",
-              "term_sha256": "sha256-208c11742a53dd38e67e004c9b1c101c38c97c65c9a79cd9ff2351f9a308903e"
-            }
-          ],
+          "term_currency": "EUR",
           "steps": [
             {
               "step": "scope",
@@ -6306,8 +7165,83 @@
               ]
             },
             {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-208c11742a53dd38e67e004c9b1c101c38c97c65c9a79cd9ff2351f9a308903e"
+                }
+              ]
+            },
+            {
               "step": "currency",
               "rule": "term.currency equals offer.currency; no conversion",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-050",
+      "name": "order: wrong seller and outside the dates: scope is reported",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "other.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2025-06-01T00:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "no_applicable_term",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-4d8861763c6cdd82d733e767213b60ed2e3f6ce26e4a28af528264dd405282c3",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "other.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2025-06-01T00:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "no_applicable_term",
+          "reason_text": "no supplied term covers this seller and product",
+          "matched_term": null,
+          "expected": null,
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
               "terms_remaining": []
             }
           ]
@@ -6315,7 +7249,505 @@
       }
     },
     {
-      "id": "cpm-044",
+      "id": "cpm-051",
+      "name": "order: outside the dates and another currency: dates are reported",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2025-06-01T00:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "EUR",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "effective_interval_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-bc42dea1a809262aa19001d59e7ade85afbe6ddfe059d6e4eae07e578d40c655",
+          "offer_sha256": "sha256-3c367e87a2ceef9dbe01bf7b4ffeeb5c2481d5c34f56d72db6d25374ca47d87c",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2025-06-01T00:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "effective_interval_unresolved",
+          "reason_text": "no supplied term for this seller and product is in effect at the offer time",
+          "matched_term": null,
+          "expected": null,
+          "terms_in_scope": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-2e8f8db0c70a34ae04415e7ee850ee3c95eee799c32bf958b154bf47e0ddd42c"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-052",
+      "name": "order: another unit and no matching tier: unit is reported",
+      "input": {
+        "offer": {
+          "unit_price": "1.20",
+          "currency": "USD",
+          "unit": "case",
+          "quantity": "0.5",
+          "seller": "seller.example",
+          "sku": "widget-9",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "SUP-77",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "widget-9"
+              ]
+            },
+            "currency": "USD",
+            "unit": "each",
+            "tiers": [
+              {
+                "min_quantity": "1",
+                "max_quantity": "100",
+                "price_per_unit": "1.20"
+              },
+              {
+                "min_quantity": "100",
+                "max_quantity": "500",
+                "price_per_unit": "1.00"
+              },
+              {
+                "min_quantity": "500",
+                "price_per_unit": "0.80"
+              }
+            ],
+            "effective_from": "2026-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "unit_mismatch",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-dc1286bc1aeb03c46eecc2692669c8e27fae61aa402ebecf3066ecb7afa02869",
+          "offer_sha256": "sha256-ab48b6519d72e2c7dcb3c400688b759f3c4a92a91e686b3318584f726ec33b01",
+          "offer": {
+            "unit_price": "1.20",
+            "currency": "USD",
+            "unit": "case",
+            "quantity": "0.5",
+            "seller": "seller.example",
+            "sku": "widget-9",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "unit_mismatch",
+          "reason_text": "the applicable term is priced in a different unit; no conversion is made",
+          "matched_term": null,
+          "expected": null,
+          "term_considered": {
+            "agreement_id": "SUP-77",
+            "version": "1",
+            "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
+          },
+          "offer_unit": "case",
+          "term_unit": "each",
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "SUP-77",
+                  "version": "1",
+                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "SUP-77",
+                  "version": "1",
+                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "SUP-77",
+                  "version": "1",
+                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "SUP-77",
+                  "version": "1",
+                  "term_sha256": "sha256-a77cafd2c885033079124e55382b607fb0b1d9bf32eec2d9b71f2a2d5b760472"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-053",
+      "name": "time: one fractional digit is accepted",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00.5Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-904731fb4f04b1151c1e327729d4bfca2ef653167867d23cf6002d4ebe661ac9",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00.5Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-054",
+      "name": "time: whole seconds and milliseconds name the same instant",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-01-01T00:00:00.000Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-4e85cf6e2b66278ee0798b9db464895a850badf86f1da3dcad134d725c5b84c8",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-01-01T00:00:00.000Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-055",
       "name": "missing: no terms supplied",
       "input": {
         "offer": {
@@ -6363,7 +7795,7 @@
       }
     },
     {
-      "id": "cpm-045",
+      "id": "cpm-056",
       "name": "missing: terms are for another seller",
       "input": {
         "offer": {
@@ -6427,7 +7859,7 @@
       }
     },
     {
-      "id": "cpm-046",
+      "id": "cpm-057",
       "name": "missing: product not in the term's scope",
       "input": {
         "offer": {
@@ -6491,7 +7923,7 @@
       }
     },
     {
-      "id": "cpm-047",
+      "id": "cpm-058",
       "name": "missing: seller spelling differs only by case",
       "input": {
         "offer": {
@@ -6555,7 +7987,7 @@
       }
     },
     {
-      "id": "cpm-048",
+      "id": "cpm-059",
       "name": "scope: term lists several products",
       "input": {
         "offer": {
@@ -6662,8 +8094,8 @@
               ]
             },
             {
-              "step": "currency",
-              "rule": "term.currency equals offer.currency; no conversion",
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
               "terms_remaining": [
                 {
                   "agreement_id": "MSA-2026-014",
@@ -6673,15 +8105,14 @@
               ]
             },
             {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
               "step": "unit",
               "rule": "term.unit equals offer.unit (exact string); no conversion",
-              "terms_remaining": [
-                {
-                  "agreement_id": "MSA-2026-014",
-                  "version": "1",
-                  "term_sha256": "sha256-db4e8a306b873f3b7250e2491ff13c21dc4c8afc7b4155de1f377b84f732a087"
-                }
-              ]
+              "matches": true
             },
             {
               "step": "price",
@@ -6697,7 +8128,7 @@
       }
     },
     {
-      "id": "cpm-049",
+      "id": "cpm-060",
       "name": "invalid: price given as a JSON number",
       "input": {
         "offer": {
@@ -6733,7 +8164,7 @@
       }
     },
     {
-      "id": "cpm-050",
+      "id": "cpm-061",
       "name": "invalid: term price given as a JSON number",
       "input": {
         "offer": {
@@ -6769,7 +8200,7 @@
       }
     },
     {
-      "id": "cpm-051",
+      "id": "cpm-062",
       "name": "invalid: date without a time",
       "input": {
         "offer": {
@@ -6805,7 +8236,7 @@
       }
     },
     {
-      "id": "cpm-052",
+      "id": "cpm-063",
       "name": "invalid: local time without Z",
       "input": {
         "offer": {
@@ -6841,7 +8272,7 @@
       }
     },
     {
-      "id": "cpm-053",
+      "id": "cpm-064",
       "name": "invalid: time with an offset instead of Z",
       "input": {
         "offer": {
@@ -6877,7 +8308,79 @@
       }
     },
     {
-      "id": "cpm-054",
+      "id": "cpm-065",
+      "name": "invalid: more than three fractional digits in a time",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00.1234Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.offered_at"
+      }
+    },
+    {
+      "id": "cpm-066",
+      "name": "invalid: time without seconds",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.offered_at"
+      }
+    },
+    {
+      "id": "cpm-067",
       "name": "invalid: impossible calendar date",
       "input": {
         "offer": {
@@ -6913,7 +8416,7 @@
       }
     },
     {
-      "id": "cpm-055",
+      "id": "cpm-068",
       "name": "invalid: unknown member on a term (a discount)",
       "input": {
         "offer": {
@@ -6950,7 +8453,7 @@
       }
     },
     {
-      "id": "cpm-056",
+      "id": "cpm-069",
       "name": "invalid: unknown member on the offer",
       "input": {
         "offer": {
@@ -6987,7 +8490,7 @@
       }
     },
     {
-      "id": "cpm-057",
+      "id": "cpm-070",
       "name": "invalid: term has both one price and tiers",
       "input": {
         "offer": {
@@ -7039,7 +8542,7 @@
       }
     },
     {
-      "id": "cpm-058",
+      "id": "cpm-071",
       "name": "invalid: term has neither a price nor tiers",
       "input": {
         "offer": {
@@ -7074,7 +8577,7 @@
       }
     },
     {
-      "id": "cpm-059",
+      "id": "cpm-072",
       "name": "invalid: same agreement version twice",
       "input": {
         "offer": {
@@ -7125,7 +8628,7 @@
       }
     },
     {
-      "id": "cpm-060",
+      "id": "cpm-073",
       "name": "invalid: terms that supersede one another",
       "input": {
         "offer": {
@@ -7178,7 +8681,7 @@
       }
     },
     {
-      "id": "cpm-061",
+      "id": "cpm-074",
       "name": "invalid: negative price",
       "input": {
         "offer": {
@@ -7214,7 +8717,7 @@
       }
     },
     {
-      "id": "cpm-062",
+      "id": "cpm-075",
       "name": "invalid: price with a thousands separator",
       "input": {
         "offer": {
@@ -7250,7 +8753,7 @@
       }
     },
     {
-      "id": "cpm-063",
+      "id": "cpm-076",
       "name": "invalid: price with an exponent",
       "input": {
         "offer": {
@@ -7286,7 +8789,7 @@
       }
     },
     {
-      "id": "cpm-064",
+      "id": "cpm-077",
       "name": "invalid: quantity zero",
       "input": {
         "offer": {
@@ -7322,7 +8825,7 @@
       }
     },
     {
-      "id": "cpm-065",
+      "id": "cpm-078",
       "name": "invalid: tier upper bound not above lower bound",
       "input": {
         "offer": {
@@ -7363,7 +8866,7 @@
       }
     },
     {
-      "id": "cpm-066",
+      "id": "cpm-079",
       "name": "invalid: term ends before it starts",
       "input": {
         "offer": {
@@ -7399,7 +8902,7 @@
       }
     },
     {
-      "id": "cpm-067",
+      "id": "cpm-080",
       "name": "invalid: offer without a seller",
       "input": {
         "offer": {
@@ -7434,7 +8937,7 @@
       }
     },
     {
-      "id": "cpm-068",
+      "id": "cpm-081",
       "name": "invalid: lower-case currency code",
       "input": {
         "offer": {
@@ -7470,7 +8973,7 @@
       }
     },
     {
-      "id": "cpm-069",
+      "id": "cpm-082",
       "name": "invalid: terms is not an array",
       "input": {
         "offer": {
