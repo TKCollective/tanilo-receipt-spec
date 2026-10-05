@@ -74,7 +74,7 @@ A signature establishes who issued a determination, not whether that determinati
 
 Three properties narrow that gap. None closes it:
 
-- **Deterministic checks.** Where a check is mechanically re-runnable from the receipt's own inputs, "trust the issuer" is replaced by "re-run the check." A deterministic verification mode with six such check types and no model in the trust chain ships in the reference implementation.
+- **Deterministic checks.** Where a check is mechanically re-runnable from the receipt's own inputs, "trust the issuer" is replaced by "re-run the check." A deterministic verification mode with seven check types and no model in the trust chain ships in the reference implementation. Six are re-run from the receipt's own inputs. The seventh, the contract price check, is re-run from the offer and terms the caller keeps, whose hashes the receipt carries; its rule, tests and vectors are in [`checks/contract-price-match/`](checks/contract-price-match/).
 - **Multi-issuer composition.** `signatures[]` accepts co-signers over identical canonical bytes, so a consumer need not trust any single issuer. The reference implementation and one independent implementation, built from this spec text alone, produce byte-identical canonical bytes.
 - **Non-evaluation is a first-class state.** The format distinguishes *"checked and could not establish"* from *"did not check."* An issuer that skipped a check cannot represent the result as a pass — see [Decision mapping](#decision-mapping).
 
