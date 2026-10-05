@@ -1,5 +1,6 @@
 {
   "rule_id": "contract-price-match/v0.1",
+  "license": "CC0-1.0",
   "note": "Each case is an input and the exact result the rule gives. For input that cannot be read, the result names the member at fault; the message text is not part of the vectors.",
   "cases": [
     {

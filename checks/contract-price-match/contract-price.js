@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 TK Collective LLC
 // ═══════════════════════════════════════════════════════════════════
 //  contract_price_match — deterministic contract-price check (MVP)
 //
@@ -119,7 +121,12 @@ function parseInstant(v, path) {
   if (typeof v !== "string") throw new InvalidInput(path, `must be a UTC time written as a string, for example "2026-10-01T00:00:00Z"; got ${got(v)}.`);
   const m = INSTANT_RE.exec(v);
   if (!m) {
-    throw new InvalidInput(path, `must be a full UTC time ending in Z, for example "2026-10-01T00:00:00Z"; got ${got(v)}. A date with no time, a time with no Z, and a time with an offset such as +02:00 are refused, because the exact instant would have to be guessed. For "from the start of 1 January 2026 UTC" send "2026-01-01T00:00:00Z".`);
+    // A time that carries an explicit offset names an exact instant; it is
+    // refused only because this schema accepts the Z form and no other.
+    if (/T.*[+-]\d{2}(:?\d{2})?$/.test(v)) {
+      throw new InvalidInput(path, `must be a UTC time ending in Z, for example "2026-10-01T00:00:00Z"; got ${got(v)}. An explicit offset such as +02:00 is unsupported by this Z-only schema. Convert the time to UTC and end it with Z.`);
+    }
+    throw new InvalidInput(path, `must be a full UTC time ending in Z, for example "2026-10-01T00:00:00Z"; got ${got(v)}. A date with no time, and a time with no Z, are refused, because the exact instant would have to be guessed. For "from the start of 1 January 2026 UTC" send "2026-01-01T00:00:00Z".`);
   }
   const [y, mo, d, h, mi, s] = m.slice(1, 7).map(Number);
   const ms = Number((m[7] || "").padEnd(3, "0"));

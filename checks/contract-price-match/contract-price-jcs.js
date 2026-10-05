@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 TK Collective LLC
+//
 // Canonical JSON (RFC 8785, JCS) for the values the contract-price rule
 // hashes and returns: objects, arrays, strings, null, booleans and whole
 // numbers (the result carries one count). Numbers with a fraction are refused:

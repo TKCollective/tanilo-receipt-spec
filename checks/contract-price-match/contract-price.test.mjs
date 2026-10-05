@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 TK Collective LLC
+//
 // contract-price.test.mjs — test suite for the contract_price_match rule.
 //
 // Pure: imports the rule and calls it. No server, no network, no clock.
@@ -216,6 +219,12 @@ console.log("\nerror messages");
   check("a formatted amount: names the things not allowed and echoes the value", /thousands separator/.test(m) && /currency symbol/.test(m) && /got the string "\$1,000\.00"/.test(m), m);
   m = msg({ ...E, terms: [{ ...E.terms[0], effective_from: "2026-01-01" }] });
   check("a date with no time: shows the form to send", /ending in Z/.test(m) && /"2026-01-01T00:00:00Z"/.test(m) && /got the string "2026-01-01"/.test(m), m);
+  m = msg({ ...E, offer: { ...E.offer, offered_at: "2026-10-01T14:00:00+02:00" } });
+  check("a time with an offset: says the offset is unsupported by this Z-only schema, and does not say the instant would be guessed", /unsupported by this Z-only schema/.test(m) && /Convert the time to UTC/.test(m) && !/guessed/.test(m) && /got the string "2026-10-01T14:00:00\+02:00"/.test(m), m);
+  m = msg({ ...E, offer: { ...E.offer, offered_at: "2026-10-01T14:00:00-0500" } });
+  check("an offset written without a colon gets the same message", /unsupported by this Z-only schema/.test(m), m);
+  m = msg({ ...E, offer: { ...E.offer, offered_at: "2026-10-01T12:00:00" } });
+  check("a time with no Z and no offset still says the instant would have to be guessed", /would have to be guessed/.test(m) && !/Z-only schema/.test(m), m);
   m = msg({ ...E, terms: [{ ...E.terms[0], discount_percent: "10" }] });
   check("an unknown member: lists the recognised members", /nothing is silently ignored/.test(m) && /price_per_unit, tiers/.test(m), m);
   m = msg({ ...E, terms: [{ ...E.terms[0], tiers: [{ min_quantity: "1", price_per_unit: "1.00" }] }] });
@@ -228,7 +237,7 @@ console.log("\nerror messages");
 // ── published vectors ──
 const VECTORS = new URL("./contract-price.vectors.json", import.meta.url);
 const slim = (r) => (r.invalid ? { invalid: true, member: r.path } : r);
-const built = { rule_id: CONTRACT_PRICE_RULE_ID, note: "Each case is an input and the exact result the rule gives. For input that cannot be read, the result names the member at fault; the message text is not part of the vectors.", cases: CASES.map(([name, input], i) => ({ id: "cpm-" + String(i + 1).padStart(3, "0"), name, input, result: slim(evaluateContractPrice(clone(input))) })) };
+const built = { rule_id: CONTRACT_PRICE_RULE_ID, license: "CC0-1.0", note: "Each case is an input and the exact result the rule gives. For input that cannot be read, the result names the member at fault; the message text is not part of the vectors.", cases: CASES.map(([name, input], i) => ({ id: "cpm-" + String(i + 1).padStart(3, "0"), name, input, result: slim(evaluateContractPrice(clone(input))) })) };
 if (process.argv.includes("--write-vectors")) {
   fs.writeFileSync(VECTORS, JSON.stringify(built, null, 2) + "\n");
   console.log(`\nwrote ${built.cases.length} vectors`);

@@ -14,6 +14,8 @@ check: same input, same rule, same result.
 | `contract-price.test.mjs` | The test suite: 82 cases, including the USD 2.00 against USD 1.00 example. |
 | `contract-price.vectors.json` | Each case as an input and the exact result. Use it to check another implementation. |
 | `SHA256SUMS` | SHA-256 of the four files above. |
+| `LICENSE`, `NOTICE` | Apache License 2.0 and its notice, for the code and this README. |
+| `LICENSE-vectors-CC0-1.0.txt` | CC0 1.0, for the vectors. |
 
 ## Run it
 
@@ -81,8 +83,8 @@ The first step that cannot continue decides the reason. Later steps are not run.
 Details that decide edge cases:
 
 - **Amounts and quantities** are decimal strings: up to 18 digits, then optionally a point and 1 to 8 digits.
-- **Times** are UTC and end in `Z`, with seconds and optionally 1 to 3 fractional digits. They are compared to the millisecond.
-- **`supersedes`** is a string: the `version` of a term of the same `agreement_id`. It has effect only while the superseding term is itself in effect at the offer time. When a superseding term has ended, the term it replaced applies again if it is still in effect. Precedence is not carried across a term that is not in effect: if version 3 replaces version 2 and version 2 replaced version 1, and version 2 has ended, versions 1 and 3 are both left and the result is `precedence_unresolved`.
+- **Times** are UTC and end in `Z`, with seconds and optionally 1 to 3 fractional digits. They are compared to the millisecond. A time with an explicit offset such as `+02:00` is unsupported by this Z-only schema.
+- **`supersedes`** is a single string: the `version` of one term of the same `agreement_id`. A term can replace one version, not several. It has effect only while the superseding term is itself in effect at the offer time. When a superseding term has ended, the term it replaced applies again if it is still in effect. Precedence is not carried across a term that is not in effect: if version 3 replaces version 2 and version 2 replaced version 1, and version 2 has ended, versions 1 and 3 are both left and the result is `precedence_unresolved`.
 - **Two terms whose dates do not both contain the offer time never compete.** Nothing replaces anything in that case; only the term in effect is considered.
 - **`terms_sha256`** is the SHA-256 of the canonical JSON of the `terms` array in the order supplied. Member order inside an object does not matter; the order of the array does. **`offer_sha256`** and each **`term_sha256`** are over the canonical JSON of that object.
 
@@ -108,4 +110,13 @@ replay. This folder holds `contract-price-match/v0.1`.
 
 Documentation: https://tanilo.io/docs/contract-price-check
 
-Licensed under the MIT License, as the rest of this repository.
+## Licence
+
+This folder is licensed separately from the rest of this repository.
+
+| Files | Licence |
+|---|---|
+| `contract-price.js`, `contract-price-jcs.js`, `contract-price.test.mjs`, `README.md` | Apache License 2.0. See `LICENSE` and `NOTICE`. Copyright 2026 TK Collective LLC. |
+| `contract-price.vectors.json` | CC0 1.0 Universal. See `LICENSE-vectors-CC0-1.0.txt`. Use the vectors without restriction. |
+
+The rest of this repository stays under its own licence (see the `LICENSE` file at the repository root).
