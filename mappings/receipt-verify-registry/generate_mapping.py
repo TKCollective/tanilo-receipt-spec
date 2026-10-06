@@ -24,7 +24,7 @@ merely contains a field is not coverage of the rule about that field.
 import hashlib, json, os, subprocess, sys
 from collections import OrderedDict
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from normative_audit import extract as extract_normative
+from normative_audit import extract as extract_normative, extract_outside, extract_structural
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mapping.json")
@@ -57,7 +57,7 @@ DOCS["D01"] = {
     "url": "https://www.ietf.org/archive/id/draft-krausz-verification-state-01.txt",
     "sha256": "22c5ce262bdf4e63ef538a308e7a8455e93c4143b9e1726b7b64720615d516db",
     "pinned_by": "examples/v0.3-composed/vectors.json spec + README; examples/v0.4-composed/vectors.json spec + README (both name -01)",
-    "scope": "whole document; every normative statement in sections 3-7, 9 and 10",
+    "scope": "sections 3-7, 9 and 10: every sentence carrying MUST, MUST NOT, SHALL, SHALL NOT, SHOULD, SHOULD NOT, REQUIRED or RECOMMENDED (normative_audit.sentences), and the requirement-bearing items that are not such sentences: the typ item of §4.1, the numbered steps of §4.3 and the rows of Table 2 in §5.1 (normative_audit.structural_sources). Statements carrying only MAY or OPTIONAL are outside the audit; the six in these sections are listed in normative_audit.outside_audit",
     "requirements": OrderedDict([
         ("D01-3.2-conjunction", "§3.2: multiple verification.* constraints combine with AND; all MUST resolve to act for the action to proceed"),
         ("D01-3.2-env-ordering", "§3.2: environment.* constraints MUST short-circuit before verification.* constraints"),
@@ -182,6 +182,32 @@ AUDIT_ASSIGN = [
     ("9.2", "A relying party that cannot independently verify t", ["D01-9.2-unverifiable-mapping-hash-malformed"]),
     ("10", "Well-known URI:* Verification issuers using HTTPS", ["D01-10-well-known-jwks"]),
 ]
+# The requirement-bearing items of -01 that are not keyword sentences, keyed by
+# (section, locator) as normative_audit.extract_structural reports them. Each names the
+# one registry row that stands for it. An item with no entry here, or an entry with no
+# item in the text, stops generation.
+STRUCT_ASSIGN = OrderedDict([
+    (("4.1", "typ"), "D01-4.1-typ"),
+    (("4.3", "step 1"), "D01-4.3-1-signature"),
+    (("4.3", "step 2"), "D01-4.3-2-mapping-digest"),
+    (("4.3", "step 3"), "D01-4.3-3-recompute-recommendation"),
+    (("4.3", "step 4"), "D01-4.3-4-confirm-recommendation"),
+    (("4.3", "step 5"), "D01-4.3-5-compute-gate"),
+    (("4.3", "step 6"), "D01-4.3-6-confirm-gate"),
+    (("4.3", "step 7"), "D01-4.3-7-time"),
+    (("4.3", "step 8"), "D01-4.3-8-mismatch-halts"),
+] + [(("5.1", f"Table 2 row {n}"), f"D01-5.1-row-{n}") for n in range(1, 8)])
+def build_structural(text, reqs):
+    items = extract_structural(text)
+    keys = [(sec, loc) for _, sec, loc, _ in items]
+    if keys != list(STRUCT_ASSIGN):
+        raise SystemExit("structural sources: the text's items %r differ from STRUCT_ASSIGN %r" % (keys, list(STRUCT_ASSIGN)))
+    out = []
+    for n, (kind, sec, loc, txt) in enumerate(items, 1):
+        rid = STRUCT_ASSIGN[(sec, loc)]; assert rid in reqs, rid
+        out.append(OrderedDict([("n", n), ("kind", kind), ("section", sec), ("locator", loc), ("text", txt), ("requirement", rid)]))
+    return out
+
 def build_audit(text, reqs):
     sentences = extract_normative(text)
     out, unassigned, seen = [], [], set()
@@ -561,15 +587,24 @@ def main():
     reverse["D01"] = reverse_view("D01", vectors_by_corpus, ["v0.3-composed", "v0.4-composed", "rule2"], normative_only=["v0.3-composed", "v0.4-composed"])
     reverse["D01"]["note"] = "two counts: summary counts every corpus including rule2, which its manifest labels NOT NORMATIVE; summary_excluding_not_normative and each row's coverage_excluding_not_normative count only the normative corpora"
     reverse["RMT"] = reverse_view("RMT", vectors_by_corpus, ["v0.3-composed", "v0.4-composed"])
-    reverse["MAP"] = reverse_view("MAP", vectors_by_corpus, ["rule2"])
-    reverse["MAP"]["note"] = "exercised only by the NOT NORMATIVE rule2 set"
+    reverse["MAP"] = reverse_view("MAP", vectors_by_corpus, ["rule2"], normative_only=[])
+    reverse["MAP"]["note"] = "exercised only by the NOT NORMATIVE rule2 set; summary_excluding_not_normative therefore counts no corpus and every row is not covered in it"
+    # a view whose scope includes a NOT NORMATIVE corpus must publish the second count
+    for doc_id, view in reverse.items():
+        has_nn = any(not corpora[c]["normative"] for c in view["corpora"])
+        assert has_nn == ("summary_excluding_not_normative" in view), doc_id
+        if has_nn: assert view["summary_excluding_not_normative"]["corpora"] == [c for c in view["corpora"] if corpora[c]["normative"]], doc_id
     reverse["EP"] = reverse_view("EP", vectors_by_corpus, ["evidence-pinning-rev8"])
     reverse["EP"]["note"] = "scoped to the evidence-pinning section only, as the fixture header pins it"
 
     all_req_ids = {rid for d in DOCS.values() for rid in d["requirements"]}
-    for c in corpora.values():
+    doc_of = {rid: doc_id for doc_id, d in DOCS.items() for rid in d["requirements"]}
+    for cname, c in corpora.items():
         for v in c["vectors"]:
-            for r in v.get("requirements", []): assert r["requirement"] in all_req_ids, r["requirement"]
+            for r in v.get("requirements", []):
+                assert r["requirement"] in all_req_ids, r["requirement"]
+                # a vector may link only to documents its own corpus names
+                assert doc_of[r["requirement"]] in c["requirement_documents"], (cname, v["id"], r["requirement"])
             for e in v.get("external_requirements", []): assert e["requirement"] in EXTERNAL, e["requirement"]
 
     doc = OrderedDict()
@@ -578,7 +613,7 @@ def main():
     doc["methodology"] = OrderedDict([("name", "Agent Receipt Conformance — Grading Methodology"), ("axis", "§2.7 Vector requirement mapping"), ("version", "v0.4.5-draft (§2.7 unchanged from v0.4.1 per its editor)"),
         ("url", "https://github.com/LembaGang/receipt-verify/blob/11d520880d7b3a2647b04d09d84d692c94cc4368/registry/methodology/v0.4.5-draft.md")])
     doc["corpus_snapshot"] = OrderedDict([("repository", "TKCollective/tanilo-receipt-spec"), ("commit", SNAPSHOT)])
-    doc["prepared"] = OrderedDict([("by", "Joe Krausz, TK Collective LLC"), ("date", "2026-09-30"), ("revised", "2026-10-01 (mapping-v2, after Michael Msebenzi's review of b1da800)"), ("for", "Michael Msebenzi (headlessoracle), receipt-verify registry")])
+    doc["prepared"] = OrderedDict([("by", "Joe Krausz, TK Collective LLC"), ("date", "2026-09-30"), ("revised", "2026-10-06 (mapping-v3, after Michael Msebenzi's re-check of 91e66a7); 2026-10-01 (mapping-v2, after his review of b1da800)"), ("for", "Michael Msebenzi (headlessoracle), receipt-verify registry")])
     doc["cited_texts"] = CITED
     doc["coverage_rule"] = ("Coverage is recorded per vector and requirement only where an assertion is actually executed. "
         "covered: executed by a checker published with the corpus against the shipped file. "
@@ -600,16 +635,34 @@ def main():
                                  ("mapped_or_deferred", sum(c["vector_count"] for c in corpora.values()))])
     doc["reverse_view"] = reverse
     # normative audit: every MUST/SHOULD/SHALL/REQUIRED/RECOMMENDED sentence of -01 §§3-7, 9, 10,
-    # with the requirement(s) it is mapped to and whether any vector exercises it
+    # with the requirement(s) it is mapped to and whether any vector exercises it. Two counts,
+    # like the reverse view: over every corpus the D01 view names, and excluding NOT NORMATIVE ones.
+    d01_rows = reverse["D01"]["requirements"]
     for row in audit_rows:
-        covs = [reverse["D01"]["requirements"][i]["coverage"] for i in row["requirements"]]
-        row["exercised"] = any(c != "not covered" for c in covs)
+        row["exercised"] = any(d01_rows[i]["coverage"] != "not covered" for i in row["requirements"])
+        row["exercised_excluding_not_normative"] = any(d01_rows[i]["coverage_excluding_not_normative"] != "not covered" for i in row["requirements"])
+    structural = build_structural(d01_text, DOCS["D01"]["requirements"])
+    named_by_sentence = {i for row in audit_rows for i in row["requirements"]}
+    named_by_structure = {x["requirement"] for x in structural}
+    unsourced = [rid for rid in DOCS["D01"]["requirements"] if rid not in named_by_sentence and rid not in named_by_structure]
+    assert not unsourced, f"D01 rows with neither an audit sentence nor a structural source: {unsourced}"
+    without_sentence = [rid for rid in DOCS["D01"]["requirements"] if rid not in named_by_sentence]
+    outside = [OrderedDict([("n", n), ("section", sec), ("text", txt), ("keyword", "MAY" if " MAY " in f" {txt} " else "OPTIONAL")]) for n, (sec, txt) in enumerate(extract_outside(d01_text), 1)]
+    nn_scope = reverse["D01"]["summary_excluding_not_normative"]["corpora"]
     doc["normative_audit"] = OrderedDict([
         ("document", "D01"), ("source", CITED["D01"]["path"]), ("sections", ["3", "4", "5", "6", "7", "9", "10"]),
         ("keywords", ["MUST", "MUST NOT", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "REQUIRED", "RECOMMENDED"]),
-        ("rule", "every sentence carrying one of the keywords is listed with the requirement identifiers it is mapped to; exercised is true when at least one of those requirements has coverage covered or partial in the reverse view (all corpora), false when every one is not covered (unexercised)"),
+        ("rule", "every sentence carrying one of the keywords is listed with the requirement identifiers it is mapped to; exercised is true when at least one of those requirements has coverage covered or partial in the reverse view (all corpora), false when every one is not covered (unexercised); exercised_excluding_not_normative is the same test against coverage_excluding_not_normative. A sentence the text breaks across a page is listed whole"),
         ("summary", OrderedDict([("sentences", len(audit_rows)), ("exercised", sum(1 for r in audit_rows if r["exercised"])), ("unexercised", sum(1 for r in audit_rows if not r["exercised"]))])),
-        ("sentences", audit_rows)])
+        ("summary_excluding_not_normative", OrderedDict([("corpora", list(nn_scope)), ("sentences", len(audit_rows)),
+            ("exercised", sum(1 for r in audit_rows if r["exercised_excluding_not_normative"])), ("unexercised", sum(1 for r in audit_rows if not r["exercised_excluding_not_normative"])),
+            ("exercised_only_through_not_normative", [r["n"] for r in audit_rows if r["exercised"] and not r["exercised_excluding_not_normative"]])])),
+        ("sentences", audit_rows),
+        ("structural_sources_rule", "the requirement-bearing items of the same sections that are not keyword sentences: the typ item of §4.1, each numbered step of §4.3 and each body row of Table 2 in §5.1, extracted from the cited bytes, each with the one registry row that stands for it. Every D01 registry row is named by at least one audit sentence or one structural source; rows_without_audit_sentence lists the rows only a structural source names"),
+        ("structural_sources", structural),
+        ("rows_without_audit_sentence", without_sentence),
+        ("outside_audit_rule", "sentences and table rows of the same sections that carry MAY or OPTIONAL and none of the audit keywords. They are outside the audit and are not counted in either summary"),
+        ("outside_audit", outside)])
     doc["totals"]["deferred"] = sum(1 for c in corpora.values() for v in c["vectors"] if v.get("status") == "deferred")
     with open(OUT, "w") as f:
         json.dump(doc, f, indent=2, ensure_ascii=False); f.write("\n")
