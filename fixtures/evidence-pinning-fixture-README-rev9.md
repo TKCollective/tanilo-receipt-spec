@@ -252,7 +252,7 @@ this corpus's own tooling, whose generator and cross-check still share an author
   rev 9. That was true when it was written. The corpus pins that file's digest, so it stays as it
   is; this section is the correction.
 - The corpus cross-check item in -03 Section 10 was filed before either report. -03 is filed text
-  and is not changed. The result is to be recorded in -04's Section 10.
+  and is not changed. The result is planned to be recorded in -04's Section 10.
 
 ## Runner notes (non-normative)
 
@@ -278,8 +278,9 @@ equivalent, or give its verifier complete `evidence_set` objects.
 
 **A second condition on three vectors.** The checker reports every condition it finds. The harness
 counts a MALFORMED vector as agreeing when the checker halts and the vector's named condition is
-among those reported (H5 in the script's header). In the reported run, three agreeing vectors
-reported a second condition beside the named one:
+among those reported (H5 in the script's header, lines 15–16, and the code at line 86:
+https://github.com/babyblueviper1/preaction-governance-conformance/blob/8a7599f/examples/evidence-set-cold/run_companion_corpus.py#L86).
+In the reported run, three agreeing vectors reported a second condition beside the named one:
 
 | Vector | Named condition (from the corpus) | Also reported in this run | Where the second one comes from |
 |---|---|---|---|
@@ -292,7 +293,8 @@ that lacks a member the root commits to, so the root stays absent and the checke
 well. He calls this a harness artifact, not a corpus defect, and states that a verifier given a
 complete -03 object would report only the named condition. That last statement is his reading: no
 run with complete objects has been reported, and none was made here. In his transcript neither
-vector reports `root_not_recomputable_from_sources`.
+vector reports `root_not_recomputable_from_sources` (lines 16 and 21:
+https://github.com/babyblueviper1/preaction-governance-conformance/blob/be2a291/examples/evidence-set-cold/companion_corpus_rev9_run.txt#L16-L21).
 
 A runner comparing output with the transcript should expect two conditions on these three lines.
 The second conditions are observations from one harness and one checker. They are not expected
