@@ -11,8 +11,13 @@ corpus (rev 10). Nothing here changes the filed -03 text or the rev 9 corpus; re
    - The question: an entry has `content_kind: full_resource` and a non-null `resource_sha256` that
      is not 64 lowercase hex characters. Read literally, the general rule in -03 §5.4.1(a) would
      suppress `resource_sha256_present_for_full_resource`, because an input member failed its form
-     check; the presence exemption names only `*_present_when_*` and `*_absent_when_*`. His checker
-     reports both conditions. No rev 9 vector covers the case.
+     check; the presence exemption names only `*_present_when_*` and `*_absent_when_*`. The
+     account's implementation reports both conditions. No rev 9 vector covers the case.
+   - The registry name for the form violation, quoted from -03 Section 5.3.2 and its registry table
+     (`draft-krausz-verification-state-03.txt`, lines 922–924 and 1437): "A non-null value MUST be
+     exactly 64 lowercase hexadecimal characters; reported condition on violation:
+     resource_sha256_not_lowercase_hex64." and
+     `| resource_sha256_not_lowercase_hex64        | 5.3.2   | malformed |`.
    - Proposed clarification (Joe Krausz, tsc#4, 2026-10-06, for review): the condition tests
      non-null presence, independently of the digest's form. With a valid `content_kind:
      full_resource` and a malformed non-null `resource_sha256`, both conditions are reported
@@ -21,7 +26,7 @@ corpus (rev 10). Nothing here changes the filed -03 text or the rev 9 corpus; re
    - Status on the thread: babyblueviper1 changed his checker to report both at `c64b41d`
      (2026-10-06), matching the proposed clarification and robertolocatelli81-dev's checker.
      Whether the reading is settled for the text awaits robertolocatelli81-dev's answer to the
-     question put to him.
+     question put to that account.
    - What -04 should do: explicit text for the presence rule in §5.4.1(a).
    - What rev 10 should do: a complete-object vector (not a fragment) with `content_kind:
      full_resource` and a malformed non-null `resource_sha256`, with the exact expected condition
@@ -34,7 +39,7 @@ corpus (rev 10). Nothing here changes the filed -03 text or the rev 9 corpus; re
    tsc#4, 2026-10-06).**
    - The gap: `evi-step-resolves-affirmatively` and `evi-resolve-all-counts-absent-accepted` carry
      `content_matches: true`, not content bytes, so they do not exercise the digest comparison of
-     §5.4.1(d). His harness takes the held digest from the vector, so a one-byte change to
+     §5.4.1(d). The account's harness takes the held digest from the vector, so a one-byte change to
      `snippet_sha256` on the first of them was not caught. Only `evi-content-mismatch-unknown`
      exercises the comparison. These two vectors should not be cited as coverage of hashing
      candidate content bytes.
@@ -48,5 +53,5 @@ corpus (rev 10). Nothing here changes the filed -03 text or the rev 9 corpus; re
 
 - Section 10: record the rev 9 results reported on tsc#4 (babyblueviper1 47/47 at `8a7599f`
   against `0dffb77`; Tetsurohhori's reruns; robertolocatelli81-dev's second implementation at
-  `2bdc3ae`, 47/47 outcome and named condition, 44/47 exact condition sets, with his disclosures).
+  `2bdc3ae`, 47/47 outcome and named condition, 44/47 exact condition sets, with the report's disclosures).
   Details: `fixtures/evidence-pinning-fixture-README-rev9.md`, "Reported runs".

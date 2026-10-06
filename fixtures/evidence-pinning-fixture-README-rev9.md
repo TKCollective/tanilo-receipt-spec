@@ -254,38 +254,41 @@ committed transcript byte for byte; s390x ran under qemu, not on hardware.
 https://github.com/x402-foundation/tsc/issues/4#issuecomment-6023275339
 
 This is recorded separately from the two reports above: it is a different checker, not a run of
-babyblueviper1's. Posted by "Noûs, AI agent operating under a revocable mandate from Roberto
-Locatelli (individual developer), who reviews and is accountable for what is posted."
+babyblueviper1's. The account is robertolocatelli81-dev; its post is signed "Noûs, AI agent
+operating under a revocable mandate from Roberto Locatelli (individual developer), who reviews and
+is accountable for what is posted." Below, "the implementation" is that account's checker and "the
+report" its post.
 
-- Checker: his cold-built -03 checker of 2026-09-26, re-checked against the filed Sections 5.3 and
-  5.4.1 before any rev 9 vector was run; he reports that no rule changed. Code, the readings
-  written before the run, the frozen hashes and the controls:
+- Checker: the account's cold-built -03 checker of 2026-09-26, re-checked against the filed
+  Sections 5.3 and 5.4.1 before any rev 9 vector was run; the report says no rule changed. Code,
+  the readings written before the run, the frozen hashes and the controls:
   robertolocatelli81-dev/evidence-record-cleanroom-verifier at `2bdc3ae`, folder
   `evidence-pinning-rev9/`.
 - Corpus: this repository at `0dffb77`, `evidence-pinning-fixtures-v2-rev9.json`, sha256
-  `3c5f4bf4…73724` as he reported it. Harness: H1–H4 as this README describes them, with his own
-  readings written down before running.
+  `3c5f4bf4…73724` as reported. Harness: H1–H4 as this README describes them, with the account's
+  own readings written down before running.
 - Result, on Python 3.9.25, 3.11.2 and 3.13.15 with byte-identical output: **47/47 agree on the
   outcome and on the named condition** (the named condition is among those reported, the rule in
   the runner notes); **44/47 if the reported condition set must equal the named condition**. The
   three vectors with a second condition are the three in the runner notes' table. Compared
   afterwards with babyblueviper1's transcript at `be2a291`: the same output on all 47 lines.
-  Controls he reported: an altered expectation and an altered computed root are flagged; with H3
+  Controls reported: an altered expectation and an altered computed root are flagged; with H3
   off, 38/47; rev 8 with the same checker, 40/44, the same four fixtures.
-- His disclosures, which apply to this result: the checker is not independent of the filed text,
-  of the 2026-09-26 NUL ruling on the thread, or of the `resource_sha256` sentence of -03 at
-  `057abd7`; on 2026-09-28 he ran an earlier version of babyblueviper1's checker (`edb864b`) on his
-  own vectors and compared condition sets, and the one later change to his code (`resource_sha256`
-  null, 2026-09-29, taken from the -03 text) is a point on which that checker had differed from
-  his; he had read the runner notes' table of three vectors before running, so that part of the
-  agreement is not blind; babyblueviper1's checker, harness, transcript and this corpus's generator
-  and cross-check were not opened before his results were frozen.
-- Two notes he made, neither a disagreement: (1) `evi-step-resolves-affirmatively` and
+- The report's disclosures, which apply to this result: the implementation is not independent of
+  the filed text, of the 2026-09-26 NUL ruling on the thread, or of the `resource_sha256` sentence
+  of -03 at `057abd7`; on 2026-09-28 the account ran an earlier version of babyblueviper1's checker
+  (`edb864b`) on its own vectors and compared condition sets, and the one later change to the
+  implementation (`resource_sha256` null, 2026-09-29, taken from the -03 text) is a point on which
+  that checker had differed from it; the runner notes' table of three vectors had been read before
+  running, so that part of the agreement is not blind; babyblueviper1's checker, harness,
+  transcript and this corpus's generator and cross-check were not opened before the results were
+  frozen.
+- Two notes in the report, neither a disagreement: (1) `evi-step-resolves-affirmatively` and
   `evi-resolve-all-counts-absent-accepted` carry `content_matches: true`, not content bytes, so they
   do not exercise the digest comparison of 5.4.1(d); only `evi-content-mismatch-unknown` does.
   (2) A question on the filed text: whether `resource_sha256_present_for_full_resource` is still
   reported when a `full_resource` entry's non-null `resource_sha256` is not 64 lowercase hex
-  characters; his checker reports both conditions; no rev 9 vector covers it. Both are carried
+  characters; the implementation reports both conditions; no rev 9 vector covers it. Both are carried
   in the -04 / rev 10 backlog (`drafts/dash04-rev10-backlog.md`), not answered here.
 
 **What the three reports amount to (revised 2026-10-06).** Two checkers written by people other than
@@ -342,7 +345,7 @@ that lacks a member the root commits to, so the root stays absent and the checke
 well. He calls this a harness artifact, not a corpus defect, and states that a verifier given a
 complete -03 object would report only the named condition. That last statement is his reading; none
 was made here. Added 2026-10-06: robertolocatelli81-dev reported that, given a complete
-`evidence_set` with a non-null `evidence_root`, his checker reports only the named condition on
+`evidence_set` with a non-null `evidence_root`, that implementation reports only the named condition on
 these two vectors, and with `evidence_root: null` the second condition, as the text requires for a
 null root with a pinned entry (see "Reported runs"). In babyblueviper1's transcript neither
 vector reports `root_not_recomputable_from_sources` (lines 16 and 21:
@@ -378,11 +381,12 @@ rev 9. That stopped being true on 2026-10-03, when babyblueviper1 reported his r
 
 - **Corrected 2026-10-06, later the same day.** Earlier that day this list said: "No second
   implementation has been run against rev 9." That was true when written and stopped being true
-  when robertolocatelli81-dev reported his run (see "Reported runs"). What is still not verified:
-  that result is his report, with the disclosures he attached; it has not been re-executed here.
+  when robertolocatelli81-dev reported its run (see "Reported runs"). What is still not verified:
+  that result is the account's report, with the disclosures attached to it; it has not been
+  re-executed here.
 - No second implementation agrees on the **exact** condition set for every vector: under the
-  stricter comparison his result is 44/47, the three being the vectors in the runner notes.
-- Two gaps he pointed out, carried in the -04 / rev 10 backlog: the two positive resolution
+  stricter comparison its result is 44/47, the three being the vectors in the runner notes.
+- Two gaps the report pointed out, carried in the -04 / rev 10 backlog: the two positive resolution
   fixtures do not hash candidate content bytes, and the presence rule for
   `resource_sha256_present_for_full_resource` on a malformed non-null digest has no vector.
 - No independent from-text build of any revision of this corpus's tooling exists; the generator and
