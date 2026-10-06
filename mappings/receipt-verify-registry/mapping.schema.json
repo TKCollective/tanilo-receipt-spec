@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/TKCollective/tanilo-receipt-spec/mappings/receipt-verify-registry/mapping.schema.json",
-  "title": "Vector -> requirement mapping (receipt-verify methodology §2.7)",
+  "title": "Vector -> requirement mapping (receipt-verify methodology \u00a72.7)",
   "type": "object",
   "required": [
     "mapping_kind",
@@ -231,10 +231,67 @@
               "partial",
               "not_covered",
               "not_covered_list"
-            ]
+            ],
+            "properties": {
+              "corpora": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "if": {
+          "required": [
+            "summary_excluding_not_normative"
+          ]
+        },
+        "then": {
+          "properties": {
+            "requirements": {
+              "additionalProperties": {
+                "required": [
+                  "text",
+                  "coverage",
+                  "coverage_excluding_not_normative",
+                  "vectors"
+                ]
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "requirements": {
+              "additionalProperties": {
+                "not": {
+                  "required": [
+                    "coverage_excluding_not_normative"
+                  ]
+                }
+              }
+            }
           }
         }
-      }
+      },
+      "properties": {
+        "D01": {
+          "required": [
+            "summary",
+            "summary_excluding_not_normative",
+            "requirements"
+          ]
+        },
+        "MAP": {
+          "required": [
+            "summary",
+            "summary_excluding_not_normative",
+            "requirements"
+          ]
+        }
+      },
+      "$comment": "A view whose scope includes a NOT NORMATIVE corpus must publish summary_excluding_not_normative and coverage_excluding_not_normative on every row. The schema requires it by name for D01 and MAP (the views that include rule2); validate_mapping.py enforces the general rule from each corpus's normative flag."
     },
     "totals": {
       "type": "object",
@@ -272,7 +329,11 @@
         "keywords",
         "rule",
         "summary",
-        "sentences"
+        "summary_excluding_not_normative",
+        "sentences",
+        "structural_sources",
+        "rows_without_audit_sentence",
+        "outside_audit"
       ],
       "properties": {
         "summary": {
@@ -293,7 +354,8 @@
               "section",
               "text",
               "requirements",
-              "exercised"
+              "exercised",
+              "exercised_excluding_not_normative"
             ],
             "properties": {
               "requirements": {
@@ -305,9 +367,87 @@
               },
               "exercised": {
                 "type": "boolean"
+              },
+              "exercised_excluding_not_normative": {
+                "type": "boolean"
               }
             }
           }
+        },
+        "summary_excluding_not_normative": {
+          "type": "object",
+          "required": [
+            "corpora",
+            "sentences",
+            "exercised",
+            "unexercised",
+            "exercised_only_through_not_normative"
+          ]
+        },
+        "structural_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "n",
+              "kind",
+              "section",
+              "locator",
+              "text",
+              "requirement"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "list_item",
+                  "numbered_step",
+                  "table_row"
+                ]
+              },
+              "requirement": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rows_without_audit_sentence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outside_audit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "n",
+              "section",
+              "text",
+              "keyword"
+            ],
+            "properties": {
+              "keyword": {
+                "enum": [
+                  "MAY",
+                  "OPTIONAL"
+                ]
+              }
+            }
+          }
+        },
+        "keywords": {
+          "const": [
+            "MUST",
+            "MUST NOT",
+            "SHALL",
+            "SHALL NOT",
+            "SHOULD",
+            "SHOULD NOT",
+            "REQUIRED",
+            "RECOMMENDED"
+          ]
         }
       }
     }
