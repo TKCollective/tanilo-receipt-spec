@@ -1,0 +1,233 @@
+{
+ "rows": [
+  {
+   "bbv": {
+    "conditions": [
+     "resource_sha256_not_lowercase_hex64",
+     "resource_sha256_present_for_full_resource"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [
+     "resource_sha256_not_lowercase_hex64",
+     "resource_sha256_present_for_full_resource"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "id": "evi-resource-sha256-malformed-with-full-resource-reports-both-rejects",
+   "ours": {
+    "conditions": [
+     "resource_sha256_not_lowercase_hex64",
+     "resource_sha256_present_for_full_resource"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "id": "evi-content-kind-invalid-suppresses-full-resource-check-rejects",
+   "ours": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned",
+     "resource_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned",
+     "resource_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "id": "evi-content-kind-invalid-resource-sha256-malformed-rejects",
+   "ours": {
+    "conditions": [
+     "content_kind_absent_or_invalid_when_pinned",
+     "resource_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [],
+    "item_reasons": [
+     "content_not_held"
+    ],
+    "outcome": "unknown"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [],
+    "item_reasons": [
+     "content_not_held"
+    ],
+    "outcome": "unknown"
+   },
+   "id": "evi-resource-sha256-null-with-full-resource-accepted",
+   "ours": {
+    "conditions": [],
+    "item_reasons": [
+     "content_not_held"
+    ],
+    "outcome": "unknown"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [],
+    "item_reasons": [
+     "content_matches",
+     "content_matches"
+    ],
+    "outcome": "resolved"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [],
+    "item_reasons": [
+     "content_matches",
+     "content_matches"
+    ],
+    "outcome": "resolved"
+   },
+   "id": "evi-candidate-bytes-match-resolves",
+   "ours": {
+    "conditions": [],
+    "item_reasons": [
+     "content_matches",
+     "content_matches"
+    ],
+    "outcome": "resolved"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [],
+    "item_reasons": [
+     "content_differs",
+     "content_matches"
+    ],
+    "outcome": "unknown"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [],
+    "item_reasons": [
+     "content_differs",
+     "content_matches"
+    ],
+    "outcome": "unknown"
+   },
+   "id": "evi-candidate-bytes-one-byte-changed-unknown",
+   "ours": {
+    "conditions": [],
+    "item_reasons": [
+     "content_differs",
+     "content_matches"
+    ],
+    "outcome": "unknown"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [
+     "snippet_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [
+     "snippet_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "id": "evi-snippet-sha256-trailing-newline-rejects",
+   "ours": {
+    "conditions": [
+     "snippet_sha256_not_lowercase_hex64"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "ours_pass": true
+  },
+  {
+   "bbv": {
+    "conditions": [
+     "retrieved_at_not_canonical_form"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "bbv_pass": true,
+   "expected": {
+    "conditions": [
+     "retrieved_at_not_canonical_form"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "id": "evi-retrieved-at-trailing-newline-rejects",
+   "ours": {
+    "conditions": [
+     "retrieved_at_not_canonical_form"
+    ],
+    "item_reasons": null,
+    "outcome": "halt"
+   },
+   "ours_pass": true
+  }
+ ],
+ "summary": {
+  "passed": {
+   "bbv": 8,
+   "ours": 8
+  },
+  "python": "3.11.2",
+  "vectors": 8,
+  "vectors_sha256": "d33638d9704a301c0387d92c6556190667a61e65e7d4d7142d9e0fae07350573"
+ }
+}
