@@ -1,0 +1,223 @@
+{
+  "suite": "verification.v0.4+composed",
+  "version": "v0.4-draft-rev-1.8",
+  "status": "DRAFT — companion to draft-krausz-verification-state-01 v0.4 rev-1.8 (PR #5) — anchors publication rule (root-caused divergence)",
+  "spec": "../../drafts/verification-v0.4.md",
+  "envelope_kind": "verification.v0.4+composed",
+  "jws_typ": "application/vnd.verification.v0.4+composed+jws",
+  "vector_keying_rules": {
+    "_note": "Design ruling for how conformance vectors are keyed, deduplicated, and integrity-checked. Applies to accept_vectors[], reject_vectors[], and status_vectors[].",
+    "primary_key": "id — vectors key on id, not envelope_sha256. Two vectors with different ids may share the same envelope (see intentional_collisions below).",
+    "envelope_sha256": "sha256 of the composed envelope JSON as distributed on disk. Same envelope bytes across separability-family vectors will share the same envelope_sha256; this is by design, not a duplicate.",
+    "vector_sha256": {
+      "_note": "Distribution-integrity checksum for a vector as a whole. Unique per vector even when envelopes collide (see intentional_collisions).",
+      "construction": "sha256 over the JCS-canonical serialization of the following wrapper object:",
+      "wrapper_fields": [
+        "id",
+        "envelope_sha256",
+        "anchors",
+        "conformance_mode",
+        "expected_core_validity",
+        "expected_failure_reason",
+        "expected_anchor_status"
+      ],
+      "field_semantics": {
+        "id": "the vector's stable identifier (primary key)",
+        "envelope_sha256": "sha256 hex of the composed envelope JSON as distributed on disk — envelope is bound BY HASH here, not by value",
+        "anchors": "the anchors[] array as it appears in the vector entry",
+        "conformance_mode": "strict | permissive | test_clock_in_production | skewed_clock_adjudication",
+        "expected_core_validity": "boolean — present only on vectors that assert this axis",
+        "expected_failure_reason": "canonical reject enum string — present only on reject_vectors[]",
+        "expected_anchor_status": "canonical status enum string — present only on status_vectors[]"
+      },
+      "envelope_binding_rationale": "The envelope is referenced BY HASH (envelope_sha256), NOT by embedding its bytes inside the wrapper. Rationale: embedding pretty-printed envelope bytes inside a JCS wrapper would create two byte-forms of the envelope (the pretty-printed on-disk copy and the JCS-normalized in-wrapper copy) with different sha256 values, breaking the hash-chain property. Binding by hash means any envelope change ripples through envelope_sha256 into vector_sha256 with a single well-defined dependency.",
+      "omission_rule": "Absent expected_* fields MUST be OMITTED from the wrapper before JCS serialization, NEVER set to null. This is §4.1 (null_field_present is a reject in the wire format) applied to the manifest itself — the wrapper obeys the same null-vs-absent discipline as the envelopes it references.",
+      "ingestion": "Verifiers SHOULD recompute vector_sha256 during suite ingestion; mismatches indicate the vector was mutated in transit, the wrapper construction disagrees with this spec, OR the manifest is missing per-vector adjudication inputs (see anchors_publication_rule).",
+      "reference_implementation": "Both verify.mjs and verify.py MUST implement this construction identically. Composite check output MUST report vector_sha256 per vector alongside the byte-identity assertion across the three separability-family envelopes.",
+      "anchors_publication_rule": {
+        "_note": "Manifest is the single published home of adjudication inputs. Nothing a conformance runner needs to reproduce vector_sha256 may live off-tree.",
+        "status_vectors_MUST_carry_anchors_verbatim": "status_vectors[] entries MUST include an `anchors` field carrying the anchors verbatim as they were presented to the adjudicator when the declared vector_sha256 was computed. Because status envelopes are byte-identical to their accept-vector baseline by design (§6 separability made executable), the anchors are the ONLY per-vector adjudication input that distinguishes them — they cannot be reconstructed from the envelope bytes alone.",
+        "accept_and_reject_vectors_OMIT_anchors": "accept_vectors[] and reject_vectors[] entries MUST OMIT the `anchors` field. Not [], not null — absent. Their expected outcome is fully determined by the envelope + expected_* fields; no adjudication input beyond that exists. This is §4.1 (null_field_present is a reject in the wire format) applied to the manifest itself.",
+        "why_reject_wrappers_already_matched": "The rev-1.5 vector_sha256 recompute matched declared values on reject vectors byte-for-byte because the reject wrapper has no `anchors` field to disagree about — anchors is omitted from both the published entry and any reasonable reconstruction. Status wrappers diverged because Pote's generator included anchors[] content that was never published to the tree; the reconstruction was correct against the published entries, but the entries were incomplete."
+      }
+    },
+    "intentional_collisions": {
+      "_note": "Envelope_sha256 collisions between the following three vectors are INTENTIONAL. The composite check MUST assert the three envelopes are byte-identical — this is separability made executable (same envelope, three different adjudication outcomes depending on anchor state and clock skew).",
+      "vectors": [
+        "v04-accept-001 (baseline: core valid, anchoring meets_commitment, no clock skew)",
+        "v04-status-test_clock_in_production (same envelope; core valid; test-clock header flagged as production violation; anchor status independent)",
+        "v04-status-skewed_clock_adjudication (same envelope; core valid; verifier-clock skew triggers indeterminate_pending anchor status; core validity preserved per §6 separability rule)"
+      ],
+      "composite_check_assertion": "sha256(envelope(accept-001)) == sha256(envelope(test_clock_in_production)) == sha256(envelope(skewed_clock_adjudication))"
+    },
+    "why": "Separability of core validity from anchor status (§6 clarifying sentence, rev-1.3) is a spec claim. Making three vectors carry byte-identical envelopes but yield three different adjudication outcomes turns the claim into an executable property: if a verifier folds anchor status into core reject, the three vectors will not all pass their respective expected_* fields. The suite tests the property directly."
+  },
+  "signature_algorithm": "EdDSA (Ed25519)",
+  "canonicalization": "RFC 8785 (JCS)",
+  "issuers": [
+    {
+      "role": "v_gate",
+      "issuer": "agentoracle",
+      "jwks_file": "../v0.3-composed/jwks-agentoracle.json",
+      "kid": "ao-fixture-v0.3-composed-2026-06"
+    },
+    {
+      "role": "v_gate_skill",
+      "issuer": "agenttrust",
+      "jwks_file": "../v0.3-composed/jwks-agenttrust.json",
+      "kid": "at-fixture-v0.3-composed-2026-06"
+    }
+  ],
+  "accept_vectors": [
+    {
+      "id": "v04-accept-001",
+      "description": "First v0.4 accept vector — ratified baseline from PR #5 discussion; AO+AT composed envelope with all v0.4 field groups (evidence, evidence_seals, seals_complete, anchor_commitments) per rev-1.2 pins P-13..18. AT leg hand-signed by @poteshniy from AgentTrust; byte-matched deterministically by build_accept_001.py via the fixture-suite seed convention. Three canonicalizations (RFC 7515 header b64u, RFC 8785 JCS payload, compact-JSON protected header) and two independent signature verifications behind it.",
+      "envelope_file": "v04-accept-001.json",
+      "expected_canonical_sha256": "sha256-0664f60ee35011ba8c5df2a3cb8a5ef0e0d9424d679a2cf2a19869411a456b90",
+      "expected_composed_decision": "act",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ],
+      "envelope_kind": "verification.v0.4+composed",
+      "receipt_version": "0.4.0-composed",
+      "v04_fields_present": [
+        "evidence",
+        "evidence_seals",
+        "seals_complete",
+        "anchor_commitments"
+      ],
+      "notes": [
+        "Baseline converged byte-identical 2026-07-29 PM between Claude's Python and Pote's Node implementations (payload = 1823 bytes, sha256 begins 0664f60e…).",
+        "AT signature fWTMae9shEBnV_EqWSCSzFfHXxRPfj3bnIyEcCp_sctOzkOL5yQXiEpLRtcfW1dK4qbn13svlDGwkB4jXM6xCg hand-signed by AgentTrust from the seed-derived at-fixture key; verified byte-identical by build_accept_001.py's deterministic regeneration path (Ed25519 is deterministic over the same seed + signing input)."
+      ],
+      "envelope_sha256": "a277c63a32589bd37775c4a4647327ff61b82ac95d70b1c8bf259f00f5d3bcaf"
+    }
+  ],
+  "reject_vectors": [
+    {
+      "id": "v04-reject-typ_field_mismatch",
+      "description": "v0.4 field groups present but AT leg protected header declares v0.3 typ. Per §5 content-driven check-set selection, a v0.3-declared envelope carrying v0.4 fields MUST be rejected.",
+      "envelope_file": "v04-reject-typ_field_mismatch.json",
+      "envelope_sha256": "3b5d4ec5ede550ca3ca6aee8809779dbc1d1aba1ea3e05d0308d8cc23083d83c",
+      "vector_sha256": "629aff1d4b447ea93dcff5a4762dacfef6bb9fa47e274b67efbb2e4dc7687819",
+      "expected_failure_reason": "typ_field_mismatch",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ]
+    },
+    {
+      "id": "v04-reject-null_field_present",
+      "description": "Optional field content_length serialized as null instead of omitted. §4.1: optional fields MUST be omitted, never null.",
+      "envelope_file": "v04-reject-null_field_present.json",
+      "envelope_sha256": "5a80111d40dc87dcbcbf84b286c72c605eaf1c2ad12ac235018199bdc18f9732",
+      "vector_sha256": "6f2896d1c09097edac265b35baec398e7d43382551db8ce87fb5154e2fe0cc90",
+      "expected_failure_reason": "null_field_present",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ]
+    },
+    {
+      "id": "v04-reject-evidence_seals_out_of_order",
+      "description": "evidence_seals not ordered lexicographically by ref. §2.5: entries MUST be ordered lexicographically by ref (byte-wise UTF-8).",
+      "envelope_file": "v04-reject-evidence_seals_out_of_order.json",
+      "envelope_sha256": "de67637c672704731440fea8ac03a9754d13a1920f54aef6bc931cf96809cb86",
+      "vector_sha256": "39b134a54579f0d8871470d2cfd419f02f9276c97c1c01b4048ff7a5b37d82da",
+      "expected_failure_reason": "evidence_seals_out_of_order",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ]
+    }
+  ],
+  "status_vectors": [
+    {
+      "id": "v04-status-test_clock_in_production",
+      "envelope_file": "v04-status-test_clock_in_production.json",
+      "envelope_sha256": "a277c63a32589bd37775c4a4647327ff61b82ac95d70b1c8bf259f00f5d3bcaf",
+      "vector_sha256": "2e7b6001d6bb598f902a5dffb249fc96a4bb2c3c101a676a10f4203dcdcb0f3e",
+      "conformance_mode": "test_clock_in_production",
+      "expected_core_validity": true,
+      "expected_anchor_status": "indeterminate_pending",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ],
+      "notes": "Same envelope as accept-001. test-clock anchor presented to a production verifier: core validity preserved, anchor status resolves indeterminate_pending. Verifiers MUST NOT fold into core reject (§6 separability).",
+      "anchors": [
+        {
+          "type": "test-clock",
+          "target_sha256": "0664f60ee35011ba8c5df2a3cb8a5ef0e0d9424d679a2cf2a19869411a456b90",
+          "anchor_data": {
+            "reading": "2026-07-31T00:00:00Z"
+          },
+          "anchored_at": "2026-07-31T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "v04-status-short_of_commitment",
+      "envelope_file": "v04-status-short_of_commitment.json",
+      "envelope_sha256": "e7ed1b9d3c5194196dd6a623a275eff9c95f4c89b7b4c9c1b592ebc5b2018e7e",
+      "vector_sha256": "60f4006a5880da35b20f6869cebde5ed9a8035c4ecb4bdc1b5e8e72f5dd55e2e",
+      "conformance_mode": "strict",
+      "expected_core_validity": true,
+      "expected_anchor_status": "short_of_commitment",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ],
+      "notes": "anchor_commitments min_count=2 over [test-clock, evm-tx], one verified anchor present, past anchor_by → short_of_commitment; core valid, reported alongside not folded (§3.5).",
+      "anchors": [
+        {
+          "type": "test-clock",
+          "target_sha256": "322a89dbcf9afeb72bdb451d193fe5d6e4b0193c98f7a21be2f7b0ad7ac34072",
+          "anchor_data": {
+            "reading": "2026-07-31T00:00:00Z"
+          },
+          "anchored_at": "2026-07-31T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": "v04-status-skewed_clock_adjudication",
+      "envelope_file": "v04-status-skewed_clock_adjudication.json",
+      "envelope_sha256": "a277c63a32589bd37775c4a4647327ff61b82ac95d70b1c8bf259f00f5d3bcaf",
+      "vector_sha256": "9cfed893f7e24880abede96538fc396322846edbebc17ee1065cd3c9b310c4fd",
+      "conformance_mode": "skewed_clock_adjudication",
+      "expected_core_validity": true,
+      "expected_anchor_status": "indeterminate_pending",
+      "signer_kids": [
+        "ao-fixture-v0.3-composed-2026-06",
+        "at-fixture-v0.3-composed-2026-06"
+      ],
+      "notes": "Same envelope as accept-001. Verifier-clock skew: adjudication uses proof-derived test-clock reading, not verifier wall-clock; resolves indeterminate_pending. Core validity preserved (§6 separability).",
+      "anchors": [
+        {
+          "type": "test-clock",
+          "target_sha256": "0664f60ee35011ba8c5df2a3cb8a5ef0e0d9424d679a2cf2a19869411a456b90",
+          "anchor_data": {
+            "reading": "2026-08-02T00:00:00Z"
+          },
+          "anchored_at": "2026-08-02T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "status_vectors_schema": {
+    "_note": "STATUS-domain conformance vectors per §6: core validity holds; adjudication follows §3.5 vocabulary. Verifiers MUST NOT fold anchoring status into core reject. Populated in rev-1.3+ conformance suite. Keying and integrity rules per vector_keying_rules (above).",
+    "fields": {
+      "id": "stable identifier, e.g. v04-status-commitment-shortfall-001. PRIMARY KEY.",
+      "envelope_file": "relative path to signed envelope JSON. May be shared across separability-family vectors (intentional envelope_sha256 collisions per vector_keying_rules).",
+      "envelope_sha256": "sha256 of the composed envelope JSON. May collide across separability-family vectors by design.",
+      "vector_sha256": "sha256 over the JCS-canonical full wrapper (envelope + anchors[] + conformance_mode + expected fields). Distribution-integrity checksum; unique per vector even when envelopes collide.",
+      "conformance_mode": "one of: strict | permissive | test_clock_in_production | skewed_clock_adjudication — the adjudication context under which this vector is tested.",
+      "expected_core_validity": "boolean — does the composed envelope pass core validity (signatures/canonicalization/seals)?",
+      "expected_anchor_status": "one of: meets_commitment | short_of_commitment | not_yet_anchored | indeterminate_pending",
+      "signer_kids": "list[str] — JWKS kids that signed the envelope, in composition order",
+      "notes": "human-readable disposition and adjudication reference to §3.5"
+    }
+  }
+}
