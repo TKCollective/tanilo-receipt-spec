@@ -4,16 +4,16 @@ A worked example for the AER-1 interop ([Brennan Zambo's half](https://gitlab.co
 
 ## The receipt
 
-One `POST https://api.tanilo.io/v1/verify-facts` made on 2026-10-08 (`request.json`, the body as sent). It asked for a `contract_price_match` check: an offer of USD 2.00 per call for `api.weather.v1` from `seller.example`, against one caller-supplied term, agreement `MSA-2026-014` version 1, priced at USD 1.00 per call. The result is `contradicted` (`offer_is: above_term_price`, `difference_per_unit: 1.00`), and the receipt is signed with `tanilo-2026-10-ed25519-7d885da9`.
+One `POST https://api.tanilo.io/v1/verify-facts` made on 2026-10-08 at 04:47 UTC (`request.json`, the body as sent; the offer's `offered_at` is 04:42:34Z, five minutes before the request). It asked for a `contract_price_match` check: an offer of USD 2.00 per call for `api.weather.v1` from `seller.example`, against one caller-supplied term, agreement `MSA-2026-014` version 1, priced at USD 1.00 per call. The result is `contradicted` (`offer_is: above_term_price`, `difference_per_unit: 1.00`), and the receipt is signed with `tanilo-2026-10-ed25519-7d885da9`.
 
 | | |
 |---|---|
-| Receipt (JWS object only) | `receipt.jws.json`, file SHA-256 `d4b41548ec040a60445d1e424db76f2abc24a493b6279309ef9fd284de01b785` |
-| Pinned raw URL | https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/9e88d972c0ce6bdf63d509c883d532b5438a25b0/examples/interop/aer1/receipt.jws.json |
-| `canonical_sha256` | `sha256-eaf9cdf889c088da4c5969fd179f07bed28b44d55fde9461e3f0fe8ccd439038` |
+| Receipt (JWS object only) | `receipt.jws.json`, file SHA-256 `3feb5a4fee5c2d4719c53c144ce143b2b76b3f96903d43f45dec01d4ad8cebd8` |
+| Pinned raw URL | https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/e1206d1a54ae23d7e0f6fed55cd85ca7149275e2/examples/interop/aer1/receipt.jws.json |
+| `canonical_sha256` | `sha256-ca2fb84597076f9c8fac2d957a05bf21a11bd741e519879ff09ba78fd2305325` |
 | `kid` | `tanilo-2026-10-ed25519-7d885da9` (Ed25519, in https://tanilo.io/.well-known/jwks.json) |
-| Issued (payload `timestamp`) | `2026-10-08T04:29:07.072Z` |
-| Added in commit | `9e88d972c0ce6bdf63d509c883d532b5438a25b0` |
+| Issued (payload `timestamp`) | `2026-10-08T04:47:35.336Z` |
+| Added in commit | `e1206d1a54ae23d7e0f6fed55cd85ca7149275e2` |
 
 Also here: `response.json` (the full response, of which the receipt is the `jws` member), `payload.decoded.json` (the signed payload, decoded and pretty-printed; the canonical form is not this file, see below), `payload.canonical.bin` (the exact RFC 8785 bytes that `canonical_sha256` is the SHA-256 of, 3,655 bytes), `jwks-tanilo-io-2026-10-08.json` (Tanilo's published key set as fetched on 2026-10-08, public keys only), `field-mapping.md` (the AER-1 evidence-reference members and how to recompute each), and `test_aer1_interop.py`.
 
@@ -29,7 +29,7 @@ Needs Python 3 and the published verifier, version 0.2.0 or later.
 
 ```
 python3 -m pip install tanilo-receipt-verify==0.2.0
-curl -sS -o receipt.json https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/9e88d972c0ce6bdf63d509c883d532b5438a25b0/examples/interop/aer1/receipt.jws.json
+curl -sS -o receipt.json https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/e1206d1a54ae23d7e0f6fed55cd85ca7149275e2/examples/interop/aer1/receipt.jws.json
 curl -sS -o jwks.json https://tanilo.io/.well-known/jwks.json
 python3 -c "import json; from tanilo_receipt_verify import verify; r = verify(json.load(open('receipt.json')), jwks_by_issuer={'https://tanilo.io/.well-known/jwks.json': json.load(open('jwks.json'))}, jwks_is_complete=True); print(r.status, r.canonical_sha256, [s['kid'] for s in r.signers])"
 ```
@@ -37,7 +37,7 @@ python3 -c "import json; from tanilo_receipt_verify import verify; r = verify(js
 Expected output:
 
 ```
-valid sha256-eaf9cdf889c088da4c5969fd179f07bed28b44d55fde9461e3f0fe8ccd439038 ['tanilo-2026-10-ed25519-7d885da9']
+valid sha256-ca2fb84597076f9c8fac2d957a05bf21a11bd741e519879ff09ba78fd2305325 ['tanilo-2026-10-ed25519-7d885da9']
 ```
 
 Downloading the key set from tanilo.io is a convenience, not authentication of it; associating the key with the issuer needs a key set you have authenticated as Tanilo's. `jwks_is_complete=True` tells the verifier that this key set is the whole trust list, so an unknown `kid` is refused rather than left unevaluated.
@@ -54,10 +54,10 @@ Downloading the key set from tanilo.io is a convenience, not authentication of i
 
 ## The anchor proof
 
-Signed receipt hashes are queued for anchoring on GOAT Network and batched about once a day (no interval is guaranteed, and not every receipt is guaranteed a proof; see https://tanilo.io/docs/anchoring). This receipt was issued at 04:29 UTC on 2026-10-08, after that day's batch, so its proof is expected after the next run. Fetch and check it with the same package:
+Signed receipt hashes are queued for anchoring on GOAT Network and batched about once a day (no interval is guaranteed, and not every receipt is guaranteed a proof; see https://tanilo.io/docs/anchoring). This receipt was issued at 04:47 UTC on 2026-10-08, after that day's batch, so its proof is expected after the next run. Fetch and check it with the same package:
 
 ```
-curl -sS https://api.tanilo.io/v1/anchor/proof/sha256-eaf9cdf889c088da4c5969fd179f07bed28b44d55fde9461e3f0fe8ccd439038 -o proof.json
+curl -sS https://api.tanilo.io/v1/anchor/proof/sha256-ca2fb84597076f9c8fac2d957a05bf21a11bd741e519879ff09ba78fd2305325 -o proof.json
 python3 -c "
 import json; from tanilo_receipt_verify import verify, verify_anchor, evm_contract_lookup
 r = verify(json.load(open('receipt.json')), jwks_by_issuer={'https://tanilo.io/.well-known/jwks.json': json.load(open('jwks.json'))})
