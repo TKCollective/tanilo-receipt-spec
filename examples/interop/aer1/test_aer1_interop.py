@@ -10,7 +10,7 @@ import base64, hashlib, json, pathlib, sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 JWKS_URL = "https://tanilo.io/.well-known/jwks.json"
-EXPECTED_SHA = "sha256-eaf9cdf889c088da4c5969fd179f07bed28b44d55fde9461e3f0fe8ccd439038"
+EXPECTED_SHA = "sha256-ca2fb84597076f9c8fac2d957a05bf21a11bd741e519879ff09ba78fd2305325"
 EXPECTED_KID = "tanilo-2026-10-ed25519-7d885da9"
 
 
