@@ -1,0 +1,142 @@
+{
+  "agent_id": "did:ao:verify-facts:anonymous",
+  "check_mode": "deterministic",
+  "check_results": [
+    {
+      "check_type": "contract_price_match",
+      "evidence": {
+        "difference_per_unit": "1.00",
+        "expected": {
+          "currency": "USD",
+          "price_per_unit": "1.00",
+          "unit": "call"
+        },
+        "matched_term": {
+          "agreement_id": "MSA-2026-014",
+          "effective_from": "2026-01-01T00:00:00Z",
+          "effective_to": null,
+          "pricing": "flat",
+          "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+          "tier": null,
+          "version": "1"
+        },
+        "offer": {
+          "currency": "USD",
+          "offered_at": "2026-10-08T12:00:00Z",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "unit": "call",
+          "unit_price": "2.00"
+        },
+        "offer_is": "above_term_price",
+        "offer_sha256": "sha256-3b5c46ba389e73e8afcb8112a40e4cbea3221f6d871f4bdcc288f30982711734",
+        "offered": {
+          "currency": "USD",
+          "quantity": "1",
+          "unit": "call",
+          "unit_price": "2.00"
+        },
+        "reason": "price_mismatch",
+        "reason_text": "the offer's unit price differs from the applicable term's price",
+        "rule_id": "contract-price-match/v0.1",
+        "state": "contradicted",
+        "steps": [
+          {
+            "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+            "step": "scope",
+            "terms_remaining": [
+              {
+                "agreement_id": "MSA-2026-014",
+                "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+                "version": "1"
+              }
+            ]
+          },
+          {
+            "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+            "step": "effective_at_offer_time",
+            "terms_remaining": [
+              {
+                "agreement_id": "MSA-2026-014",
+                "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+                "version": "1"
+              }
+            ]
+          },
+          {
+            "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+            "step": "declared_precedence",
+            "terms_remaining": [
+              {
+                "agreement_id": "MSA-2026-014",
+                "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+                "version": "1"
+              }
+            ]
+          },
+          {
+            "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+            "step": "exactly_one_term",
+            "terms_remaining": [
+              {
+                "agreement_id": "MSA-2026-014",
+                "term_sha256": "sha256-d744c281708412c0d546f42fb5a341de9c67fb788a2b3c65a79440b3a2f9cea1",
+                "version": "1"
+              }
+            ]
+          },
+          {
+            "matches": true,
+            "rule": "term.currency equals offer.currency; no conversion",
+            "step": "currency"
+          },
+          {
+            "matches": true,
+            "rule": "term.unit equals offer.unit (exact string); no conversion",
+            "step": "unit"
+          },
+          {
+            "pricing": "flat",
+            "rule": "the term carries one price for every quantity",
+            "step": "price"
+          },
+          {
+            "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding",
+            "step": "compare"
+          }
+        ],
+        "terms_count": 1,
+        "terms_sha256": "sha256-3c4d8717770c9e42b9c5931ea899b218310eda14ec3b2dcf15927fabefaf3999",
+        "terms_source": "caller_supplied"
+      },
+      "failure_reason": "price_mismatch",
+      "outcome": "fail",
+      "recommendation": "offer price differs from the applicable term among the supplied terms",
+      "state": "contradicted"
+    }
+  ],
+  "check_types_applied": [
+    "contract_price_match"
+  ],
+  "envelope_kind": "verification.v0.3+composed",
+  "receipt_version": "0.3.0-composed",
+  "signature_meta": {
+    "jwks_url": "https://tanilo.io/.well-known/jwks.json"
+  },
+  "subject": {
+    "claim_hash": "sha256-bce8fd5e651ced1189a2af22386389687ec086ea1d0ca490830039625f73936b"
+  },
+  "timestamp": "2026-10-08T04:29:07.072Z",
+  "timestamp_ms": 1791433747072,
+  "v_gate": {
+    "confidence": 1,
+    "deterministic_mapping_id": "tanilo-deterministic-v0.2-2026-10-04",
+    "issuer": "tanilo.io",
+    "mapping_hash": "sha256-0a78263976790df6e76cd9f3f441bf5a3b5c3a82e346b5aca43e49626881d7b0",
+    "mapping_id": "agentoracle-v0.3-2026-05-30",
+    "signed_at": "2026-10-08T04:29:07.072Z",
+    "v_adversarial_result": "n/a",
+    "verdict": "halt"
+  }
+}
