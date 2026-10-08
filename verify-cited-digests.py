@@ -37,6 +37,8 @@ ALLOW = {
       "STRAWMAN v0.4 seated — external artifact",
   "042bca91ba0a49e2608b3fe0f735805922bd283d9e34953bdb74e6ab95eacc27":
       "STRAWMAN v0.3 as sent — external artifact",
+  "3a5cf8fa2674d560aff05394a10f4ffc8912d265456237978190ce4de88b932f":
+      "aer1_verify.py in gitlab.com/rambozambodotdev/zambo at b2b1a4ee, cited by examples/interop/aer1/chain-run-2026-10-08.md — external artifact",
   "d78fc31f" + "0"*56:
       "placeholder guard — never matches; present so the allowlist shape is obvious",
 }
