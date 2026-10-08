@@ -73,16 +73,16 @@ At this check, no proof was available. A later scheduled run may include the has
 
 ## The AER-1 half
 
-Brennan's example now carries this receipt's three values; the chain was run end to end on 2026-10-08 (see below). Brennan Zambo's AER-1 receipt and its evidence-reference shape are at https://gitlab.com/rambozambodotdev/zambo/-/tree/main/aer1-interop/tanilo. The three values the AER-1 receipt carries for this receipt are the `canonical_sha256`, the pinned raw URL and the `kid` in the table above; `field-mapping.md` says where each comes from and how a verifier of the AER-1 receipt recomputes them. The evidence-reference object itself (`type`, `url`, `kid`, `relationship`, `description`) is AER-1's; Tanilo's specification defines `canonical_sha256` and `kid`, not that object.
+Brennan's worked example (an unsigned AER-1 record whose held call is the example's scenario, not a live execution trace) now carries this receipt's three values; the chain was run end to end on 2026-10-08 (see below). Brennan Zambo's AER-1 receipt and its evidence-reference shape are at https://gitlab.com/rambozambodotdev/zambo/-/tree/main/aer1-interop/tanilo. The three values the AER-1 receipt carries for this receipt are the `canonical_sha256`, the pinned raw URL and the `kid` in the table above; `field-mapping.md` says where each comes from and how a verifier of the AER-1 receipt recomputes them. The evidence-reference object itself (`type`, `url`, `kid`, `relationship`, `description`) is AER-1's; Tanilo's specification defines `canonical_sha256` and `kid`, not that object.
 
 ## Chain run, 2026-10-08
 
 Run on Tanilo's side on 2026-10-08 against Brennan's repository at head `b2b1a4ee` (the `aer1-interop/tanilo` directory last changed in `1f91d07`). Full record, commands and digests: `chain-run-2026-10-08.md` in this directory.
 
-- The AER-1 receipt passes his own verifier (`aer1_verify.py` at that head, 15 of 15 checks): the committed bytes are intact and the outer version and provenance labels match the committed ones. That verifier does not read `evidence_references`; the steps below were done by hand.
+- The AER-1 worked-example record passes his own verifier (`aer1_verify.py` at that head, 15 of 15 checks): the committed bytes are intact and the outer version and provenance labels match the committed ones. That verifier does not read `evidence_references`; the steps below were done by hand.
 - Its evidence reference carries this receipt's `canonical_sha256`, pinned URL and `kid` exactly. The reference object lies outside the committed bytes; what the hash commitment covers is the sentence in `output.text` naming `sha256-ca2fb845…05325`, and changing one digit there makes his verifier fail.
 - The pinned URL returns the same bytes as `receipt.jws.json` here. `canonical_sha256` recomputed with a canonicalizer written from RFC 8785 equals the reference, and `tanilo-receipt-verify` 0.2.0 reports `valid`, signed by `tanilo-2026-10-ed25519-7d885da9`, against the live key set.
-- The scenario is consistent: `contradicted`, gate `halt`, the AER-1 record says the follow-on call was held with no side effects, and its `created_at` is 2 h 07 min after this receipt's `timestamp`.
+- The scenario is consistent: `contradicted`, gate `halt`, the AER-1 example describes the follow-on call as held with no side effects (its scenario, not an execution trace), and its `created_at` is 2 h 07 min after this receipt's `timestamp`.
 - No anchor proof existed at 21:45 UTC (`no_proof`); the receipt postdates that day's batch.
 
 Not established by this run: that any call was executed or held, that the hold was caused by this result, who issued the AER-1 record (it is unsigned; its verifier checks integrity and label binding only), that the caller-supplied term is real, or the true order of events beyond the issuers' own timestamps.
