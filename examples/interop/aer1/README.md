@@ -19,7 +19,7 @@ Also here: `response.json` (the full response, of which the receipt is the `jws`
 
 ## What the receipt records, and what it does not
 
-It records what was checked and the result, signed: the offer and the term it was compared with, both by digest and in full, the rule applied (`contract-price-match/v0.1`) and the three-state outcome (`verified`, `contradicted` or `indeterminate`). A valid signature shows which key signed those bytes and that they have not changed since.
+It records the offer in full, digests of the offer and supplied terms, selected attributes and the digest of the matched term, the comparison amounts, the rule applied and the outcome. Retain request.json to replay the check against the complete supplied terms. A valid signature shows which key signed those bytes and that they have not changed since.
 
 It does not show that the premise was true. The terms are supplied by the caller (`terms_source: caller_supplied`) and are not authenticated: nothing here shows the agreement exists, was signed by anyone, or is the one in force. The receipt says which supplied term it used and why. The claim text behind `subject.claim_hash` is not stored; only its hash is in the receipt. It also does not show that any tool call acted on the result; that is the AER-1 receipt's half.
 
@@ -62,13 +62,15 @@ python3 -c "
 import json; from tanilo_receipt_verify import verify, verify_anchor, evm_contract_lookup
 r = verify(json.load(open('receipt.json')), jwks_by_issuer={'https://tanilo.io/.well-known/jwks.json': json.load(open('jwks.json'))})
 assert r.status == 'valid'
-proof = json.load(open('proof.json'))['proof']
+d = json.load(open('proof.json'))
+assert 'proof' in d, 'no proof yet: ' + str(d.get('status', d))
+proof = d['proof']
 lookup = evm_contract_lookup('https://rpc.goat.network', trusted_contracts=['0xddCC4eb18b39a520b874046b91b748B5E8cE7C54'], chain_id=2345)
 a = verify_anchor(r.canonical_sha256, proof, {'evm-contract': lookup}); print(a.status, a.anchored_at)"
 ```
 
-Until the batch runs the lookup returns a not-found answer and there is nothing to check. Once it has, the expected output is `anchored` followed by the block time. An anchor shows the receipt's canonical payload existed by that block's timestamp; it does not show when the receipt was signed or that its claim is true. Pass the hash your verifier recomputed, never the proof's own `leaf`.
+At this check, no proof was available. A later scheduled run may include the hash, but inclusion is not guaranteed. Run the following verification command only after the endpoint returns a proof. Report the verifier's actual status; anchored requires both a valid inclusion path and a successful trusted lookup. An anchor shows the receipt's canonical payload existed by that block's timestamp; it does not show when the receipt was signed or that its claim is true. Pass the hash your verifier recomputed, never the proof's own `leaf`.
 
 ## The AER-1 half
 
-Brennan Zambo's AER-1 receipt and its evidence-reference shape are at https://gitlab.com/rambozambodotdev/zambo/-/tree/main/aer1-interop/tanilo. The three values the AER-1 receipt carries for this receipt are the `canonical_sha256`, the pinned raw URL and the `kid` in the table above; `field-mapping.md` says where each comes from and how a verifier of the AER-1 receipt recomputes them. The evidence-reference object itself (`type`, `url`, `kid`, `relationship`, `description`) is AER-1's; Tanilo's specification defines `canonical_sha256` and `kid`, not that object.
+Brennan's current fixture illustrates the proposed evidence-reference shape. The values below are supplied for an updated example; end-to-end binding and execution have not yet been verified. Brennan Zambo's AER-1 receipt and its evidence-reference shape are at https://gitlab.com/rambozambodotdev/zambo/-/tree/main/aer1-interop/tanilo. The three values the AER-1 receipt carries for this receipt are the `canonical_sha256`, the pinned raw URL and the `kid` in the table above; `field-mapping.md` says where each comes from and how a verifier of the AER-1 receipt recomputes them. The evidence-reference object itself (`type`, `url`, `kid`, `relationship`, `description`) is AER-1's; Tanilo's specification defines `canonical_sha256` and `kid`, not that object.

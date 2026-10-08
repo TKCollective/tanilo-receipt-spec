@@ -12,10 +12,10 @@ Members an AER-1 verifier may also want, all inside the signed payload (`payload
 
 | Member | Value | Meaning |
 |---|---|---|
-| `timestamp` | `2026-10-08T04:47:35.336Z` | The issuer's own statement of issue time; not independently established. The anchor, once available, gives an upper bound |
+| `timestamp` | `2026-10-08T04:47:35.336Z` | The issuer's declared issue time, not independently established. An anchor, if available, bounds the existence of the canonical payload—not its signing or issue time. |
 | `v_gate.verdict` | `halt` | Gate decision for the whole receipt |
 | `check_results[0].state` | `contradicted` | The three-state result of the contract price check |
 | `check_results[0].evidence.offer_sha256`, `terms_sha256`, `matched_term.term_sha256` | see payload | Digests over the offer, the supplied terms and the term used |
 | `subject.claim_hash` | `sha256-…` of a claim text that is not stored | The claim this check was attached to; only its hash is in the receipt |
 
-What a match on all three values establishes: the AER-1 receipt refers to exactly this signed payload, and the payload was signed by the holder of the key published under that `kid`. What it does not establish: that the supplied term is genuine or in force, that the claim is true, or that anything acted on the result.
+After verifying the AER-1 artifact's binding to its evidence reference, recomputing the Tanilo payload hash, and verifying the Tanilo JWS with authenticated trust material, the two artifacts can be linked to the same canonical payload and signing key. This does not establish execution or causal reliance on the result.
