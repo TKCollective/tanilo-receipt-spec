@@ -42,6 +42,9 @@ def test_canonical_sha256_recomputes():
     assert got == EXPECTED_SHA, got
     assert json.loads((HERE / "response.json").read_text())["canonical_sha256"] == EXPECTED_SHA
     assert json.loads((HERE / "payload.decoded.json").read_text()) == payload
+    canonical = (HERE / "payload.canonical.bin").read_bytes()
+    assert canonical == jcs(payload).encode("utf-8")
+    assert "sha256-" + hashlib.sha256(canonical).hexdigest() == EXPECTED_SHA
 
 
 def test_signature_verifies_offline_with_tanilo_receipt_verify():
