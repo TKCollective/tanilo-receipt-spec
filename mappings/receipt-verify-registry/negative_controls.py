@@ -17,6 +17,13 @@ other revision-3 rules:
   - registry row D01-4.1-typ deleted (alone, and together with its structural source);
   - the audit's second count altered; sentence 27 cut at the page break again; an
     outside-audit item removed; a structural source's text altered.
+Revision 4 adds Michael Msebenzi's later-revision findings: a D01 or MAP row with a
+value outside the enum or a missing member (the per-view schema had been bypassed for
+those two views, and the validator answered with a traceback); a corpus naming a
+document whose view does not include it, and the converse; a row id whose section or
+slug does not match its source (sentence section, structural locator, or the cited
+mapping's rule numbers). A validator crash (a Traceback) never counts as a pass.
+
 For each case the expected rule must appear in the validator's output, not merely a
 non-zero exit. Exit 0 only when every case behaves as expected.
 
@@ -122,6 +129,51 @@ def outside_item_removed(d):
 def structural_text_altered(d):
     d["normative_audit"]["structural_sources"][0]["text"] = "typ: application/vnd.something-else"; return d
 
+# ── revision 4: Michael Msebenzi's later-revision findings ───────────
+def rename_requirement(d, old, new):
+    """Rename a registry row everywhere it is referenced, then resync: only an
+    id-to-source rule can tell the renamed file from the real one."""
+    for doc in d["requirement_documents"].values():
+        if old in doc["requirements"]:
+            doc["requirements"] = {(new if k == old else k): v for k, v in doc["requirements"].items()}
+            if old in doc.get("requirement_notes", {}): doc["requirement_notes"][new] = doc["requirement_notes"].pop(old)
+    for c in d["corpora"].values():
+        for v in c["vectors"]:
+            for r in v.get("requirements", []):
+                if r["requirement"] == old: r["requirement"] = new
+    for view in d["reverse_view"].values():
+        if old in view["requirements"]: view["requirements"] = {(new if k == old else k): v for k, v in view["requirements"].items()}
+    aud = d["normative_audit"]
+    for r in aud["sentences"]: r["requirements"] = [new if i == old else i for i in r["requirements"]]
+    for x in aud["structural_sources"]:
+        if x["requirement"] == old: x["requirement"] = new
+    aud["rows_without_audit_sentence"] = [new if i == old else i for i in aud["rows_without_audit_sentence"]]
+    return resync_reverse(d)
+def d01_row_bad_coverage(d):                # (1) a value outside the enum in a D01 row
+    d["reverse_view"]["D01"]["requirements"]["D01-3.2-conjunction"]["coverage"] = "bogus"; return d
+def map_row_without_vectors(d):             # (1) a MAP row missing a required member
+    d["reverse_view"]["MAP"]["requirements"]["MAP-rule-1"].pop("vectors"); return d
+def corpus_names_unscoped_document(d):      # (2) v0.3-composed names EP, but the EP view does not include it
+    d["corpora"]["v0.3-composed"]["requirement_documents"].append("EP"); return resync_reverse(d)
+def view_scopes_unnaming_corpus(d):         # (2) the EP view includes leaf-screen-halt, which names no document
+    d["reverse_view"]["EP"]["corpora"].append("leaf-screen-halt"); return resync_reverse(d)
+def typ_row_wrong_section(d):               # (3) id section 4.2, source section 4.1
+    return rename_requirement(d, "D01-4.1-typ", "D01-4.2-typ")
+def typ_row_wrong_locator(d):               # (3) id slug "type", locator "typ"
+    return rename_requirement(d, "D01-4.1-typ", "D01-4.1-type")
+def map_rule_renumbered(d):                 # (3) MAP-rule-8: the cited mapping has rules 1 to 7
+    return rename_requirement(d, "MAP-rule-7", "MAP-rule-8")
+
+V4_CASES = [
+    ("(1) D01 row coverage 'bogus'", d01_row_bad_coverage, "coverage 'bogus'"),
+    ("(1) MAP row without vectors", map_row_without_vectors, "vectors is missing"),
+    ("(2) v0.3-composed names EP but the EP view does not include it", corpus_names_unscoped_document, "names EP but the EP view does not include"),
+    ("(2) the EP view includes leaf-screen-halt, which does not name EP", view_scopes_unnaming_corpus, "includes leaf-screen-halt but leaf-screen-halt does not name EP"),
+    ("(3) D01-4.1-typ renamed D01-4.2-typ (section differs from its source)", typ_row_wrong_section, "id section 4.2"),
+    ("(3) D01-4.1-typ renamed D01-4.1-type (slug differs from its locator)", typ_row_wrong_locator, "does not match its structural source"),
+    ("(3) MAP-rule-7 renamed MAP-rule-8 (no such rule in the cited mapping)", map_rule_renumbered, "MAP-rule-8"),
+]
+
 V3_CASES = [
     ("(a) comp-001 relinked only to EP-4.1.2-canonical-order", relink_to_unnamed_document, "the corpus names only"),
     ("(b) D01 view: excluding-NOT-NORMATIVE summary and row fields removed", drop_excluding_from_d01, "summary_excluding_not_normative is missing"),
@@ -149,15 +201,16 @@ with tempfile.TemporaryDirectory() as tmp:
     same = json.dumps(resync_reverse(copy.deepcopy(real)), sort_keys=True) == json.dumps(real, sort_keys=True)
     bad += 0 if same else 1
     print(("PASS" if same else "FAIL") + ": resync_reverse() on the unmodified mapping reproduces it exactly")
-    for label, mutate, needle in V3_CASES:
+    for label, mutate, needle in V3_CASES + V4_CASES:
         path = os.path.join(tmp, "mapping.json")
         json.dump(mutate(copy.deepcopy(real)), open(path, "w"))
         r = subprocess.run([sys.executable, os.path.join(HERE, "validate_mapping.py"), "--mapping", path], capture_output=True, text=True)
         probs = [ln for ln in r.stdout.splitlines() if ln.startswith("PROBLEM")]
         hit = next((ln for ln in probs if needle in ln), None)
-        ok = r.returncode != 0 and hit is not None
+        crashed = "Traceback" in r.stderr
+        ok = r.returncode != 0 and hit is not None and not crashed
         bad += 0 if ok else 1
-        print(("PASS" if ok else "FAIL") + f": {label} -> validator exit {r.returncode}, {len(probs)} problem(s); " + (hit[:150] if hit else f"expected rule not reported: {needle!r}; first: {(probs or ['(none)'])[0][:120]}"))
+        print(("PASS" if ok else "FAIL") + f": {label} -> validator exit {r.returncode}, {len(probs)} problem(s); " + ("TRACEBACK instead of a PROBLEM line; " if crashed else "") + (hit[:150] if hit else f"expected rule not reported: {needle!r}; first: {(probs or ['(none)'])[0][:120]}"))
     for label, mutate, want in CASES:
         path = os.path.join(tmp, "mapping.json")
         json.dump(mutate(copy.deepcopy(real)), open(path, "w"))
