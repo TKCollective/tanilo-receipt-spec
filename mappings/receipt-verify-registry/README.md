@@ -177,6 +177,14 @@ python3 mappings/receipt-verify-registry/validate_mapping.py
 python3 mappings/receipt-verify-registry/negative_controls.py
 ```
 
+## What changed in revision 4 (2026-10-11)
+
+Three rules from Michael Msebenzi's later-revision findings on revision 3, each with a control in `negative_controls.py` that fails against the revision-3 validator and passes now (committed in that order, `b2cac82` then the fix). `mapping.json` is unchanged: 58 D01 requirements, 10 / 6 / 42, and 3 / 5 / 50 excluding the NOT NORMATIVE corpus; the generator still rebuilds it byte for byte.
+
+1. **Per-view checks for D01 and MAP.** The schema listed those two views under `properties` to require `summary_excluding_not_normative`; in JSON Schema that exempts them from `additionalProperties`, so the per-view subschema (row members, the coverage enum, the if/then rule) applied only to RMT and EP. The view definition now lives in `$defs.view` and D01 and MAP reference it through `allOf`. The validator also checks every view and row's shape itself and reports a bad value as a `PROBLEM` line (`coverage 'bogus' is not covered, partial or not covered`, `vectors is missing`); before, those were tracebacks. The controls runner now treats any traceback as a failure.
+2. **A corpus names a document if and only if that document's view includes the corpus.** Checked in both directions for every corpus and view: `corpus v0.3-composed names EP but the EP view does not include v0.3-composed`, and the converse.
+3. **Every row id matches its source.** A D01 id's section component must be the section of an audit sentence or structural source that names the row; a structural row's id is derived from its locator (`typ`, `step N` → `D01-4.3-N-…`, `Table 2 row N` → `D01-5.1-row-N`); the MAP ids must be exactly `MAP-rule-<order>` for the cited mapping's rules plus `MAP-gate_map` and `MAP-threshold`; an EP id's section must be one the EP scope names. Controls: `D01-4.1-typ` renamed to `D01-4.2-typ` and to `D01-4.1-type`, and `MAP-rule-7` to `MAP-rule-8`, each renamed consistently everywhere so that only this rule can catch it.
+
 ## What changed in revision 3
 
 After Michael Msebenzi's re-check of `91e66a7`. No count published at `91e66a7` changes: the vector counts, the totals, all four reverse views (summaries, per-row coverage, hits), the `-01` second count (3 / 5 / 50), the registry, the forward view and the audit's all-corpora count (10 / 45) are identical. What is new is listed here.
