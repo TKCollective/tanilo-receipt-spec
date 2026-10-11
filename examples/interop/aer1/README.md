@@ -21,7 +21,7 @@ Also here: `response.json` (the full response, of which the receipt is the `jws`
 
 It records the offer in full, digests of the offer and supplied terms, selected attributes and the digest of the matched term, the comparison amounts, the rule applied and the outcome. Retain request.json to replay the check against the complete supplied terms. A valid signature shows which key signed those bytes and that they have not changed since.
 
-It does not show that the premise was true. The terms are supplied by the caller (`terms_source: caller_supplied`) and are not authenticated: nothing here shows the agreement exists, was signed by anyone, or is the one in force. The receipt says which supplied term it used and why. The claim text behind `subject.claim_hash` is not stored; only its hash is in the receipt. It also does not show that any tool call acted on the result; that is the AER-1 receipt's half.
+It does not show that the premise was true. The terms are supplied by the caller (`terms_source: caller_supplied`) and are not authenticated: nothing here shows the agreement exists, was signed by anyone, or is the one in force. The receipt says which supplied term it used and why. The claim text behind `subject.claim_hash` is not stored; only its hash is in the receipt. It also does not show that any tool call acted on the result. In the worked example, the AER-1 record describes the follow-on call as the example's scenario; execution and causal reliance were not established (see the chain run below).
 
 ## Verify the signature offline
 
