@@ -54,7 +54,7 @@ const CASES = [
 
   // ── rounding traps: nothing is rounded ──
   ["no float error: 0.10 x 3 against 0.30", { offer: offer({ unit_price: "0.10", quantity: "3" }), cap: cap({ amount: "0.30" }) }, { state: "verified", total: "0.30" }],
-  ["no float error: 0.1 x 3 against 0.3000000000000001 is under", { offer: offer({ unit_price: "0.1", quantity: "3" }), cap: cap({ amount: "0.30000001" }) }, { state: "verified", total: "0.30", remaining: "0.30000001" }],
+  ["no float error: 0.1 x 3 = 0.30 is under a cap of 0.30000001", { offer: offer({ unit_price: "0.1", quantity: "3" }), cap: cap({ amount: "0.30000001" }) }, { state: "verified", total: "0.30", remaining: "0.30000001" }],
   ["16 fraction digits in the total: 0.12345678 x 0.12345678 = 0.0152415765279684, under an 8-digit cap", { offer: offer({ unit_price: "0.12345678", quantity: "0.12345678" }), cap: cap({ amount: "0.01524158" }) }, { state: "verified", total: "0.0152415765279684", remaining: "0.01524158" }],
   ["16 fraction digits in the total, over an 8-digit cap by part of a digit", { offer: offer({ unit_price: "0.12345678", quantity: "0.12345678" }), cap: cap({ amount: "0.01524157" }) }, { state: "contradicted", reason: "cap_exceeded", total: "0.0152415765279684", excess: "0.0000000065279684" }],
   ["large amounts stay exact", { offer: offer({ unit_price: "123456789012345678.12345678", quantity: "1" }), cap: cap({ amount: "123456789012345678.12345678" }) }, { state: "verified" }],

@@ -1168,7 +1168,7 @@
     },
     {
       "id": "spc-016",
-      "name": "no float error: 0.1 x 3 against 0.3000000000000001 is under",
+      "name": "no float error: 0.1 x 3 = 0.30 is under a cap of 0.30000001",
       "input": {
         "offer": {
           "unit_price": "0.1",

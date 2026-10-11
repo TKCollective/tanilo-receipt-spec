@@ -6,7 +6,7 @@ supplied?** The total is the offer's unit price times its quantity, by exact
 decimal arithmetic. No model is involved.
 
 This folder holds the rule as the service runs it, so that anyone can replay a
-check: same input, same rule, same result.
+check: same input, same published rule version, same result.
 
 | File | What it is |
 |---|---|
@@ -46,8 +46,9 @@ same. The receipt also carries `offer_sha256` and `cap_sha256`, so you can first
 confirm that the offer and cap you hold are the ones that were checked.
 
 Checking the receipt's signature is a separate step, done with
-[`tanilo-receipt-verify`](https://pypi.org/project/tanilo-receipt-verify/). A
-valid signature shows which key signed the receipt. It does not show that the
+[`tanilo-receipt-verify`](https://pypi.org/project/tanilo-receipt-verify/) against
+a key set you have authenticated as Tanilo's (published at
+https://tanilo.io/.well-known/jwks.json). A valid signature shows which key signed the receipt. It does not show that the
 supplied cap was genuine.
 
 ## Input
@@ -112,10 +113,11 @@ as supplied; member order does not matter.
 
 ## What this does not establish
 
-The cap and `already_spent` are supplied by the caller. The check does not
-establish that this is the right cap, that it was approved, or that
-`already_spent` is complete or current. The check is not a ledger: it keeps no
-state between calls and does not record this offer against the cap.
+The cap and `already_spent` are supplied by the caller; this check does not
+retrieve or track budgets. It does not establish that this is the right cap,
+that it was approved, or that `already_spent` is complete or current. It is not a
+ledger: it keeps no state between calls and does not record this offer against
+the cap.
 
 It makes no currency conversion, applies no rounding or tolerance, and
 calculates no tax. It does not judge whether the purchase is sensible. A
