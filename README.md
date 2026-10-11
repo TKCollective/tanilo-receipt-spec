@@ -2,7 +2,7 @@
 
 A signed, offline-verifiable receipt recording **what was checked before an agent acted**, so a gate can refuse to proceed and a later examiner can recompute the decision.
 
-**Version 0.3 — in production use since May 2026 (the issuing service is in free beta).** The v0.3 envelope and its decision mapping (`agentoracle-v0.3-2026-05-30`) have been serving live traffic since May 2026. This document is normative for v0.3. Extension work for v0.4 is an open draft and is **not** normative — see [Extension draft](#extension-draft-v04).
+**Version 0.3 — in production use since May 2026 (the issuing service is in free beta).** The v0.3 envelope and its decision mapping (`agentoracle-v0.3-2026-05-30`) have been serving live traffic since May 2026; from 2026-10-13 new receipts bind to `tanilo-v0.3-2026-10-13`, the same rules under a Tanilo identifier (see [Decision mapping](#decision-mapping)). This document is normative for v0.3. Extension work for v0.4 is an open draft and is **not** normative — see [Extension draft](#extension-draft-v04).
 
 | | |
 |---|---|
@@ -192,7 +192,7 @@ Sibling blocks other than `v_gate` (for example an independent skill or screenin
 
 ## Decision mapping
 
-`v_recommendation` is derived by applying the mapping's rules in order. This table is normative for `agentoracle-v0.3-2026-05-30`:
+`v_recommendation` is derived by applying the mapping's rules in order. This table is normative for `agentoracle-v0.3-2026-05-30` (receipts signed before 2026-10-13, sha256 `0a78263976790df6e76cd9f3f441bf5a3b5c3a82e346b5aca43e49626881d7b0`) and for `tanilo-v0.3-2026-10-13` (receipts signed from 2026-10-13, sha256 `52842536d5c8444b6add8e8cb7e8987aa3fcc0bf40cc7ac266ddc1744f0711ce`); the two documents differ only in `mapping_id`, `issuer`, `resolution` and `published`. Both are immutable and published at `https://api.tanilo.io/mappings/<sha256>.json` and by id. The example payload above is a receipt from before the cutover and is unchanged.
 
 | # | `v_verdict` | `v_adversarial_result` | confidence | `v_recommendation` |
 |---|---|---|---|---|
