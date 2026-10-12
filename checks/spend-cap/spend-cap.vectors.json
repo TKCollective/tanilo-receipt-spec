@@ -1005,7 +1005,7 @@
     },
     {
       "id": "spc-014",
-      "name": "per period: remaining exactly zero, offer one cent: the cap was fully used before this offer",
+      "name": "per period: remaining exactly zero, offer one cent: the supplied inputs leave no positive allowance before including this offer",
       "input": {
         "offer": {
           "unit_price": "0.01",

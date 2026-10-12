@@ -50,7 +50,7 @@ const CASES = [
   ["zero cap, positive price", { offer: offer({ unit_price: "0.01" }), cap: cap({ amount: "0.00" }) }, { state: "contradicted", reason: "cap_exceeded", total: "0.01", remaining: "0.00", excess: "0.01", exhausted: true }],
   ["zero price against a positive cap", { offer: offer({ unit_price: "0" }), cap: cap() }, { state: "verified", total: "0.00" }],
   ["per period: remaining exactly zero, offer zero", { offer: offer({ unit_price: "0.00" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "verified", total: "0.00", remaining: "0.00" }],
-  ["per period: remaining exactly zero, offer one cent: the cap was fully used before this offer", { offer: offer({ unit_price: "0.01" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.00", excess: "0.01", exhausted: true }],
+  ["per period: remaining exactly zero, offer one cent: the supplied inputs leave no positive allowance before including this offer", { offer: offer({ unit_price: "0.01" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.00", excess: "0.01", exhausted: true }],
   ["per period: one cent remaining, offer two cents: over, but not exhausted beforehand", { offer: offer({ unit_price: "0.02" }), cap: cap({ already_spent: "99.99" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.01", excess: "0.01", exhausted: false }],
 
   // ── rounding traps: nothing is rounded ──

@@ -111,10 +111,7 @@ A contradicted result has reason `cap_exceeded`; a verified result has reason
 contradicted reasons appear in `failure_reason` and indeterminate reasons appear
 in `indeterminate_reason`.
 
-`cap_already_exhausted` is `true` on a contradicted result when the computed
-remaining cap is zero or below: the cap was fully used before this offer. It is
-`false` otherwise. For indeterminate results, `false` does not establish that
-budget remains.
+`cap_already_exhausted` is true only on a contradicted result when the computed remaining cap is zero or below. This means the supplied inputs leave no positive allowance before including this offer; it does not establish that any spending actually occurred. It is false otherwise. For indeterminate results, false does not establish that budget remains.
 
 Schema-invalid input gets no result at all. The rule returns
 `{ invalid: true, path, message }`. At the service, schema-invalid input

@@ -20,7 +20,8 @@
 //    verified       total <= remaining cap
 //    contradicted   total > remaining cap; total, remaining and excess recorded;
 //                   cap_already_exhausted is true when remaining <= 0, that is,
-//                   the cap was fully used before this offer
+//                   the supplied inputs leave no positive allowance before
+//                   including this offer
 //    indeterminate  the comparison could not be made; a reason code says why
 //
 //  Conventions (the same as contract_price_match):
