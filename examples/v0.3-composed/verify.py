@@ -32,6 +32,10 @@ from typing import Any
 
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from ed25519_guard import check_ed25519  # noqa: E402  (small-order guard, see ../ed25519_guard.py)
 
 HERE = Path(__file__).resolve().parent
 
@@ -211,6 +215,11 @@ def verify_one(
 
         signing_input = (sig_entry["protected"] + "." + payload_b64).encode("ascii")
         sig_bytes = b64u_decode(sig_entry["signature"])
+        # Small-order key or R, non-canonical encoding, S >= L: rejected before
+        # the library is asked; a failed verification with its reason.
+        guard = check_ed25519(pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw), sig_bytes)
+        if guard is not None:
+            return {"ok": False, "reason": "signature_invalid", "guard": guard, "kid": kid, "issuer": issuer}
         try:
             pub_key.verify(sig_bytes, signing_input)
         except InvalidSignature:

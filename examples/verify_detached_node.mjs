@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createHash, createPublicKey, verify as nodeVerify } from 'node:crypto';
+import { checkEd25519, rawPublicKeyBytes } from './ed25519_guard.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -60,6 +61,13 @@ const signingInput = Buffer.concat([
   payloadBytes,
 ]);
 
+// Small-order key or R, non-canonical encoding, S >= L: rejected before the library is asked.
+const guard = checkEd25519(rawPublicKeyBytes(publicKey), new Uint8Array(b64uDec(detached.signature)));
+if (guard) {
+  console.error('=== DETACHED VERIFICATION FAILED ===');
+  console.error(guard);
+  process.exit(1);
+}
 const ok = nodeVerify(null, signingInput, publicKey, b64uDec(detached.signature));
 if (!ok) {
   console.error('=== DETACHED VERIFICATION FAILED ===');

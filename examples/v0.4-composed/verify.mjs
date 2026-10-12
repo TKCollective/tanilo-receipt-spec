@@ -26,6 +26,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createHash, createPublicKey, verify as nodeVerify } from 'node:crypto';
+import { checkEd25519, rawPublicKeyBytes } from '../ed25519_guard.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
@@ -254,6 +255,10 @@ async function verifyOne(payload, jws, jwksByIssuer, opts = {}) {
 
     const signingInput = Buffer.from(sigEntry.protected + '.' + payloadB64, 'ascii');
     const sigBytes = b64uDecode(sigEntry.signature);
+    // Small-order key or R, non-canonical encoding, S >= L: rejected before the
+    // library is asked (see ../ed25519_guard.mjs); a failed verification with its reason.
+    const guard = checkEd25519(rawPublicKeyBytes(pubKey), new Uint8Array(sigBytes));
+    if (guard) return { ok: false, reason: 'signature_invalid', guard, kid, issuer };
     const valid = nodeVerify(null, signingInput, pubKey, sigBytes);
     if (!valid) return { ok: false, reason: 'signature_invalid', kid, issuer };
   }

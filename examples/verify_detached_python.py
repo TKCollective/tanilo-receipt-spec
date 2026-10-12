@@ -27,6 +27,9 @@ import base64, hashlib, json, sys
 from pathlib import Path
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ed25519_guard import check_ed25519  # noqa: E402  (small-order guard, see ./ed25519_guard.py)
+
 HERE = Path(__file__).parent
 
 
@@ -92,6 +95,10 @@ def main() -> None:
     keys = local_jwks.get("public_only", {}).get("keys") or local_jwks["keys"]
     pub_jwk = next(k for k in keys if k["kid"] == header["kid"])
     pk = Ed25519PublicKey.from_public_bytes(b64u_dec(pub_jwk["x"]))
+    # Small-order key or R, non-canonical encoding, S >= L: rejected before the library is asked.
+    guard = check_ed25519(b64u_dec(pub_jwk["x"]), b64u_dec(detached["signature"]))
+    if guard is not None:
+        raise SystemExit(f"=== DETACHED VERIFICATION FAILED ===\n{guard}")
 
     signing_input = detached["protected"].encode("ascii") + b"." + payload_bytes
     pk.verify(b64u_dec(detached["signature"]), signing_input)
