@@ -18,13 +18,15 @@
 //
 //  Three states, never a guess:
 //    verified       total <= remaining cap
-//    contradicted   total > remaining cap; total, remaining and excess recorded
+//    contradicted   total > remaining cap; total, remaining and excess recorded;
+//                   cap_already_exhausted is true when remaining <= 0, that is,
+//                   the cap was fully used before this offer
 //    indeterminate  the comparison could not be made; a reason code says why
 //
 //  Conventions (the same as contract_price_match):
 //    - decimals are strings, compared by exact value ("1" equals "1.00");
 //      no floating point, no rounding; a product keeps every digit
-//    - instants are RFC 3339 UTC ("...Z"); nothing reads a clock
+//    - instants are RFC 3339 UTC ("...Z"), years 0100 through 9999; nothing reads a clock
 //    - the period is lower-inclusive, upper-exclusive
 //    - no currency conversion
 // ═══════════════════════════════════════════════════════════════════
@@ -299,5 +301,5 @@ export function evaluateSpendCap(input) {
   const remScaled = cap.scope === "per_purchase" ? cap.amount : cap.amount - cap.already_spent;
   steps.push({ step: "compare", rule: "offer_total <= remaining by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding", fits: totalScaled <= remScaled });
   if (totalScaled <= remScaled) return done("verified", null);
-  return done("contradicted", "cap_exceeded", { excess: formatDecimal(totalScaled - remScaled), cap_already_exhausted: remScaled < 0n });
+  return done("contradicted", "cap_exceeded", { excess: formatDecimal(totalScaled - remScaled), cap_already_exhausted: remScaled <= 0n });
 }

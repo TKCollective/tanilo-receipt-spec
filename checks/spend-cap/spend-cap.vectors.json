@@ -550,7 +550,7 @@
     },
     {
       "id": "spc-008",
-      "name": "smallest representable excess",
+      "name": "one hundred-millionth over the cap (smaller excesses are possible after multiplication)",
       "input": {
         "offer": {
           "unit_price": "1.00000001",
@@ -808,7 +808,7 @@
           "offer_total": "0.01",
           "remaining": "0.00",
           "excess": "0.01",
-          "cap_already_exhausted": false,
+          "cap_already_exhausted": true,
           "steps": [
             {
               "step": "currency",
@@ -1005,7 +1005,7 @@
     },
     {
       "id": "spc-014",
-      "name": "per period: remaining exactly zero, offer one cent",
+      "name": "per period: remaining exactly zero, offer one cent: the cap was fully used before this offer",
       "input": {
         "offer": {
           "unit_price": "0.01",
@@ -1056,7 +1056,7 @@
           "offer_total": "0.01",
           "remaining": "0.00",
           "excess": "0.01",
-          "cap_already_exhausted": false,
+          "cap_already_exhausted": true,
           "steps": [
             {
               "step": "currency",
@@ -1095,6 +1095,96 @@
     },
     {
       "id": "spc-015",
+      "name": "per period: one cent remaining, offer two cents: over, but not exhausted beforehand",
+      "input": {
+        "offer": {
+          "unit_price": "0.02",
+          "currency": "USD",
+          "quantity": "1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "cap": {
+          "cap_id": "api-budget-2026-10",
+          "amount": "100.00",
+          "currency": "USD",
+          "scope": "per_period",
+          "already_spent": "99.99",
+          "period": {
+            "from": "2026-10-01T00:00:00Z",
+            "to": "2026-11-01T00:00:00Z"
+          }
+        }
+      },
+      "result": {
+        "state": "contradicted",
+        "reason": "cap_exceeded",
+        "evidence": {
+          "rule_id": "spend-cap/v0.1",
+          "cap_source": "caller_supplied",
+          "offer_sha256": "sha256-80d0843198b5dc60d48a74b5ca375438184734fad37ab839cdd3bd9e222cee4d",
+          "cap_sha256": "sha256-81209dfe196334be316b2af8c7de64ca70a6d4b32f0f144712be11e906129b8d",
+          "offer": {
+            "unit_price": "0.02",
+            "currency": "USD",
+            "quantity": "1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "cap": {
+            "cap_id": "api-budget-2026-10",
+            "amount": "100.00",
+            "currency": "USD",
+            "scope": "per_period",
+            "already_spent": "99.99",
+            "period": {
+              "from": "2026-10-01T00:00:00Z",
+              "to": "2026-11-01T00:00:00Z"
+            }
+          },
+          "state": "contradicted",
+          "reason": "cap_exceeded",
+          "reason_text": "the offer's total exceeds the remaining cap",
+          "offer_total": "0.02",
+          "remaining": "0.01",
+          "excess": "0.01",
+          "cap_already_exhausted": false,
+          "steps": [
+            {
+              "step": "currency",
+              "rule": "cap.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "quantity",
+              "rule": "offer.quantity is present; without it no total can be computed",
+              "present": true
+            },
+            {
+              "step": "total",
+              "rule": "offer_total = unit_price × quantity by exact decimal arithmetic; nothing is rounded",
+              "offer_total": "0.02"
+            },
+            {
+              "step": "remaining_cap",
+              "rule": "per_period: period.from <= offered_at < period.to (end exclusive); remaining = cap.amount − already_spent (already_spent defaults to 0 and may exceed amount)",
+              "scope": "per_period",
+              "period_present": true,
+              "offer_time_present": true,
+              "offer_in_period": true,
+              "already_spent": "99.99",
+              "already_spent_given": true,
+              "remaining": "0.01"
+            },
+            {
+              "step": "compare",
+              "rule": "offer_total <= remaining by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding",
+              "fits": false
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "spc-016",
       "name": "no float error: 0.10 x 3 against 0.30",
       "input": {
         "offer": {
@@ -1167,7 +1257,7 @@
       }
     },
     {
-      "id": "spc-016",
+      "id": "spc-017",
       "name": "no float error: 0.1 x 3 = 0.30 is under a cap of 0.30000001",
       "input": {
         "offer": {
@@ -1240,7 +1330,7 @@
       }
     },
     {
-      "id": "spc-017",
+      "id": "spc-018",
       "name": "16 fraction digits in the total: 0.12345678 x 0.12345678 = 0.0152415765279684, under an 8-digit cap",
       "input": {
         "offer": {
@@ -1313,7 +1403,7 @@
       }
     },
     {
-      "id": "spc-018",
+      "id": "spc-019",
       "name": "16 fraction digits in the total, over an 8-digit cap by part of a digit",
       "input": {
         "offer": {
@@ -1386,7 +1476,7 @@
       }
     },
     {
-      "id": "spc-019",
+      "id": "spc-020",
       "name": "large amounts stay exact",
       "input": {
         "offer": {
@@ -1459,7 +1549,7 @@
       }
     },
     {
-      "id": "spc-020",
+      "id": "spc-021",
       "name": "large amounts: one unit over",
       "input": {
         "offer": {
@@ -1532,7 +1622,7 @@
       }
     },
     {
-      "id": "spc-021",
+      "id": "spc-022",
       "name": "fractional quantity: 2.5 x 0.40 = 1.00",
       "input": {
         "offer": {
@@ -1605,7 +1695,7 @@
       }
     },
     {
-      "id": "spc-022",
+      "id": "spc-023",
       "name": "large quantity: 1000000 x 0.000001 = 1.00",
       "input": {
         "offer": {
@@ -1678,7 +1768,7 @@
       }
     },
     {
-      "id": "spc-023",
+      "id": "spc-024",
       "name": "per period: well under",
       "input": {
         "offer": {
@@ -1768,7 +1858,7 @@
       }
     },
     {
-      "id": "spc-024",
+      "id": "spc-025",
       "name": "per period: already_spent absent defaults to zero",
       "input": {
         "offer": {
@@ -1856,7 +1946,7 @@
       }
     },
     {
-      "id": "spc-025",
+      "id": "spc-026",
       "name": "per period: cap already exhausted before this offer",
       "input": {
         "offer": {
@@ -1946,7 +2036,7 @@
       }
     },
     {
-      "id": "spc-026",
+      "id": "spc-027",
       "name": "per period: offer at the period start is inside",
       "input": {
         "offer": {
@@ -2036,7 +2126,7 @@
       }
     },
     {
-      "id": "spc-027",
+      "id": "spc-028",
       "name": "per period: offer one millisecond before the end is inside",
       "input": {
         "offer": {
@@ -2126,7 +2216,7 @@
       }
     },
     {
-      "id": "spc-028",
+      "id": "spc-029",
       "name": "per period: offer at the period end is outside",
       "input": {
         "offer": {
@@ -2213,7 +2303,7 @@
       }
     },
     {
-      "id": "spc-029",
+      "id": "spc-030",
       "name": "per period: offer before the period",
       "input": {
         "offer": {
@@ -2300,7 +2390,7 @@
       }
     },
     {
-      "id": "spc-030",
+      "id": "spc-031",
       "name": "per period: period bounds missing",
       "input": {
         "offer": {
@@ -2372,7 +2462,7 @@
       }
     },
     {
-      "id": "spc-031",
+      "id": "spc-032",
       "name": "per period: offer time missing",
       "input": {
         "offer": {
@@ -2451,7 +2541,7 @@
       }
     },
     {
-      "id": "spc-032",
+      "id": "spc-033",
       "name": "per purchase: offer time is not needed",
       "input": {
         "offer": {
@@ -2522,7 +2612,7 @@
       }
     },
     {
-      "id": "spc-033",
+      "id": "spc-034",
       "name": "currency: offer in EUR, cap in USD",
       "input": {
         "offer": {
@@ -2576,7 +2666,7 @@
       }
     },
     {
-      "id": "spc-034",
+      "id": "spc-035",
       "name": "currency: cap in GBP, per period",
       "input": {
         "offer": {
@@ -2642,7 +2732,7 @@
       }
     },
     {
-      "id": "spc-035",
+      "id": "spc-036",
       "name": "quantity missing: no total can be computed",
       "input": {
         "offer": {
@@ -2697,7 +2787,7 @@
       }
     },
     {
-      "id": "spc-036",
+      "id": "spc-037",
       "name": "order: currency differs and quantity missing: currency is reported",
       "input": {
         "offer": {
@@ -2749,7 +2839,7 @@
       }
     },
     {
-      "id": "spc-037",
+      "id": "spc-038",
       "name": "order: quantity missing and offer outside period: quantity is reported",
       "input": {
         "offer": {
@@ -2816,7 +2906,7 @@
       }
     },
     {
-      "id": "spc-038",
+      "id": "spc-039",
       "name": "order: period bounds missing and offer time missing: bounds are reported",
       "input": {
         "offer": {
@@ -2886,7 +2976,7 @@
       }
     },
     {
-      "id": "spc-039",
+      "id": "spc-040",
       "name": "optional seller and sku are carried",
       "input": {
         "offer": {
@@ -2963,7 +3053,7 @@
       }
     },
     {
-      "id": "spc-040",
+      "id": "spc-041",
       "name": "cap_id is carried",
       "input": {
         "offer": {
@@ -3053,7 +3143,7 @@
       }
     },
     {
-      "id": "spc-041",
+      "id": "spc-042",
       "name": "invalid: price given as a JSON number",
       "input": {
         "offer": {
@@ -3074,7 +3164,7 @@
       }
     },
     {
-      "id": "spc-042",
+      "id": "spc-043",
       "name": "invalid: cap amount given as a JSON number",
       "input": {
         "offer": {
@@ -3095,7 +3185,7 @@
       }
     },
     {
-      "id": "spc-043",
+      "id": "spc-044",
       "name": "invalid: negative amount",
       "input": {
         "offer": {
@@ -3116,7 +3206,7 @@
       }
     },
     {
-      "id": "spc-044",
+      "id": "spc-045",
       "name": "invalid: amount with a currency symbol",
       "input": {
         "offer": {
@@ -3137,7 +3227,7 @@
       }
     },
     {
-      "id": "spc-045",
+      "id": "spc-046",
       "name": "invalid: quantity zero",
       "input": {
         "offer": {
@@ -3158,7 +3248,7 @@
       }
     },
     {
-      "id": "spc-046",
+      "id": "spc-047",
       "name": "invalid: unknown scope",
       "input": {
         "offer": {
@@ -3179,7 +3269,7 @@
       }
     },
     {
-      "id": "spc-047",
+      "id": "spc-048",
       "name": "invalid: already_spent with a per-purchase cap",
       "input": {
         "offer": {
@@ -3201,7 +3291,7 @@
       }
     },
     {
-      "id": "spc-048",
+      "id": "spc-049",
       "name": "invalid: period with a per-purchase cap",
       "input": {
         "offer": {
@@ -3226,7 +3316,7 @@
       }
     },
     {
-      "id": "spc-049",
+      "id": "spc-050",
       "name": "invalid: period end not after start",
       "input": {
         "offer": {
@@ -3253,7 +3343,7 @@
       }
     },
     {
-      "id": "spc-050",
+      "id": "spc-051",
       "name": "invalid: period with only a start",
       "input": {
         "offer": {
@@ -3279,7 +3369,107 @@
       }
     },
     {
-      "id": "spc-051",
+      "id": "spc-052",
+      "name": "year 0100 is the earliest accepted",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "quantity": "1",
+          "offered_at": "0100-01-01T00:00:00Z"
+        },
+        "cap": {
+          "amount": "1.00",
+          "currency": "USD",
+          "scope": "per_purchase"
+        }
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "spend-cap/v0.1",
+          "cap_source": "caller_supplied",
+          "offer_sha256": "sha256-46680b8222076330b6fd554e726820ea07d8929064ef845ed7774ca0d131bf44",
+          "cap_sha256": "sha256-2ada7afdec90e7113edb0bddf0f00ac0e1fc6eb613bb22c9320d356ee1373339",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "quantity": "1",
+            "offered_at": "0100-01-01T00:00:00Z"
+          },
+          "cap": {
+            "amount": "1.00",
+            "currency": "USD",
+            "scope": "per_purchase"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "offer_total": "1.00",
+          "remaining": "1.00",
+          "excess": null,
+          "cap_already_exhausted": false,
+          "steps": [
+            {
+              "step": "currency",
+              "rule": "cap.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "quantity",
+              "rule": "offer.quantity is present; without it no total can be computed",
+              "present": true
+            },
+            {
+              "step": "total",
+              "rule": "offer_total = unit_price × quantity by exact decimal arithmetic; nothing is rounded",
+              "offer_total": "1.00"
+            },
+            {
+              "step": "remaining_cap",
+              "rule": "per_purchase: remaining = cap.amount",
+              "scope": "per_purchase",
+              "remaining": "1.00"
+            },
+            {
+              "step": "compare",
+              "rule": "offer_total <= remaining by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding",
+              "fits": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "spc-053",
+      "name": "invalid: year 0099 is not accepted (years run 0100 through 9999)",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "quantity": "1",
+          "offered_at": "0099-12-31T23:59:59Z"
+        },
+        "cap": {
+          "cap_id": "api-budget-2026-10",
+          "amount": "100.00",
+          "currency": "USD",
+          "scope": "per_period",
+          "already_spent": "40.00",
+          "period": {
+            "from": "2026-10-01T00:00:00Z",
+            "to": "2026-11-01T00:00:00Z"
+          }
+        }
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.offered_at"
+      }
+    },
+    {
+      "id": "spc-054",
       "name": "invalid: date without a time",
       "input": {
         "offer": {
@@ -3306,7 +3496,7 @@
       }
     },
     {
-      "id": "spc-052",
+      "id": "spc-055",
       "name": "invalid: unknown member on the cap (a note)",
       "input": {
         "offer": {
@@ -3328,7 +3518,7 @@
       }
     },
     {
-      "id": "spc-053",
+      "id": "spc-056",
       "name": "invalid: unknown member on the offer",
       "input": {
         "offer": {
@@ -3350,7 +3540,7 @@
       }
     },
     {
-      "id": "spc-054",
+      "id": "spc-057",
       "name": "invalid: lower-case currency code",
       "input": {
         "offer": {
@@ -3371,7 +3561,7 @@
       }
     },
     {
-      "id": "spc-055",
+      "id": "spc-058",
       "name": "invalid: cap missing",
       "input": {
         "offer": {
@@ -3387,7 +3577,7 @@
       }
     },
     {
-      "id": "spc-056",
+      "id": "spc-059",
       "name": "invalid: more than 8 fraction digits",
       "input": {
         "offer": {

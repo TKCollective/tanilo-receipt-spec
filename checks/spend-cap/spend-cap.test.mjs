@@ -42,15 +42,16 @@ const CASES = [
   ["one cent over: 1.01 x 1 against 1.00", { offer: offer({ unit_price: "1.01" }), cap: cap() }, { state: "contradicted", reason: "cap_exceeded", total: "1.01", remaining: "1.00", excess: "0.01", exhausted: false }],
   ["one cent over, per period: 60.01 against 60.00 remaining", { offer: offer({ unit_price: "60.01" }), cap: cap({}, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", total: "60.01", remaining: "60.00", excess: "0.01" }],
   ["a hundredth of a cent over: 0.3334 x 3 = 1.0002", { offer: offer({ unit_price: "0.3334", quantity: "3" }), cap: cap() }, { state: "contradicted", reason: "cap_exceeded", total: "1.0002", excess: "0.0002" }],
-  ["smallest representable excess", { offer: offer({ unit_price: "1.00000001" }), cap: cap() }, { state: "contradicted", reason: "cap_exceeded", excess: "0.00000001" }],
+  ["one hundred-millionth over the cap (smaller excesses are possible after multiplication)", { offer: offer({ unit_price: "1.00000001" }), cap: cap() }, { state: "contradicted", reason: "cap_exceeded", excess: "0.00000001" }],
   ["under by a hundredth of a cent: 0.3333 x 3 = 0.9999", { offer: offer({ unit_price: "0.3333", quantity: "3" }), cap: cap() }, { state: "verified", total: "0.9999", remaining: "1.00" }],
 
   // ── zero ──
   ["zero price against a zero cap", { offer: offer({ unit_price: "0.00", quantity: "5" }), cap: cap({ amount: "0" }) }, { state: "verified", total: "0.00", remaining: "0.00" }],
-  ["zero cap, positive price", { offer: offer({ unit_price: "0.01" }), cap: cap({ amount: "0.00" }) }, { state: "contradicted", reason: "cap_exceeded", total: "0.01", remaining: "0.00", excess: "0.01" }],
+  ["zero cap, positive price", { offer: offer({ unit_price: "0.01" }), cap: cap({ amount: "0.00" }) }, { state: "contradicted", reason: "cap_exceeded", total: "0.01", remaining: "0.00", excess: "0.01", exhausted: true }],
   ["zero price against a positive cap", { offer: offer({ unit_price: "0" }), cap: cap() }, { state: "verified", total: "0.00" }],
   ["per period: remaining exactly zero, offer zero", { offer: offer({ unit_price: "0.00" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "verified", total: "0.00", remaining: "0.00" }],
-  ["per period: remaining exactly zero, offer one cent", { offer: offer({ unit_price: "0.01" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.00", excess: "0.01", exhausted: false }],
+  ["per period: remaining exactly zero, offer one cent: the cap was fully used before this offer", { offer: offer({ unit_price: "0.01" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.00", excess: "0.01", exhausted: true }],
+  ["per period: one cent remaining, offer two cents: over, but not exhausted beforehand", { offer: offer({ unit_price: "0.02" }), cap: cap({ already_spent: "99.99" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.01", excess: "0.01", exhausted: false }],
 
   // ── rounding traps: nothing is rounded ──
   ["no float error: 0.10 x 3 against 0.30", { offer: offer({ unit_price: "0.10", quantity: "3" }), cap: cap({ amount: "0.30" }) }, { state: "verified", total: "0.30" }],
@@ -95,6 +96,8 @@ const CASES = [
   ["invalid: period with a per-purchase cap", { offer: offer(), cap: cap({ period: CAP_T.period }) }, { invalid: "cap.period" }],
   ["invalid: period end not after start", { offer: offer(), cap: cap({ period: { from: "2026-10-01T00:00:00Z", to: "2026-10-01T00:00:00Z" } }, CAP_T) }, { invalid: "cap.period.to" }],
   ["invalid: period with only a start", { offer: offer(), cap: cap({ period: { from: "2026-10-01T00:00:00Z" } }, CAP_T) }, { invalid: "cap.period.to" }],
+  ["year 0100 is the earliest accepted", { offer: offer({ offered_at: "0100-01-01T00:00:00Z" }), cap: cap() }, { state: "verified" }],
+  ["invalid: year 0099 is not accepted (years run 0100 through 9999)", { offer: offer({ offered_at: "0099-12-31T23:59:59Z" }), cap: cap({}, CAP_T) }, { invalid: "offer.offered_at" }],
   ["invalid: date without a time", { offer: offer({ offered_at: "2026-10-01" }), cap: cap({}, CAP_T) }, { invalid: "offer.offered_at" }],
   ["invalid: unknown member on the cap (a note)", { offer: offer(), cap: cap({ note: "approved by Sam" }) }, { invalid: "cap.note" }],
   ["invalid: unknown member on the offer", { offer: offer({ discount: "10" }), cap: cap() }, { invalid: "offer.discount" }],
