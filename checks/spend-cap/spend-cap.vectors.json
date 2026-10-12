@@ -1095,7 +1095,7 @@
     },
     {
       "id": "spc-015",
-      "name": "per period: one cent remaining, offer two cents: over, but not exhausted beforehand",
+      "name": "per period: one cent remaining, offer two cents: over, with a positive allowance before including this offer",
       "input": {
         "offer": {
           "unit_price": "0.02",
@@ -1947,7 +1947,7 @@
     },
     {
       "id": "spc-026",
-      "name": "per period: cap already exhausted before this offer",
+      "name": "per period: already_spent above the cap: the supplied inputs leave no positive allowance before including this offer",
       "input": {
         "offer": {
           "unit_price": "1.00",

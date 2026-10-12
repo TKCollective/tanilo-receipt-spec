@@ -51,7 +51,7 @@ const CASES = [
   ["zero price against a positive cap", { offer: offer({ unit_price: "0" }), cap: cap() }, { state: "verified", total: "0.00" }],
   ["per period: remaining exactly zero, offer zero", { offer: offer({ unit_price: "0.00" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "verified", total: "0.00", remaining: "0.00" }],
   ["per period: remaining exactly zero, offer one cent: the supplied inputs leave no positive allowance before including this offer", { offer: offer({ unit_price: "0.01" }), cap: cap({ already_spent: "100.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.00", excess: "0.01", exhausted: true }],
-  ["per period: one cent remaining, offer two cents: over, but not exhausted beforehand", { offer: offer({ unit_price: "0.02" }), cap: cap({ already_spent: "99.99" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.01", excess: "0.01", exhausted: false }],
+  ["per period: one cent remaining, offer two cents: over, with a positive allowance before including this offer", { offer: offer({ unit_price: "0.02" }), cap: cap({ already_spent: "99.99" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "0.01", excess: "0.01", exhausted: false }],
 
   // ── rounding traps: nothing is rounded ──
   ["no float error: 0.10 x 3 against 0.30", { offer: offer({ unit_price: "0.10", quantity: "3" }), cap: cap({ amount: "0.30" }) }, { state: "verified", total: "0.30" }],
@@ -66,7 +66,7 @@ const CASES = [
   // ── per period: already_spent and bounds ──
   ["per period: well under", { offer: offer({ unit_price: "10.00" }), cap: cap({}, CAP_T) }, { state: "verified", total: "10.00", remaining: "60.00" }],
   ["per period: already_spent absent defaults to zero", { offer: offer({ unit_price: "100.00" }), cap: cap({ already_spent: undefined }, CAP_T) }, { state: "verified", total: "100.00", remaining: "100.00" }],
-  ["per period: cap already exhausted before this offer", { offer: offer({ unit_price: "1.00" }), cap: cap({ already_spent: "120.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "-20.00", excess: "21.00", exhausted: true }],
+  ["per period: already_spent above the cap: the supplied inputs leave no positive allowance before including this offer", { offer: offer({ unit_price: "1.00" }), cap: cap({ already_spent: "120.00" }, CAP_T) }, { state: "contradicted", reason: "cap_exceeded", remaining: "-20.00", excess: "21.00", exhausted: true }],
   ["per period: offer at the period start is inside", { offer: offer({ offered_at: "2026-10-01T00:00:00Z" }), cap: cap({}, CAP_T) }, { state: "verified" }],
   ["per period: offer one millisecond before the end is inside", { offer: offer({ offered_at: "2026-10-31T23:59:59.999Z" }), cap: cap({}, CAP_T) }, { state: "verified" }],
   ["per period: offer at the period end is outside", { offer: offer({ offered_at: "2026-11-01T00:00:00Z" }), cap: cap({}, CAP_T) }, { state: "indeterminate", reason: "offer_outside_period" }],
