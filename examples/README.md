@@ -114,14 +114,19 @@ The verifying examples here come in two languages and two forms:
 `ed25519_guard.py` is a byte-identical copy of `tanilo_receipt_verify/ed25519_guard.py` from
 [`tanilo-receipt-verify` 0.2.1](https://pypi.org/project/tanilo-receipt-verify/0.2.1/)
 (sha256 `2fb65a919a4aecf83d1345b319de2a984fe8c8e0b5d198433093343a0b3243e3`).
-`ed25519_guard.mjs` is its JavaScript port: the same decoding, the same checks and the same
-reason codes.
+`ed25519_guard.mjs` is its JavaScript port, written to apply the same decoding, checks and
+reason codes; on 53 shared key and signature pairs it returns the same reason as the Python
+file.
 
 Before the library runs, the public key must decode per RFC 8032 section 5.1.3 (including:
 x = 0 with the sign bit set is invalid), be canonically encoded (y < p) and not be a small-order
 point (order 1, 2, 4 or 8, in any encoding); the signature's R must decode and not be
 small-order; S must satisfy 0 <= S < L (section 5.1.7). A rejection is a failed verification
 with a reason.
+
+Version 0.2.1 intentionally rejects equation-valid signatures with small-order R, including
+ones a key holder constructs deliberately. Not checked: a *mixed-order* key or R (a point
+outside the prime-order subgroup that is not itself small-order; Taming case 3).
 
 The guard is called by `verify_detached_node.mjs`, `verify_detached_python.py`, and by
 `verify.mjs` and `verify.py` under `v0.3-composed/` and `v0.4-composed/`. `verify_node.mjs`
