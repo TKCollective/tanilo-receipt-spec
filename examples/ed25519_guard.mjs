@@ -1,5 +1,5 @@
 // ed25519_guard.mjs: Ed25519 input guard (small-order points, non-canonical
-// encodings, S range), run before the crypto library is called.
+// encodings, S range), run before the library verifies the signature.
 //
 // JavaScript port of tanilo_receipt_verify/ed25519_guard.py as released in
 // tanilo-receipt-verify 0.2.1 (commit 0618def). ed25519_guard.py beside this
@@ -36,7 +36,7 @@
 //   preaction-governance-conformance at 90b5032. This release adds
 //   corresponding input restrictions to Tanilo's verifier.
 //
-// Checks, before the library is called:
+// Checks, before the library verifies the signature:
 //   - the public key must decode to a point on the curve (RFC 8032 section
 //     5.1.3, including its rule that x = 0 with the sign bit set is invalid),
 //     must be canonically encoded (y < p), and must not be a small-order point
