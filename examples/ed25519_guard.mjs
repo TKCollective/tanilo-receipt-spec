@@ -1,19 +1,57 @@
-// ed25519_guard.mjs — reject small-order Ed25519 keys and signatures before
-// calling the crypto library. Node's crypto (OpenSSL), like most libraries,
-// accepts a public key that is a small-order point; under such a key a
-// signature can verify for every message (identity key, R = identity, S = 0).
-// Reported by babyblueviper1 (x402-foundation/tsc#4); vectors from "Taming the
-// many EdDSAs" (Chalkias, Garillot, Nikolaenko 2020; novifinancial/ed25519-speccheck).
+// ed25519_guard.mjs: Ed25519 input guard (small-order points, non-canonical
+// encodings, S range), run before the crypto library is called.
 //
-// Mirrors tanilo_receipt_verify/ed25519_guard.py in tanilo-receipt-verify 0.2.1:
-// same checks, same reason codes. Pure BigInt arithmetic, no dependency.
+// JavaScript port of tanilo_receipt_verify/ed25519_guard.py as released in
+// tanilo-receipt-verify 0.2.1 (commit 0618def). ed25519_guard.py beside this
+// file is a byte-identical copy of that module. Same decoding, same checks,
+// same reason codes; the reason texts are identical too, except the two
+// input-type reasons, which name the JavaScript type. Pure BigInt arithmetic,
+// no dependency. It never throws: a wrong input type, a wrong length or
+// malformed bytes return a reason instead.
+//
+// From the 0.2.1 module, unchanged:
+//
+//   With the identity public key, the signature R = identity, S = 0 satisfies
+//   the verification equation for every message. For other small-order keys,
+//   acceptance depends on the verifier's equation and the message. This
+//   release rejects all small-order public keys and R values.
+//
+//   Acceptance of these edge cases varies by library, backend and version. In
+//   our measurements, cryptography 50.0.1 (OpenSSL 4.0.2) and Node 18 (OpenSSL
+//   3.0.16) accepted Taming cases 0, 1, 2 and 11 and the identity-key
+//   signature; Node 24 (OpenSSL 3.5.7) rejected them. This release applies its
+//   input restrictions independently of the backend.
+//   (Vectors: "Taming the many EdDSAs", Chalkias, Garillot, Nikolaenko 2020;
+//   novifinancial/ed25519-speccheck.)
+//
+//   Rejecting a small-order R is a stricter acceptance policy than the RFC
+//   8032 verification equation: an equation-valid signature whose R is a
+//   small-order point is refused here. A key holder can construct an
+//   equation-valid signature with small-order R deliberately. Small-order R is
+//   also possible, with negligible probability, under normal RFC 8032 signing.
+//
+//   The identity-key behavior was reported by Noûs through
+//   @robertolocatelli81-dev in x402-foundation/tsc#4. @babyblueviper1
+//   reproduced it and added small-order checks to
+//   preaction-governance-conformance at 90b5032. This release adds
+//   corresponding input restrictions to Tanilo's verifier.
+//
+// Checks, before the library is called:
+//   - the public key must decode to a point on the curve (RFC 8032 section
+//     5.1.3, including its rule that x = 0 with the sign bit set is invalid),
+//     must be canonically encoded (y < p), and must not be a small-order point
+//     (order 1, 2, 4 or 8, whatever its encoding);
+//   - the signature's R must decode and must not be a small-order point;
+//   - the signature's S must satisfy 0 <= S < L (RFC 8032 section 5.1.7).
 //
 //   checkEd25519(publicKey: Uint8Array, signature: Uint8Array) -> string | null
 //
 // Returns null when the pair may go to the library, otherwise a reason that
-// starts with one of: key_length, key_not_on_curve, noncanonical_key_encoding,
-// small_order_key, signature_length, r_not_on_curve, noncanonical_r_encoding,
-// small_order_r, signature_s_out_of_range.
+// starts with one of: key_type, key_length, key_not_on_curve,
+// noncanonical_key_encoding, small_order_key, signature_type,
+// signature_length, r_not_on_curve, noncanonical_r_encoding, small_order_r,
+// signature_s_out_of_range. Not checked: a mixed-order key or R (outside the
+// prime-order subgroup but not itself small-order).
 
 const P = (1n << 255n) - 19n;
 export const L = (1n << 252n) + 27742317777372353535851937790883648493n;
@@ -70,6 +108,7 @@ export function pointMul(k, pt) {
 export function isSmallOrder(pt) { const q = pointMul(8n, pt); return q[0] === 0n && q[1] === 1n; }
 
 export function checkPublicKey(raw) {
+  if (!(raw instanceof Uint8Array)) return "key_type: expected a Uint8Array";
   if (raw.length !== 32) return `key_length: an Ed25519 public key is 32 bytes, got ${raw.length}`;
   const { point, noncanonical } = decodePoint(raw);
   if (!point) return "key_not_on_curve: the public key bytes do not encode a point on the Ed25519 curve";
@@ -79,10 +118,11 @@ export function checkPublicKey(raw) {
 }
 
 export function checkSignature(sig) {
+  if (!(sig instanceof Uint8Array)) return "signature_type: expected a Uint8Array";
   if (sig.length !== 64) return `signature_length: an Ed25519 signature is 64 bytes, got ${sig.length}`;
   const { point, noncanonical } = decodePoint(sig.subarray(0, 32));
   if (!point) return "r_not_on_curve: the signature's R does not encode a point on the Ed25519 curve";
-  if (isSmallOrder(point)) return "small_order_r: the signature's R encodes a small-order point (order 1, 2, 4 or 8)" + (noncanonical ? ", in a non-canonical encoding" : "") + "; such an R contributes nothing message-dependent to the verification equation";
+  if (isSmallOrder(point)) return "small_order_r: the signature's R encodes a small-order point (order 1, 2, 4 or 8)" + (noncanonical ? ", in a non-canonical encoding" : "") + "; this verifier's acceptance policy rejects small-order R values (stricter than the RFC 8032 verification equation)";
   if (noncanonical) return "noncanonical_r_encoding: the signature's R is not a canonical RFC 8032 encoding (y >= p, or x = 0 with the sign bit set)";
   if (leToBigInt(sig.subarray(32)) >= L) return "signature_s_out_of_range: S >= L; RFC 8032 section 5.1.7 requires 0 <= S < L";
   return null;
@@ -92,8 +132,12 @@ export function checkSignature(sig) {
 export function checkEd25519(publicKey, signature) { return checkPublicKey(publicKey) || checkSignature(signature); }
 
 // The raw public key bytes of a Node KeyObject (or an OKP JWK): what the guard checks.
+// Returns null, never throws, when the input is not an Ed25519 public key; checkPublicKey(null)
+// then answers key_type.
 export function rawPublicKeyBytes(keyObjectOrJwk) {
-  const jwk = typeof keyObjectOrJwk.export === "function" ? keyObjectOrJwk.export({ format: "jwk" }) : keyObjectOrJwk;
-  if (jwk.kty !== "OKP" || jwk.crv !== "Ed25519" || typeof jwk.x !== "string") return new Uint8Array(0);
-  return new Uint8Array(Buffer.from(jwk.x, "base64url"));
+  try {
+    const jwk = typeof keyObjectOrJwk?.export === "function" ? keyObjectOrJwk.export({ format: "jwk" }) : keyObjectOrJwk;
+    if (!jwk || jwk.kty !== "OKP" || jwk.crv !== "Ed25519" || typeof jwk.x !== "string") return null;
+    return new Uint8Array(Buffer.from(jwk.x, "base64url"));
+  } catch { return null; }
 }

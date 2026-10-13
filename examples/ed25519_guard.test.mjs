@@ -1,8 +1,14 @@
 // node --test examples/ed25519_guard.test.mjs
+//
+// The tests assert only that the guard rejects (or lets through) each input. What the installed
+// crypto library itself accepts is printed for information and never asserted: it varies by
+// library, backend and version.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createPublicKey, verify as nodeVerify, createHash, generateKeyPairSync } from "node:crypto";
-import { checkEd25519, checkPublicKey, checkSignature, decodePoint, encodePoint, pointMul, isSmallOrder, L, IDENTITY } from "./ed25519_guard.mjs";
+import { createPublicKey, verify as nodeVerify, createHash, generateKeyPairSync, sign as nodeSign } from "node:crypto";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+import { checkEd25519, checkPublicKey, checkSignature, decodePoint, encodePoint, pointMul, isSmallOrder, rawPublicKeyBytes, L, IDENTITY } from "./ed25519_guard.mjs";
 
 const hex = (h) => new Uint8Array(Buffer.from(h, "hex"));
 const keyObj = (raw) => createPublicKey({ key: { kty: "OKP", crv: "Ed25519", x: Buffer.from(raw).toString("base64url") }, format: "jwk" });
@@ -83,4 +89,69 @@ test("an ordinary key passes the guard", () => {
   const { publicKey } = generateKeyPairSync("ed25519");
   const raw = new Uint8Array(Buffer.from(publicKey.export({ format: "jwk" }).x, "base64url"));
   assert.equal(checkPublicKey(raw), null);
+});
+
+// Cases 3, 4 and 5 of the published set have a mixed-order key and R that are not small-order.
+// The guard does not check for mixed order (RFC 8032 does not require rejecting it), so it lets
+// all three through to the library, which decides them.
+const TAMING_NOT_CHECKED = [
+  [3, "9bd9f44f4dcc75bd531b56b2cd280b0bb38fc1cd6d1230e14861d861de092e79", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "9046a64750444938de19f227bb80485e92b83fdb4b6506c160484c016cc1852f87909e14428a7a1d62e9f22f3d3ad7802db02eb2e688b6c52fcd6648a98bd009"],
+  [4, "e47d62c63f830dc7a6851a0b1f33ae4bb2f507fb6cffec4011eaccd55b53f56c", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "160a1cb0dc9c0258cd0a7d23e94d8fa878bcb1925f2c64246b2dee1796bed5125ec6bc982a269b723e0668e540911a9a6a58921d6925e434ab10aa7940551a09"],
+  [5, "e47d62c63f830dc7a6851a0b1f33ae4bb2f507fb6cffec4011eaccd55b53f56c", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "21122a84e0b5fca4052f5b1235c80a537878b38f3142356b2c2384ebad4668b7e40bc836dac0f71076f9abe3a53f9c03c1ceeeddb658d0030494ace586687405"],
+];
+for (const [c, msg, pbk, sig] of TAMING_NOT_CHECKED) {
+  test(`Taming case ${c}: mixed-order, not checked by the guard (passes through to the library)`, () => {
+    console.log(`  node:crypto ${process.version} says ${nodeVerify(null, hex(msg), keyObj(hex(pbk)), hex(sig))} for case ${c}`);
+    assert.equal(checkEd25519(hex(pbk), hex(sig)), null);
+  });
+}
+
+test("wrong input types are reasons, not exceptions", () => {
+  for (const bad of [null, undefined, "0100", 1, [1, 2, 3], {}, 3.5]) {
+    assert.equal(checkPublicKey(bad), "key_type: expected a Uint8Array");
+    assert.equal(checkSignature(bad), "signature_type: expected a Uint8Array");
+    assert.equal(checkEd25519(bad, bad), "key_type: expected a Uint8Array");
+  }
+  assert.match(checkPublicKey(Buffer.from(SMALL[0], "hex")), /^small_order_key/);   // a Buffer is a Uint8Array
+  for (const raw of [new Uint8Array(0), new Uint8Array(31), new Uint8Array(33), new Uint8Array(32).fill(255)]) assert.equal(typeof (checkPublicKey(raw) ?? ""), "string");
+  for (const sig of [new Uint8Array(0), new Uint8Array(63), new Uint8Array(65), new Uint8Array(64).fill(255)]) assert.equal(typeof checkSignature(sig), "string");
+});
+
+test("rawPublicKeyBytes never throws; a key that is not Ed25519 becomes a key_type reason", () => {
+  const ec = generateKeyPairSync("ec", { namedCurve: "P-256" }).publicKey;
+  for (const bad of [null, undefined, 7, "x", {}, { kty: "OKP", crv: "X25519", x: "AA" }, ec]) {
+    assert.equal(rawPublicKeyBytes(bad), null);
+    assert.equal(checkEd25519(rawPublicKeyBytes(bad), new Uint8Array(64)), "key_type: expected a Uint8Array");
+  }
+  const ed = generateKeyPairSync("ed25519").publicKey;
+  assert.equal(rawPublicKeyBytes(ed).length, 32);
+});
+
+test("ordinary keys and real signatures pass the guard", () => {
+  for (let i = 0; i < 25; i++) {
+    const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+    const raw = rawPublicKeyBytes(publicKey); const sig = new Uint8Array(nodeSign(null, Buffer.from("message " + i), privateKey));
+    assert.equal(checkEd25519(raw, sig), null);
+  }
+});
+
+test("the JavaScript port and ed25519_guard.py give the same reason for the same bytes", (t) => {
+  const pairs = [];
+  const one = new Uint8Array(32); one[0] = 1;
+  for (const h of [...SMALL, ...SMALL_NONCANONICAL]) { pairs.push([h, "00".repeat(64)]); pairs.push(["f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43", h + Buffer.from(one).toString("hex")]); }
+  for (const [, , pbk, sig] of TAMING) pairs.push([pbk, sig]);
+  for (const [, , pbk, sig] of TAMING_NOT_CHECKED) pairs.push([pbk, sig]);
+  for (const n of [0, 31, 33]) pairs.push(["ab".repeat(n), "cd".repeat(64)]);
+  for (const n of [0, 63, 65]) pairs.push(["f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43", "cd".repeat(n)]);
+  pairs.push(["ff".repeat(32), "ff".repeat(64)]);
+  for (let i = 0; i < 10; i++) { const { publicKey, privateKey } = generateKeyPairSync("ed25519"); pairs.push([Buffer.from(rawPublicKeyBytes(publicKey)).toString("hex"), nodeSign(null, Buffer.from("m" + i), privateKey).toString("hex")]); }
+  const here = fileURLToPath(new URL(".", import.meta.url));
+  const py = spawnSync("python3", ["-c", "import sys, json\nsys.path.insert(0, sys.argv[1])\nimport ed25519_guard as g\nprint(json.dumps([g.check_ed25519(bytes.fromhex(k), bytes.fromhex(s)) for k, s in json.load(sys.stdin)]))", here], { input: JSON.stringify(pairs), encoding: "utf8" });
+  if (py.error || py.status !== 0) return t.skip("python3 is not available to run ed25519_guard.py: " + (py.error?.message || py.stderr.slice(0, 120)));
+  const fromPython = JSON.parse(py.stdout);
+  const fromJs = pairs.map(([k, sg]) => checkEd25519(hex(k), hex(sg)));
+  assert.equal(fromPython.length, pairs.length);
+  let rejected = 0;
+  for (let i = 0; i < pairs.length; i++) { assert.equal(fromJs[i], fromPython[i], `pair ${i}: key ${pairs[i][0].slice(0, 16)}…`); if (fromJs[i]) rejected++; }
+  console.log(`  ${pairs.length} key/signature pairs compared, identical reasons from both; ${rejected} rejected, ${pairs.length - rejected} passed through`);
 });
