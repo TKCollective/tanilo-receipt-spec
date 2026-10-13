@@ -4,13 +4,18 @@ texts and the schema. Independent of the generator. It checks that
   1. every corpus's manifest, read with `git show <corpus_snapshot.commit>:<path>`
      (never the working tree), has the recorded sha256 and the recorded count,
      and every mapped vector id exists in it (and vice versa);
-  2. every requirement identifier referenced exists in the registry, and every
-     registry identifier appears in the reverse view;
+  2. every requirement identifier referenced exists in the registry, every
+     registry identifier appears in the reverse view, and every requirement link
+     points into a document that the linking vector's own corpus names in its
+     requirement_documents (a link to a document the corpus does not name fails);
   3. every vector carries at least one in-scope requirement link, or an explicit
      status "deferred" with a reason (and a deferred vector carries no coverage);
   4. the reverse view EQUALS the forward view scoped to the corpora each view names
-     (every hit and the best coverage), recomputed here; for views that publish a
-     second count excluding not-normative corpora, that count is recomputed too;
+     (every hit and the best coverage), recomputed here; a view whose scope
+     includes a NOT NORMATIVE corpus MUST publish summary_excluding_not_normative
+     (naming exactly the normative corpora of its scope) and
+     coverage_excluding_not_normative on every row, and both are recomputed; a
+     view with no such corpus must not carry them;
   5. the digests recorded for the cited -01 text and the mapping document are
      recomputed from the cited bytes (cited_texts[].path), and the evidence-pinning
      drafts' digests from their bytes at the snapshot commit;
@@ -18,17 +23,30 @@ texts and the schema. Independent of the generator. It checks that
      as cited_texts.D01, bytes hashing to the recorded digest; a missing or
      mismatched source is a hard failure, never a skip), and the audit lists
      exactly the sentences normative_audit.py extracts from those bytes, each
-     mapped to at least one registry identifier, with exercised recomputed from
-     the reverse view;
+     mapped to at least one registry identifier, with exercised and
+     exercised_excluding_not_normative recomputed from the reverse view and both
+     summaries recomputed from the rows; the structural sources (the typ item of
+     4.1, the numbered steps of 4.3, the rows of Table 2) are re-extracted from
+     the same bytes and must match; every D01 registry row must be named by an
+     audit sentence or a structural source, and every row so named must exist
+     (so deleting a row fails); the outside-audit list (MAY / OPTIONAL only) is
+     re-extracted and must match;
   7. mapping.json conforms to mapping.schema.json (jsonschema package; this script
-     says so when it is not installed and the structural checks stand alone).
+     says so when it is not installed and the structural checks stand alone);
+  8. (revision 4, from Michael Msebenzi's later-revision findings) every reverse-view
+     row is well formed, and a bad value is reported as a PROBLEM line, never as a
+     traceback; a corpus names a document if and only if that document's view
+     includes the corpus; every row id matches its source (D01: the section of a
+     sentence or structural source naming it, and the structural locator; MAP: the
+     cited mapping's rule numbers plus gate_map and threshold; EP: a section the
+     EP scope names).
 Exit code 0 only when every check holds.
 
     python3 mappings/receipt-verify-registry/validate_mapping.py [--mapping PATH]
 """
 import hashlib, json, os, subprocess, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from normative_audit import extract as extract_normative
+from normative_audit import extract as extract_normative, extract_outside, extract_structural
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
@@ -36,6 +54,8 @@ problems = []
 mapping_path = os.path.join(HERE, "mapping.json")
 if "--mapping" in sys.argv: mapping_path = sys.argv[sys.argv.index("--mapping") + 1]
 doc = json.load(open(mapping_path))
+import copy as _copy
+doc_as_loaded = _copy.deepcopy(doc)   # the schema is checked against the file as loaded, before any row is set aside (revision 4)
 COMMIT = doc["corpus_snapshot"]["commit"]
 
 def snapshot_bytes(rel):
@@ -65,12 +85,18 @@ for name, c in doc["corpora"].items():
 
 # 2. requirement identifiers; 3. every vector linked or deferred
 registry = {rid for d in doc["requirement_documents"].values() for rid in d["requirements"]}
+doc_of = {rid: doc_id for doc_id, d in doc["requirement_documents"].items() for rid in d["requirements"]}
+for name, c in doc["corpora"].items():
+    for d_id in c.get("requirement_documents", []):
+        if d_id not in doc["requirement_documents"]: problems.append(f"{name}: requirement_documents names unknown document {d_id}")
 external = set(doc["external_documents"])
 deferred_count = 0
 for name, c in doc["corpora"].items():
     for v in c["vectors"]:
         for r in v.get("requirements", []):
             if r["requirement"] not in registry: problems.append(f"{name}/{v['id']}: unknown requirement {r['requirement']}")
+            elif doc_of[r["requirement"]] not in c.get("requirement_documents", []):
+                problems.append(f"{name}/{v['id']}: links {r['requirement']}, which is in document {doc_of[r['requirement']]}; the corpus names only {c.get('requirement_documents', [])}")
         for e in v.get("external_requirements", []):
             if e["requirement"] not in external: problems.append(f"{name}/{v['id']}: unknown external {e['requirement']}")
         if v.get("status") == "deferred":
@@ -86,29 +112,65 @@ if doc["totals"].get("deferred") != deferred_count: problems.append(f"totals.def
 # 4. reverse view MUST EQUAL the forward view scoped to the corpora it names
 rank = {"not covered": 0, "partial": 1, "covered": 2}
 def check_summary(label, s, rows, key):
+    if not isinstance(s, dict) or any(k not in s for k in ("requirements", "covered", "partial", "not_covered", "not_covered_list")):
+        problems.append(f"{label}: summary is missing or lacks requirements/covered/partial/not_covered/not_covered_list"); return
     counts = {"covered": 0, "partial": 0, "not covered": 0}
     for row in rows.values(): counts[row[key]] += 1
     if (s["requirements"], s["covered"], s["partial"], s["not_covered"]) != (len(rows), counts["covered"], counts["partial"], counts["not covered"]):
         problems.append(f"{label}: summary counts disagree with rows")
     if sorted(s["not_covered_list"]) != sorted(rid for rid, row in rows.items() if row[key] == "not covered"):
         problems.append(f"{label}: not_covered_list disagrees with rows")
-for doc_id, view in doc["reverse_view"].items():
+# 4a. shape of every view and row, reported as PROBLEM lines (revision 4). A row
+# that is not well formed is reported once and left out of the recomputation below,
+# so a bad value never surfaces as a traceback.
+def well_formed_view(doc_id, view):
+    ok = True
+    if not isinstance(view, dict): problems.append(f"reverse {doc_id}: view is not an object"); return False
+    if not isinstance(view.get("corpora"), list) or not all(isinstance(x, str) for x in view.get("corpora", [])):
+        problems.append(f"reverse {doc_id}: corpora is missing or not a list of corpus names"); ok = False
+    if not isinstance(view.get("summary"), dict) or any(k not in view["summary"] for k in ("requirements", "covered", "partial", "not_covered", "not_covered_list")):
+        problems.append(f"reverse {doc_id}: summary is missing or lacks requirements/covered/partial/not_covered/not_covered_list"); ok = False
+    if not isinstance(view.get("requirements"), dict):
+        problems.append(f"reverse {doc_id}: requirements is missing or not an object"); ok = False
+    return ok
+def well_formed_row(doc_id, rid, row):
+    label = f"reverse {doc_id}/{rid}"
+    if not isinstance(row, dict): problems.append(f"{label}: row is not an object"); return False
+    ok = True
+    if not isinstance(row.get("text"), str): problems.append(f"{label}: text is missing or not a string"); ok = False
+    if row.get("coverage") not in rank: problems.append(f"{label}: coverage {row.get('coverage')!r} is not covered, partial or not covered"); ok = False
+    if "vectors" not in row: problems.append(f"{label}: vectors is missing"); ok = False
+    elif not isinstance(row["vectors"], list) or not all(isinstance(h, dict) and {"corpus", "vector", "coverage"} <= set(h) for h in row["vectors"]):
+        problems.append(f"{label}: vectors is not a list of {{corpus, vector, coverage}} objects"); ok = False
+    if "coverage_excluding_not_normative" in row and row["coverage_excluding_not_normative"] not in rank:
+        problems.append(f"{label}: coverage_excluding_not_normative {row['coverage_excluding_not_normative']!r} is not covered, partial or not covered"); ok = False
+    return ok
+for doc_id, view in list(doc["reverse_view"].items()):
+    if not well_formed_view(doc_id, view): continue
     scope = view["corpora"]
     for name in scope:
         if name not in doc["corpora"]: problems.append(f"reverse {doc_id}: names unknown corpus {name}")
-    doc_reqs = set(doc["requirement_documents"][doc_id]["requirements"])
+    doc_reqs = set(doc["requirement_documents"][doc_id]["requirements"]) if doc_id in doc["requirement_documents"] else set()
+    if doc_id not in doc["requirement_documents"]: problems.append(f"reverse {doc_id}: no such requirement document")
     if set(view["requirements"]) != doc_reqs: problems.append(f"reverse {doc_id}: requirement set differs from the registry")
+    view = dict(view); view["requirements"] = {rid: row for rid, row in view["requirements"].items() if well_formed_row(doc_id, rid, row)}
+    doc["reverse_view"][doc_id] = view
     sub = view.get("summary_excluding_not_normative")
-    subscope = sub["corpora"] if sub else None
-    if sub:
-        for name in subscope:
-            if doc["corpora"].get(name, {}).get("normative") is not True: problems.append(f"reverse {doc_id}: excluding-not-normative scope names a non-normative or unknown corpus {name}")
-        if any(doc["corpora"][n]["normative"] for n in scope if n not in subscope) : pass
-        for n in scope:
-            if n not in subscope and doc["corpora"][n].get("normative") is True: problems.append(f"reverse {doc_id}: normative corpus {n} excluded from the normative-only count")
+    normative_in_scope = [n for n in scope if doc["corpora"].get(n, {}).get("normative") is True]
+    needs_sub = any(n in doc["corpora"] and doc["corpora"][n].get("normative") is not True for n in scope)
+    if needs_sub and not isinstance(sub, dict):
+        problems.append(f"reverse {doc_id}: scope includes a NOT NORMATIVE corpus but summary_excluding_not_normative is missing")
+        sub = None
+    if not needs_sub and sub is not None:
+        problems.append(f"reverse {doc_id}: summary_excluding_not_normative present although no corpus in scope is NOT NORMATIVE")
+    subscope = sub.get("corpora") if sub else None
+    if sub and subscope != normative_in_scope:
+        problems.append(f"reverse {doc_id}: summary_excluding_not_normative.corpora {subscope} != the normative corpora of the scope {normative_in_scope}")
+        subscope = normative_in_scope
     for rid, row in view["requirements"].items():
         hits = []
         for name in scope:
+            if name not in doc["corpora"]: continue
             for v in doc["corpora"][name]["vectors"]:
                 for r in v.get("requirements", []):
                     if r["requirement"] == rid: hits.append((name, v["id"], r["coverage"]))
@@ -116,13 +178,67 @@ for doc_id, view in doc["reverse_view"].items():
         if sorted(listed) != sorted(hits): problems.append(f"reverse {rid}: listed hits {sorted(listed)} != scoped forward hits {sorted(hits)}")
         best = max((rank[h[2]] for h in hits), default=0)
         if rank[row["coverage"]] != best: problems.append(f"reverse {rid}: coverage {row['coverage']} != best of the scoped forward hits")
-        if sub:
-            best2 = max((rank[h[2]] for h in hits if h[0] in subscope), default=0)
-            if rank[row.get("coverage_excluding_not_normative", "")] != best2 if row.get("coverage_excluding_not_normative") in rank else True:
-                problems.append(f"reverse {rid}: coverage_excluding_not_normative {row.get('coverage_excluding_not_normative')} != best of the normative-only hits")
+        if needs_sub:
+            best2 = max((rank[h[2]] for h in hits if h[0] in normative_in_scope), default=0)
+            got = row.get("coverage_excluding_not_normative")
+            if got not in rank: problems.append(f"reverse {rid}: coverage_excluding_not_normative is missing (the view's scope includes a NOT NORMATIVE corpus)")
+            elif rank[got] != best2: problems.append(f"reverse {rid}: coverage_excluding_not_normative {got} != best of the normative-only hits")
+        elif "coverage_excluding_not_normative" in row:
+            problems.append(f"reverse {rid}: coverage_excluding_not_normative present although no corpus in scope is NOT NORMATIVE")
         if row["text"] != doc["requirement_documents"][doc_id]["requirements"][rid]: problems.append(f"reverse {rid}: text differs from the registry")
     check_summary(f"reverse {doc_id}", view["summary"], view["requirements"], "coverage")
-    if sub: check_summary(f"reverse {doc_id} (excluding not normative)", sub, view["requirements"], "coverage_excluding_not_normative")
+    if sub and all(row.get("coverage_excluding_not_normative") in rank for row in view["requirements"].values()):
+        check_summary(f"reverse {doc_id} (excluding not normative)", sub, view["requirements"], "coverage_excluding_not_normative")
+
+# 4b. a corpus names a document if and only if that document's view includes the
+# corpus (revision 4, Michael Msebenzi).
+for name, c in doc["corpora"].items():
+    for d_id, view in doc["reverse_view"].items():
+        if not isinstance(view, dict) or not isinstance(view.get("corpora"), list): continue
+        named = d_id in c.get("requirement_documents", [])
+        scoped = name in view["corpora"]
+        if named and not scoped: problems.append(f"corpus {name} names {d_id} but the {d_id} view does not include {name}")
+        if scoped and not named: problems.append(f"the {d_id} view includes {name} but {name} does not name {d_id}")
+
+# 4c. every row id matches its source (revision 4, Michael Msebenzi): a D01 id's
+# section component is the section of a sentence or structural source that names it;
+# a structural row's id is derived from its locator; MAP ids are the cited mapping's
+# rule numbers plus gate_map and threshold; an EP id's section is one the EP scope names.
+import re as _re
+def id_section(rid):
+    m = _re.match(r"^[A-Z0-9]+-([0-9]+(?:\.[0-9]+)*)-", rid)
+    return m.group(1) if m else None
+_aud = doc.get("normative_audit") or {}
+_src_sections = {}
+for r in _aud.get("sentences", []):
+    for i in r.get("requirements", []): _src_sections.setdefault(i, set()).add(str(r.get("section")))
+for x in _aud.get("structural_sources", []):
+    _src_sections.setdefault(x.get("requirement"), set()).add(str(x.get("section")))
+for rid in doc["requirement_documents"].get("D01", {}).get("requirements", {}):
+    sec = id_section(rid)
+    if sec is None: problems.append(f"row {rid}: id does not have the form D01-<section>-<slug>"); continue
+    if rid in _src_sections and sec not in _src_sections[rid]:
+        problems.append(f"row {rid}: id section {sec} matches no source naming it (sources: {', '.join('§' + s for s in sorted(_src_sections[rid]))})")
+for x in _aud.get("structural_sources", []):
+    rid, sec, loc = x.get("requirement"), str(x.get("section")), str(x.get("locator"))
+    m_step = _re.match(r"^step (\d+)$", loc); m_row = _re.match(r"^Table 2 row (\d+)$", loc)
+    if m_step: want_ok = rid.startswith(f"D01-{sec}-{m_step.group(1)}-")
+    elif m_row: want_ok = rid == f"D01-{sec}-row-{m_row.group(1)}"
+    else: want_ok = rid == f"D01-{sec}-{loc}"
+    if not want_ok: problems.append(f"row {rid}: id does not match its structural source (section {sec}, locator {loc!r})")
+try:
+    _map_doc = json.load(open(os.path.join(ROOT, doc["cited_texts"]["MAP"]["path"])))
+    _want_map = {f"MAP-rule-{r['order']}" for r in _map_doc.get("recommendation_rules", [])} | {"MAP-gate_map", "MAP-threshold"}
+    _have_map = set(doc["requirement_documents"].get("MAP", {}).get("requirements", {}))
+    for rid in sorted(_have_map - _want_map): problems.append(f"row {rid}: no rule, gate_map or threshold of that name in the cited mapping (it has rules {sorted(r['order'] for r in _map_doc.get('recommendation_rules', []))})")
+    for rid in sorted(_want_map - _have_map): problems.append(f"MAP registry lacks a row for {rid}, which the cited mapping carries")
+except Exception as e:
+    problems.append(f"MAP row ids could not be checked against the cited mapping: {e}")
+_ep_scope = doc["requirement_documents"].get("EP", {}).get("scope", "")
+for rid in doc["requirement_documents"].get("EP", {}).get("requirements", {}):
+    sec = id_section(rid)
+    if sec is None: problems.append(f"row {rid}: id does not have the form EP-<section>-<slug>"); continue
+    if f"§{sec}" not in _ep_scope and f"§{sec} " not in _ep_scope: problems.append(f"row {rid}: id section {sec} is not a section the EP scope names ({_ep_scope[:80]}…)")
 
 # 5. digests recomputed from the cited bytes and from the snapshot
 for key, t in doc["cited_texts"].items():
@@ -166,20 +282,51 @@ else:
         listed = [(r["section"], r["text"]) for r in aud["sentences"]]
         if listed != expected: problems.append(f"normative_audit: listed sentences differ from the extraction ({len(listed)} listed, {len(expected)} extracted)")
         d01 = doc["reverse_view"]["D01"]["requirements"]
+        d01_registry = set(doc["requirement_documents"]["D01"]["requirements"])
         for r in aud["sentences"]:
             if not r["requirements"]: problems.append(f"normative_audit sentence {r['n']}: no requirement assigned")
             for i in r["requirements"]:
                 if i not in d01: problems.append(f"normative_audit sentence {r['n']}: unknown requirement {i}")
             ex = any(d01.get(i, {}).get("coverage") != "not covered" for i in r["requirements"] if i in d01)
             if r["exercised"] != ex: problems.append(f"normative_audit sentence {r['n']}: exercised {r['exercised']} != recomputed {ex}")
+            ex2 = any(d01.get(i, {}).get("coverage_excluding_not_normative", "not covered") != "not covered" for i in r["requirements"] if i in d01)
+            if r.get("exercised_excluding_not_normative") is not ex2: problems.append(f"normative_audit sentence {r['n']}: exercised_excluding_not_normative {r.get('exercised_excluding_not_normative')} != recomputed {ex2}")
         s = aud["summary"]
         if (s["sentences"], s["exercised"], s["unexercised"]) != (len(aud["sentences"]), sum(1 for r in aud["sentences"] if r["exercised"]), sum(1 for r in aud["sentences"] if not r["exercised"])):
             problems.append("normative_audit: summary disagrees with rows")
+        s2 = aud.get("summary_excluding_not_normative")
+        if not isinstance(s2, dict): problems.append("normative_audit: summary_excluding_not_normative is missing")
+        else:
+            want_scope = doc["reverse_view"]["D01"].get("summary_excluding_not_normative", {}).get("corpora")
+            if s2.get("corpora") != want_scope: problems.append(f"normative_audit: summary_excluding_not_normative.corpora {s2.get('corpora')} != the D01 view's {want_scope}")
+            yes = [r["n"] for r in aud["sentences"] if r.get("exercised_excluding_not_normative") is True]
+            if (s2.get("sentences"), s2.get("exercised"), s2.get("unexercised")) != (len(aud["sentences"]), len(yes), len(aud["sentences"]) - len(yes)):
+                problems.append("normative_audit: summary_excluding_not_normative disagrees with rows")
+            only = [r["n"] for r in aud["sentences"] if r["exercised"] and r.get("exercised_excluding_not_normative") is not True]
+            if s2.get("exercised_only_through_not_normative") != only: problems.append(f"normative_audit: exercised_only_through_not_normative {s2.get('exercised_only_through_not_normative')} != recomputed {only}")
+        # structural sources: re-extracted from the cited bytes
+        text = audit_bytes.decode("utf-8")
+        want_struct = [(k, sec, loc, t) for k, sec, loc, t in extract_structural(text)]
+        got_struct = [(x.get("kind"), x.get("section"), x.get("locator"), x.get("text")) for x in aud.get("structural_sources", [])]
+        if got_struct != want_struct: problems.append(f"normative_audit: structural_sources differ from the extraction ({len(got_struct)} listed, {len(want_struct)} extracted)")
+        for x in aud.get("structural_sources", []):
+            if x.get("requirement") not in d01_registry: problems.append(f"normative_audit structural source {x.get('section')} {x.get('locator')}: requirement {x.get('requirement')} is not a D01 registry row")
+        by_sentence = {i for r in aud["sentences"] for i in r["requirements"]}
+        by_structure = {x.get("requirement") for x in aud.get("structural_sources", [])}
+        for rid in sorted(d01_registry - by_sentence - by_structure): problems.append(f"D01 registry row {rid} is named by no audit sentence and no structural source")
+        for rid in sorted((by_sentence | by_structure) - d01_registry): problems.append(f"a source names {rid}, which is not a D01 registry row (was a row deleted?)")
+        want_without = [rid for rid in doc["requirement_documents"]["D01"]["requirements"] if rid not in by_sentence]
+        if aud.get("rows_without_audit_sentence") != want_without: problems.append(f"normative_audit: rows_without_audit_sentence disagrees with the rows ({len(aud.get('rows_without_audit_sentence') or [])} listed, {len(want_without)} recomputed)")
+        # outside the audit: MAY / OPTIONAL only, re-extracted
+        want_out = extract_outside(text)
+        got_out = [(x.get("section"), x.get("text")) for x in aud.get("outside_audit", [])]
+        if got_out != want_out: problems.append(f"normative_audit: outside_audit differs from the extraction ({len(got_out)} listed, {len(want_out)} extracted)")
+        if aud.get("keywords") != ["MUST", "MUST NOT", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "REQUIRED", "RECOMMENDED"]: problems.append("normative_audit: keywords differ from the extractor's")
 
 # 7. schema
 try:
     import jsonschema
-    jsonschema.validate(doc, json.load(open(os.path.join(HERE, "mapping.schema.json"))))
+    jsonschema.validate(doc_as_loaded, json.load(open(os.path.join(HERE, "mapping.schema.json"))))
     schema_note = "schema: valid (jsonschema)"
 except ImportError:
     schema_note = "schema: jsonschema package not installed; structural checks only"

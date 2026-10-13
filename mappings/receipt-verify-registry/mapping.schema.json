@@ -186,55 +186,39 @@
     "reverse_view": {
       "type": "object",
       "additionalProperties": {
-        "type": "object",
-        "required": [
-          "summary",
-          "requirements"
-        ],
-        "properties": {
-          "requirements": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "object",
+        "$ref": "#/$defs/view"
+      },
+      "properties": {
+        "D01": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/view"
+            },
+            {
               "required": [
-                "text",
-                "coverage",
-                "vectors"
-              ],
-              "properties": {
-                "coverage": {
-                  "enum": [
-                    "covered",
-                    "partial",
-                    "not covered"
-                  ]
-                },
-                "coverage_excluding_not_normative": {
-                  "enum": [
-                    "covered",
-                    "partial",
-                    "not covered"
-                  ]
-                },
-                "note": {
-                  "type": "string"
-                }
-              }
+                "summary",
+                "summary_excluding_not_normative",
+                "requirements"
+              ]
             }
-          },
-          "summary_excluding_not_normative": {
-            "type": "object",
-            "required": [
-              "corpora",
-              "requirements",
-              "covered",
-              "partial",
-              "not_covered",
-              "not_covered_list"
-            ]
-          }
+          ]
+        },
+        "MAP": {
+          "allOf": [
+            {
+              "$ref": "#/$defs/view"
+            },
+            {
+              "required": [
+                "summary",
+                "summary_excluding_not_normative",
+                "requirements"
+              ]
+            }
+          ]
         }
-      }
+      },
+      "$comment": "A view whose scope includes a NOT NORMATIVE corpus must publish summary_excluding_not_normative and coverage_excluding_not_normative on every row. The schema requires it by name for D01 and MAP (the views that include rule2) through allOf with the shared view definition, so those two views get the per-view checks too (revision 4: a bare properties entry had bypassed additionalProperties for them); validate_mapping.py enforces the general rule from each corpus's normative flag."
     },
     "totals": {
       "type": "object",
@@ -272,7 +256,11 @@
         "keywords",
         "rule",
         "summary",
-        "sentences"
+        "summary_excluding_not_normative",
+        "sentences",
+        "structural_sources",
+        "rows_without_audit_sentence",
+        "outside_audit"
       ],
       "properties": {
         "summary": {
@@ -293,7 +281,8 @@
               "section",
               "text",
               "requirements",
-              "exercised"
+              "exercised",
+              "exercised_excluding_not_normative"
             ],
             "properties": {
               "requirements": {
@@ -305,6 +294,176 @@
               },
               "exercised": {
                 "type": "boolean"
+              },
+              "exercised_excluding_not_normative": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "summary_excluding_not_normative": {
+          "type": "object",
+          "required": [
+            "corpora",
+            "sentences",
+            "exercised",
+            "unexercised",
+            "exercised_only_through_not_normative"
+          ]
+        },
+        "structural_sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "n",
+              "kind",
+              "section",
+              "locator",
+              "text",
+              "requirement"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "list_item",
+                  "numbered_step",
+                  "table_row"
+                ]
+              },
+              "requirement": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rows_without_audit_sentence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "outside_audit": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "n",
+              "section",
+              "text",
+              "keyword"
+            ],
+            "properties": {
+              "keyword": {
+                "enum": [
+                  "MAY",
+                  "OPTIONAL"
+                ]
+              }
+            }
+          }
+        },
+        "keywords": {
+          "const": [
+            "MUST",
+            "MUST NOT",
+            "SHALL",
+            "SHALL NOT",
+            "SHOULD",
+            "SHOULD NOT",
+            "REQUIRED",
+            "RECOMMENDED"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "view": {
+      "type": "object",
+      "required": [
+        "summary",
+        "requirements"
+      ],
+      "properties": {
+        "requirements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "text",
+              "coverage",
+              "vectors"
+            ],
+            "properties": {
+              "coverage": {
+                "enum": [
+                  "covered",
+                  "partial",
+                  "not covered"
+                ]
+              },
+              "coverage_excluding_not_normative": {
+                "enum": [
+                  "covered",
+                  "partial",
+                  "not covered"
+                ]
+              },
+              "note": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "summary_excluding_not_normative": {
+          "type": "object",
+          "required": [
+            "corpora",
+            "requirements",
+            "covered",
+            "partial",
+            "not_covered",
+            "not_covered_list"
+          ],
+          "properties": {
+            "corpora": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "required": [
+          "summary_excluding_not_normative"
+        ]
+      },
+      "then": {
+        "properties": {
+          "requirements": {
+            "additionalProperties": {
+              "required": [
+                "text",
+                "coverage",
+                "coverage_excluding_not_normative",
+                "vectors"
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "requirements": {
+            "additionalProperties": {
+              "not": {
+                "required": [
+                  "coverage_excluding_not_normative"
+                ]
               }
             }
           }

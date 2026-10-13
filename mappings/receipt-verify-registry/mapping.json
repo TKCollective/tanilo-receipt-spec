@@ -14,7 +14,7 @@
   "prepared": {
     "by": "Joe Krausz, TK Collective LLC",
     "date": "2026-09-30",
-    "revised": "2026-10-01 (mapping-v2, after Michael Msebenzi's review of b1da800)",
+    "revised": "2026-10-06 (mapping-v3, after Michael Msebenzi's re-check of 91e66a7); 2026-10-01 (mapping-v2, after his review of b1da800)",
     "for": "Michael Msebenzi (headlessoracle), receipt-verify registry"
   },
   "cited_texts": {
@@ -43,7 +43,7 @@
       "url": "https://www.ietf.org/archive/id/draft-krausz-verification-state-01.txt",
       "sha256": "22c5ce262bdf4e63ef538a308e7a8455e93c4143b9e1726b7b64720615d516db",
       "pinned_by": "examples/v0.3-composed/vectors.json spec + README; examples/v0.4-composed/vectors.json spec + README (both name -01)",
-      "scope": "whole document; every normative statement in sections 3-7, 9 and 10",
+      "scope": "sections 3-7, 9 and 10: every sentence carrying MUST, MUST NOT, SHALL, SHALL NOT, SHOULD, SHOULD NOT, REQUIRED or RECOMMENDED (normative_audit.sentences), and the requirement-bearing items that are not such sentences: the typ item of §4.1, the numbered steps of §4.3 and the rows of Table 2 in §5.1 (normative_audit.structural_sources). Statements carrying only MAY or OPTIONAL are outside the audit; the six in these sections are listed in normative_audit.outside_audit",
       "requirements": {
         "D01-3.2-conjunction": "§3.2: multiple verification.* constraints combine with AND; all MUST resolve to act for the action to proceed",
         "D01-3.2-env-ordering": "§3.2: environment.* constraints MUST short-circuit before verification.* constraints",
@@ -2969,10 +2969,29 @@
           "MAP-rule-7"
         ]
       },
+      "summary_excluding_not_normative": {
+        "corpora": [],
+        "requirements": 9,
+        "covered": 0,
+        "partial": 0,
+        "not_covered": 9,
+        "not_covered_list": [
+          "MAP-rule-1",
+          "MAP-rule-2",
+          "MAP-rule-3",
+          "MAP-rule-4",
+          "MAP-rule-5",
+          "MAP-rule-6",
+          "MAP-rule-7",
+          "MAP-gate_map",
+          "MAP-threshold"
+        ]
+      },
       "requirements": {
         "MAP-rule-1": {
           "text": "rule 1: supported, >= threshold, resilient -> confident_supported",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -2984,6 +3003,7 @@
         "MAP-rule-2": {
           "text": "rule 2: supported, >= threshold, not_checked -> un_probed_not_cleared",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3000,6 +3020,7 @@
         "MAP-rule-3": {
           "text": "rule 3: supported, any, vulnerable -> vulnerable_supported",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3011,6 +3032,7 @@
         "MAP-rule-4": {
           "text": "rule 4: supported, < threshold, resilient or not_checked -> weak_supported",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3022,6 +3044,7 @@
         "MAP-rule-5": {
           "text": "rule 5: refuted -> refuted",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3033,6 +3056,7 @@
         "MAP-rule-6": {
           "text": "rule 6: unverifiable or unknown -> unverifiable",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3044,11 +3068,13 @@
         "MAP-rule-7": {
           "text": "rule 7: error condition -> error",
           "coverage": "not covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": []
         },
         "MAP-gate_map": {
           "text": "gate_map: only confident_supported -> act; every other recommendation -> halt",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3070,6 +3096,7 @@
         "MAP-threshold": {
           "text": "threshold: v_confidence >= 0.7; the threshold lives in the mapping, not in receipts",
           "coverage": "covered",
+          "coverage_excluding_not_normative": "not covered",
           "vectors": [
             {
               "corpus": "rule2",
@@ -3079,7 +3106,7 @@
           ]
         }
       },
-      "note": "exercised only by the NOT NORMATIVE rule2 set"
+      "note": "exercised only by the NOT NORMATIVE rule2 set; summary_excluding_not_normative therefore counts no corpus and every row is not covered in it"
     },
     "EP": {
       "corpora": [
@@ -3679,11 +3706,24 @@
       "REQUIRED",
       "RECOMMENDED"
     ],
-    "rule": "every sentence carrying one of the keywords is listed with the requirement identifiers it is mapped to; exercised is true when at least one of those requirements has coverage covered or partial in the reverse view (all corpora), false when every one is not covered (unexercised)",
+    "rule": "every sentence carrying one of the keywords is listed with the requirement identifiers it is mapped to; exercised is true when at least one of those requirements has coverage covered or partial in the reverse view (all corpora), false when every one is not covered (unexercised); exercised_excluding_not_normative is the same test against coverage_excluding_not_normative. A sentence the text breaks across a page is listed whole",
     "summary": {
       "sentences": 55,
       "exercised": 10,
       "unexercised": 45
+    },
+    "summary_excluding_not_normative": {
+      "corpora": [
+        "v0.3-composed",
+        "v0.4-composed"
+      ],
+      "sentences": 55,
+      "exercised": 8,
+      "unexercised": 47,
+      "exercised_only_through_not_normative": [
+        27,
+        28
+      ]
     },
     "sentences": [
       {
@@ -3693,7 +3733,8 @@
         "requirements": [
           "D01-3.2-conjunction"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 2,
@@ -3702,7 +3743,8 @@
         "requirements": [
           "D01-3.2-env-ordering"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 3,
@@ -3711,7 +3753,8 @@
         "requirements": [
           "D01-4.1-jws"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 4,
@@ -3720,7 +3763,8 @@
         "requirements": [
           "D01-4.1-jws"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 5,
@@ -3729,7 +3773,8 @@
         "requirements": [
           "D01-4.1-alg"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 6,
@@ -3738,7 +3783,8 @@
         "requirements": [
           "D01-4.1-iana-alg"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 7,
@@ -3747,7 +3793,8 @@
         "requirements": [
           "D01-4.1-kid"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 8,
@@ -3756,7 +3803,8 @@
         "requirements": [
           "D01-4.2-v_verdict"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 9,
@@ -3765,7 +3813,8 @@
         "requirements": [
           "D01-4.2-v_confidence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 10,
@@ -3774,7 +3823,8 @@
         "requirements": [
           "D01-4.2-v_adversarial_result"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 11,
@@ -3783,7 +3833,8 @@
         "requirements": [
           "D01-4.2-v_recommendation"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 12,
@@ -3792,7 +3843,8 @@
         "requirements": [
           "D01-4.2-v_gate"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 13,
@@ -3801,7 +3853,8 @@
         "requirements": [
           "D01-4.2-v_gate_mapping"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 14,
@@ -3810,7 +3863,8 @@
         "requirements": [
           "D01-4.2-v_gate_mapping_hash"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 15,
@@ -3820,7 +3874,8 @@
           "D01-4.2-v_gate_mapping_hash",
           "D01-4.5-mapping-hash-present"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 16,
@@ -3830,7 +3885,8 @@
           "D01-4.2-v_gate_mapping_hash",
           "D01-9.2-mapping-tampering"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 17,
@@ -3839,7 +3895,8 @@
         "requirements": [
           "D01-4.2-jwt-claims"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 18,
@@ -3849,7 +3906,8 @@
           "D01-4.3-sequence",
           "D01-4.3-8-mismatch-halts"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 19,
@@ -3858,7 +3916,8 @@
         "requirements": [
           "D01-4.3-2-mapping-digest"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 20,
@@ -3867,7 +3926,8 @@
         "requirements": [
           "D01-4.4-v_claim"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 21,
@@ -3876,7 +3936,8 @@
         "requirements": [
           "D01-4.4-v_claim"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 22,
@@ -3885,7 +3946,8 @@
         "requirements": [
           "D01-4.5-mapping-hash-present"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 23,
@@ -3894,7 +3956,8 @@
         "requirements": [
           "D01-4.6-old-mapping-verifiable"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 24,
@@ -3903,7 +3966,8 @@
         "requirements": [
           "D01-4.6-mapping-immutable"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 25,
@@ -3912,7 +3976,8 @@
         "requirements": [
           "D01-4.6-mapping-immutable"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 26,
@@ -3921,16 +3986,18 @@
         "requirements": [
           "D01-5.1-table-shape"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 27,
         "section": "5.2",
-        "text": "This ensures that the threshold is auditable, versioned, and consistent across all receipts issued under the same mapping: two receipts under the same mapping ID MUST gate against the same threshold; threshold changes require a new",
+        "text": "This ensures that the threshold is auditable, versioned, and consistent across all receipts issued under the same mapping: two receipts under the same mapping ID MUST gate against the same threshold; threshold changes require a new mapping version with a new ID.",
         "requirements": [
           "D01-5.2-threshold-from-mapping"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 28,
@@ -3939,7 +4006,8 @@
         "requirements": [
           "D01-5.2-uncertainty-halts"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 29,
@@ -3948,7 +4016,8 @@
         "requirements": [
           "D01-5.2-no-foreign-threshold"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 30,
@@ -3957,7 +4026,8 @@
         "requirements": [
           "D01-5.3-fail-closed"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 31,
@@ -3966,7 +4036,8 @@
         "requirements": [
           "D01-5.3-fail-closed"
         ],
-        "exercised": true
+        "exercised": true,
+        "exercised_excluding_not_normative": true
       },
       {
         "n": 32,
@@ -3975,7 +4046,8 @@
         "requirements": [
           "D01-6.1-reject-expired"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 33,
@@ -3984,7 +4056,8 @@
         "requirements": [
           "D01-6.2-stale-signature"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 34,
@@ -3993,7 +4066,8 @@
         "requirements": [
           "D01-6.2-stale-calibration"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 35,
@@ -4003,7 +4077,8 @@
           "D01-6.2-stale-calibration",
           "D01-7.2-cadence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 36,
@@ -4012,7 +4087,8 @@
         "requirements": [
           "D01-6.2-stale-evidence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 37,
@@ -4021,7 +4097,8 @@
         "requirements": [
           "D01-6.2-stale-evidence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 38,
@@ -4030,7 +4107,8 @@
         "requirements": [
           "D01-7.1-publish-anchors"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 39,
@@ -4039,7 +4117,8 @@
         "requirements": [
           "D01-7.1-harness"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 40,
@@ -4048,7 +4127,8 @@
         "requirements": [
           "D01-7.2-cadence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 41,
@@ -4057,7 +4137,8 @@
         "requirements": [
           "D01-7.2-cadence"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 42,
@@ -4066,7 +4147,8 @@
         "requirements": [
           "D01-7.2-surface-stale"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 43,
@@ -4075,7 +4157,8 @@
         "requirements": [
           "D01-9.1-ordering-holds"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 44,
@@ -4084,7 +4167,8 @@
         "requirements": [
           "D01-9.1-no-mask-env-halt"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 45,
@@ -4093,7 +4177,8 @@
         "requirements": [
           "D01-9.1-env-terminal-first"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 46,
@@ -4102,7 +4187,8 @@
         "requirements": [
           "D01-9.2-key-rotation"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 47,
@@ -4111,7 +4197,8 @@
         "requirements": [
           "D01-9.2-key-rotation"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 48,
@@ -4120,7 +4207,8 @@
         "requirements": [
           "D01-9.2-replay"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 49,
@@ -4129,7 +4217,8 @@
         "requirements": [
           "D01-9.2-sample-harness"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 50,
@@ -4138,7 +4227,8 @@
         "requirements": [
           "D01-9.2-downgrade"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 51,
@@ -4148,7 +4238,8 @@
           "D01-9.2-mapping-tampering",
           "D01-4.2-v_gate_mapping_hash"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 52,
@@ -4157,7 +4248,8 @@
         "requirements": [
           "D01-9.2-mapping-tampering"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 53,
@@ -4167,7 +4259,8 @@
           "D01-9.2-mapping-tampering",
           "D01-4.3-2-mapping-digest"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 54,
@@ -4176,7 +4269,8 @@
         "requirements": [
           "D01-9.2-unverifiable-mapping-hash-malformed"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
       },
       {
         "n": 55,
@@ -4185,7 +4279,194 @@
         "requirements": [
           "D01-10-well-known-jwks"
         ],
-        "exercised": false
+        "exercised": false,
+        "exercised_excluding_not_normative": false
+      }
+    ],
+    "structural_sources_rule": "the requirement-bearing items of the same sections that are not keyword sentences: the typ item of §4.1, each numbered step of §4.3 and each body row of Table 2 in §5.1, extracted from the cited bytes, each with the one registry row that stands for it. Every D01 registry row is named by at least one audit sentence or one structural source; rows_without_audit_sentence lists the rows only a structural source names",
+    "structural_sources": [
+      {
+        "n": 1,
+        "kind": "list_item",
+        "section": "4.1",
+        "locator": "typ",
+        "text": "typ: verification-receipt+jws.",
+        "requirement": "D01-4.1-typ"
+      },
+      {
+        "n": 2,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 1",
+        "text": "1. Verify JWS signature against issuer's published JWKS (RFC 7515).",
+        "requirement": "D01-4.3-1-signature"
+      },
+      {
+        "n": 3,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 2",
+        "text": "2. Resolve v_gate_mapping -> fetch the named immutable mapping document. MUST verify the SHA-256 digest of the fetched document matches v_gate_mapping_hash (hex-encoded). Digest mismatch -> malformed; gate decision = halt. This binding is mandatory; receipts without v_gate_mapping_hash are malformed.",
+        "requirement": "D01-4.3-2-mapping-digest"
+      },
+      {
+        "n": 4,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 3",
+        "text": "3. Recompute candidate_recommendation from (v_verdict, v_confidence, v_adversarial_result) using the mapping's rules and the threshold recovered from the mapping document.",
+        "requirement": "D01-4.3-3-recompute-recommendation"
+      },
+      {
+        "n": 5,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 4",
+        "text": "4. Confirm candidate_recommendation == v_recommendation.",
+        "requirement": "D01-4.3-4-confirm-recommendation"
+      },
+      {
+        "n": 6,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 5",
+        "text": "5. Compute candidate_gate = mapping(v_recommendation).",
+        "requirement": "D01-4.3-5-compute-gate"
+      },
+      {
+        "n": 7,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 6",
+        "text": "6. Confirm candidate_gate == v_gate.",
+        "requirement": "D01-4.3-6-confirm-gate"
+      },
+      {
+        "n": 8,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 7",
+        "text": "7. Verify exp/nbf against current time, subject to clock tolerance per Section 6.",
+        "requirement": "D01-4.3-7-time"
+      },
+      {
+        "n": 9,
+        "kind": "numbered_step",
+        "section": "4.3",
+        "locator": "step 8",
+        "text": "8. If all match -> receipt is valid AND internally consistent under the named mapping. Any mismatch -> malformed; gate decision = halt.",
+        "requirement": "D01-4.3-8-mismatch-halts"
+      },
+      {
+        "n": 10,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 1",
+        "text": "supported | >= threshold | resilient | confident_supported | act",
+        "requirement": "D01-5.1-row-1"
+      },
+      {
+        "n": 11,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 2",
+        "text": "supported | >= threshold | not_checked | un_probed_not_cleared | halt",
+        "requirement": "D01-5.1-row-2"
+      },
+      {
+        "n": 12,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 3",
+        "text": "supported | (any) | vulnerable | vulnerable_supported | halt",
+        "requirement": "D01-5.1-row-3"
+      },
+      {
+        "n": 13,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 4",
+        "text": "supported | < threshold | resilient or not_checked | weak_supported | halt",
+        "requirement": "D01-5.1-row-4"
+      },
+      {
+        "n": 14,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 5",
+        "text": "refuted | (any) | (any) | refuted | halt",
+        "requirement": "D01-5.1-row-5"
+      },
+      {
+        "n": 15,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 6",
+        "text": "unverifiable or unknown | (any) | (any) | unverifiable | halt",
+        "requirement": "D01-5.1-row-6"
+      },
+      {
+        "n": 16,
+        "kind": "table_row",
+        "section": "5.1",
+        "locator": "Table 2 row 7",
+        "text": "(error condition) | N/A | N/A | error | halt",
+        "requirement": "D01-5.1-row-7"
+      }
+    ],
+    "rows_without_audit_sentence": [
+      "D01-4.1-typ",
+      "D01-4.3-1-signature",
+      "D01-4.3-3-recompute-recommendation",
+      "D01-4.3-4-confirm-recommendation",
+      "D01-4.3-5-compute-gate",
+      "D01-4.3-6-confirm-gate",
+      "D01-4.3-7-time",
+      "D01-5.1-row-1",
+      "D01-5.1-row-2",
+      "D01-5.1-row-3",
+      "D01-5.1-row-4",
+      "D01-5.1-row-5",
+      "D01-5.1-row-6",
+      "D01-5.1-row-7"
+    ],
+    "outside_audit_rule": "sentences and table rows of the same sections that carry MAY or OPTIONAL and none of the audit keywords. They are outside the audit and are not counted in either summary",
+    "outside_audit": [
+      {
+        "n": 1,
+        "section": "4.2",
+        "text": "v_method (string, OPTIONAL) --- Self-describing verifier pipeline identifier.",
+        "keyword": "OPTIONAL"
+      },
+      {
+        "n": 2,
+        "section": "4.2",
+        "text": "v_calibration (object, OPTIONAL) --- Calibration anchor metadata.",
+        "keyword": "OPTIONAL"
+      },
+      {
+        "n": 3,
+        "section": "4.2",
+        "text": "v_sources_used (array of strings, OPTIONAL) --- Source labels actually consulted in this evaluation.",
+        "keyword": "OPTIONAL"
+      },
+      {
+        "n": 4,
+        "section": "4.2",
+        "text": "v_evidence (string, OPTIONAL) --- URI pointer to evidence corpus, if persisted.",
+        "keyword": "OPTIONAL"
+      },
+      {
+        "n": 5,
+        "section": "5.2",
+        "text": "Relying parties MAY require a higher threshold mapping for their own gate policies by requiring receipts under a different mapping ID that specifies a higher threshold.",
+        "keyword": "MAY"
+      },
+      {
+        "n": 6,
+        "section": "6.1",
+        "text": "Evidence | v_evidence.valid_until (OPTIONAL) | Re-fetch evidence; usually shorter window than calibration",
+        "keyword": "OPTIONAL"
       }
     ]
   }
