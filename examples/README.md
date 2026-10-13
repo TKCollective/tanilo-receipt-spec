@@ -121,12 +121,18 @@ file.
 Before the library runs, the public key must decode per RFC 8032 section 5.1.3 (including:
 x = 0 with the sign bit set is invalid), be canonically encoded (y < p) and not be a small-order
 point (order 1, 2, 4 or 8, in any encoding); the signature's R must decode and not be
-small-order; S must satisfy 0 <= S < L (section 5.1.7). A rejection is a failed verification
-with a reason.
+small-order; S must satisfy 0 <= S < L (section 5.1.7). The guard returns a rejection reason,
+or no reason when these input checks pass; passing the guard does not establish that the
+signature is valid.
 
-Version 0.2.1 intentionally rejects equation-valid signatures with small-order R, including
-ones a key holder constructs deliberately. Not checked: a *mixed-order* key or R (a point
-outside the prime-order subgroup that is not itself small-order; Taming case 3).
+Under normal RFC 8032 signing, small-order R is negligibly unlikely but not impossible. Version
+0.2.1 intentionally rejects equation-valid signatures with small-order R, including ones a key
+holder constructs deliberately.
+
+Not checked: a mixed-order key or R (a point outside the prime-order subgroup that is not
+itself small-order; Taming case 3). RFC 8032 does not require blanket rejection of mixed-order
+points. Passing the guard leaves signature verification to the library; in our recorded run, it
+accepted case 3 and rejected cases 4 and 5.
 
 The guard is called by `verify_detached_node.mjs`, `verify_detached_python.py`, and by
 `verify.mjs` and `verify.py` under `v0.3-composed/` and `v0.4-composed/`. `verify_node.mjs`
