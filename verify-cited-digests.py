@@ -11,6 +11,10 @@ WHAT THIS CHECKS
     1. the sha256 of every file in the directory
     2. the sha256 of every blob in git history (for "the file at <old ref>" citations)
     3. an explicit allowlist of external artifacts, each with a stated reason
+    4. EXAMPLE_VALUES: a value that is the printed output of an example, not the
+       digest of a file. Each entry names the receipt it is computed from, and the
+       tool recomputes it (SHA-256 of that receipt's signed payload bytes). If the
+       receipt is missing or gives a different value, the claim is unresolved.
 
 WHAT THIS DOES NOT CHECK
   Data files whose CONTENT is cryptographic values -- fixture sets, vector files,
@@ -23,7 +27,7 @@ USAGE
   python3 verify-cited-digests.py <prose-or-code-file>...
   exit 0 = every claimed digest resolves;  1 = at least one does not;  2 = misuse
 """
-import hashlib, pathlib, re, subprocess, sys
+import base64, hashlib, json, pathlib, re, subprocess, sys
 
 # Extensions whose content is data rather than claims. Refused, not audited.
 DATA_SUFFIXES = {".json", ".jsonl", ".pem", ".jwk", ".der", ".sig", ".bin"}
@@ -42,6 +46,28 @@ ALLOW = {
   "d78fc31f" + "0"*56:
       "placeholder guard — never matches; present so the allowlist shape is obvious",
 }
+
+# Example values: 64-hex strings that a document shows as the OUTPUT of an example, not as
+# the digest of a file. They are not exempted: each is recomputed from the receipt named here.
+EXAMPLE_VALUES = {
+  "baac7b814e66e90d729a51d7337fa3ea24d57daf623d8d545a0778f838447aff":
+      ("examples/live-receipts/evaluate-demo-2026-10-02.json",
+       "canonical_sha256 printed by the example in README.md ('Verify a receipt yourself'): "
+       "the SHA-256 of that receipt's signed payload bytes"),
+}
+
+def example_value_resolves(digest):
+    """True only when the receipt named for this example value exists and the SHA-256 of
+    its base64url-decoded JWS payload equals the value."""
+    path, _reason = EXAMPLE_VALUES[digest]
+    try:
+        env = json.loads(pathlib.Path(path).read_text())
+        env = env.get("jws", env)
+        payload = env["payload"]
+        raw = base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4))
+    except Exception:
+        return False
+    return hashlib.sha256(raw).hexdigest() == digest
 
 def build_index(root: pathlib.Path):
     idx = {}
@@ -85,13 +111,18 @@ def main(argv):
             continue
         text = p.read_text(errors="replace")
         claimed = sorted(set(re.findall(r"\b[a-f0-9]{64}\b", text)))
-        bad = [d for d in claimed if d not in idx and d not in ALLOW]
+        examples = [d for d in claimed if d not in idx and d not in ALLOW
+                    and d in EXAMPLE_VALUES and example_value_resolves(d)]
+        bad = [d for d in claimed if d not in idx and d not in ALLOW and d not in examples]
         if bad:
             print(f"FAIL     {p.name}: {len(claimed)} claimed, {len(bad)} unresolved")
             for d in bad:
-                print(f"           {d}")
+                why = " (an example value, but the receipt named for it does not give this value)" if d in EXAMPLE_VALUES else ""
+                print(f"           {d}{why}")
         else:
             print(f"OK       {p.name}: {len(claimed)} claimed, all resolve")
+        for d in examples:
+            print(f"           example value, recomputed from {EXAMPLE_VALUES[d][0]}: {d}")
         total_bad += len(bad)
     print()
     print(f"unresolved digest claims: {total_bad}")
