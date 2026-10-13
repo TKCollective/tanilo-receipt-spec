@@ -190,7 +190,7 @@ A change to what the rule returns for any input gets a new rule identifier.
 The identifier in a receipt (`evidence.rule_id`) tells you which rule to
 replay. This folder holds `spend-cap/v0.1`.
 
-Documentation: https://tanilo.io/docs/spend-cap-check (not yet published)
+Documentation: https://tanilo.io/docs/spend-cap-check
 
 ## Licence
 
