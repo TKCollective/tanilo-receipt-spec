@@ -10,11 +10,15 @@
 //  function of the input alone, so anyone holding the same input and this
 //  rule can recompute it.
 //
-//  WHAT IT DOES NOT ESTABLISH. The cap and already_spent are supplied by
-//  the caller. This check does not establish that the cap is the right one,
-//  that it was approved, or that already_spent is complete or current. It is
-//  not a ledger: it keeps no state between calls. It does not judge whether
-//  the purchase is sensible.
+//  WHAT IT DOES NOT ESTABLISH. The cap and already_spent are
+//  caller-supplied. This check does not establish that the cap is
+//  authentic, approved or applicable to this purchase, or that
+//  already_spent is complete or current. It does not authenticate the
+//  supplied offer time or establish that the offer is still current. It
+//  does not retrieve budget balances, maintain a running balance or
+//  reserve funds: it keeps no state between calls and does not record this
+//  offer against the cap. It does not judge whether the purchase is
+//  sensible.
 //
 //  Three states, never a guess:
 //    verified       total <= remaining cap
