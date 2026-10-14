@@ -1,7 +1,7 @@
 {
   "name": "agentoracle-receipt-verify-example",
   "version": "0.1.0",
-  "description": "End-to-end verification example for AgentOracle JWS receipts using the jose library. Fetches the live JWKS from agentoracle.co/.well-known/jwks.json and verifies sample_receipt_attached_jws.json.",
+  "description": "End-to-end verification example for AgentOracle JWS receipts using the jose library. Fetches the live JWKS from tanilo.io/.well-known/jwks.json and verifies sample_receipt_attached_jws.json.",
   "type": "module",
   "private": true,
   "scripts": {

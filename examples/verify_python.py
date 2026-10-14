@@ -17,6 +17,9 @@ Usage:
 
 Expected output: "VERIFIED OK" (exit code 0).
 If signature / kid / algorithm does not match the live JWKS, raises and exits 1.
+
+The API issues JWS JSON general serialization with an attached payload. This
+script verifies the attached flattened sample.
 """
 
 from __future__ import annotations
@@ -42,7 +45,7 @@ import requests
 from joserfc import jws as joserfc_jws
 from joserfc.jwk import KeySet
 
-JWKS_URL = "https://agentoracle.co/.well-known/jwks.json"
+JWKS_URL = "https://tanilo.io/.well-known/jwks.json"
 HERE = Path(__file__).parent
 
 
