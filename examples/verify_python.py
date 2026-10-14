@@ -42,7 +42,7 @@ import requests
 from joserfc import jws as joserfc_jws
 from joserfc.jwk import KeySet
 
-JWKS_URL = "https://agentoracle.co/.well-known/jwks.json"
+JWKS_URL = "https://tanilo.io/.well-known/jwks.json"
 HERE = Path(__file__).parent
 
 

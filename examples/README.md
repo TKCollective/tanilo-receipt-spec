@@ -1,10 +1,10 @@
-# AgentOracle Receipt Verification — Working Examples
+# Tanilo receipt verification — working examples
 
 End-to-end verifying examples for the receipt format described in the parent
 [README](../README.md). Both examples fetch the live JWKS from the production
 endpoint and verify a real detached JWS against a real payload.
 
-**Live JWKS endpoint:** https://agentoracle.co/.well-known/jwks.json
+**Live JWKS endpoint:** https://tanilo.io/.well-known/jwks.json
 
 ## What's in this directory
 
@@ -12,7 +12,7 @@ endpoint and verify a real detached JWS against a real payload.
 | --- | --- |
 | `sample_payload.json` | Example `claim + evidence + confidence` payload — the canonical content the signature commits to |
 | `sample_receipt_attached_jws.json` | Flattened JWS (attached payload) — used by the verifying examples for cross-language byte stability |
-| `sample_receipt_detached_jws.json` | Flattened JWS (detached) — for reference; matches the production wire format |
+| `sample_receipt_detached_jws.json` | Older fixture (flattened JWS, detached payload, RFC 7797 `b64=false`), kept for reference; not the format production issues |
 | `verify_node.mjs` | Node.js verifier using [`jose`](https://github.com/panva/jose) |
 | `verify_python.py` | Python verifier using [`joserfc`](https://github.com/authlib/joserfc) (EdDSA-supported; python-jose does not yet support EdDSA — [issue 319](https://github.com/mpdavis/python-jose/issues/319)) |
 | `package.json` | Node deps (jose) |
@@ -34,7 +34,7 @@ Expected output:
   key id (kid):             ao-receipt-2026-04-ed25519-f2753b7c
   content type:             application/json
   receipt type:             application/vnd.agentoracle.receipt+jws
-  jwks source:              https://agentoracle.co/.well-known/jwks.json
+  jwks source:              https://tanilo.io/.well-known/jwks.json
   ...
 ```
 
@@ -57,19 +57,21 @@ Same expected output under `joserfc`.
 
 ## Attached vs. detached
 
-The production wire format is **detached** JWS (RFC 7797, `b64=false` flow) —
-the receipt body transports the payload separately from the signature to
-minimize header size on every `/evaluate` response. The signing input follows
-RFC 7797 §3 exactly:
+The API issues receipts today as JWS JSON general serialization (RFC 7515
+§7.2.1) with one signature: `{ "payload": ..., "signatures": [{ "protected":
+..., "signature": ... }] }`. The payload is attached and base64url-encoded; the
+protected header carries `alg`, `kid` and `typ`
+(`application/vnd.verification.v0.3+composed+jws`) and no `b64` or `crit`
+member, so the signing input is the standard RFC 7515 form:
 
 ```
-BASE64URL(UTF8(JWS Protected Header)) || '.' || JWS Payload
+BASE64URL(UTF8(JWS Protected Header)) || '.' || BASE64URL(JWS Payload)
 ```
 
-— with the payload transported as raw octets (no base64 wrapping), which is
-what the `"b64": false` header + `"crit": ["b64"]` marker together declare.
 The payload bytes are **RFC 8785 (JCS)** canonicalized before signing so that
-two independent implementations sign over byte-identical input.
+two independent implementations sign over byte-identical input. For a real
+receipt as issued, see [`interop/aer1/`](interop/aer1/): `receipt.jws.json` is
+a live receipt in this form, with its canonical payload bytes alongside.
 
 The verifying examples here come in two languages and two forms:
 
@@ -82,7 +84,7 @@ The verifying examples here come in two languages and two forms:
 
 ## What you're seeing here
 
-1. **The public key is live.** `GET https://agentoracle.co/.well-known/jwks.json`
+1. **The public key is live.** `GET https://tanilo.io/.well-known/jwks.json`
    returns an RFC 7517 JWK Set with four Ed25519 keys — one legacy receipt
    signer, two composed-envelope signers (site + gateway), and one
    fixture-suite key for the detached sample. All four are clearly labeled by

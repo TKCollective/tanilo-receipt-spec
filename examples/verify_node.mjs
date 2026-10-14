@@ -20,7 +20,7 @@
 import { createRemoteJWKSet, flattenedVerify } from 'jose';
 import fs from 'node:fs';
 
-const JWKS_URL = 'https://agentoracle.co/.well-known/jwks.json';
+const JWKS_URL = 'https://tanilo.io/.well-known/jwks.json';
 
 async function main() {
   const attachedJws = JSON.parse(fs.readFileSync(
