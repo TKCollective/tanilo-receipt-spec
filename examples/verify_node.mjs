@@ -11,11 +11,10 @@
 //
 // ----------------------------------------------------------------------------
 // Why the attached (flattened) JWS form is used here:
-// The spec describes detached JWS (RFC 7797) receipts for production — payload
-// travels separately from signature. The verifying *example* uses the attached
-// flattened form so there is zero canonicalization ambiguity across languages.
-// The signature covers the exact bytes inside the JWS. See detached_verify.md
-// for how the production detached flow would be reconstructed byte-accurately.
+// The API issues JWS JSON general serialization with an attached payload. This
+// script verifies the attached flattened sample so there is zero
+// canonicalization ambiguity across languages. The signature covers the exact
+// bytes inside the JWS.
 
 import { createRemoteJWKSet, flattenedVerify } from 'jose';
 import fs from 'node:fs';

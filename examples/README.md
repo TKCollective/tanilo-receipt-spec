@@ -2,7 +2,7 @@
 
 End-to-end verifying examples for the receipt format described in the parent
 [README](../README.md). Both examples fetch the live JWKS from the production
-endpoint and verify a real detached JWS against a real payload.
+endpoint and verify a real JWS (the attached flattened sample) against a real payload.
 
 **Live JWKS endpoint:** https://tanilo.io/.well-known/jwks.json
 
@@ -60,8 +60,8 @@ Same expected output under `joserfc`.
 The API issues receipts today as JWS JSON general serialization (RFC 7515
 §7.2.1) with one signature: `{ "payload": ..., "signatures": [{ "protected":
 ..., "signature": ... }] }`. The payload is attached and base64url-encoded; the
-protected header carries `alg`, `kid` and `typ`
-(`application/vnd.verification.v0.3+composed+jws`) and no `b64` or `crit`
+protected header carries `alg`, `kid`, `typ`
+(`application/vnd.verification.v0.3+composed+jws`) and `role`, and no `b64` or `crit`
 member, so the signing input is the standard RFC 7515 form:
 
 ```
@@ -85,10 +85,10 @@ The verifying examples here come in two languages and two forms:
 ## What you're seeing here
 
 1. **The public key is live.** `GET https://tanilo.io/.well-known/jwks.json`
-   returns an RFC 7517 JWK Set with four Ed25519 keys — one legacy receipt
-   signer, two composed-envelope signers (site + gateway), and one
-   fixture-suite key for the detached sample. All four are clearly labeled by
-   `kid`.
+   returns an RFC 7517 JWK Set of Ed25519 keys that includes the sample's
+   signing key, `ao-receipt-2026-04-ed25519-f2753b7c`, alongside the current
+   signer, the composed-envelope signers and the fixture-suite key for the
+   detached sample. Every key is labeled by `kid`.
 2. **The attached sample was signed with a production key.**
    `sample_receipt_attached_jws.json` was signed with the matching private
    half of `ao-receipt-2026-04-ed25519-f2753b7c`; that private half lives only
