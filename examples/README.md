@@ -114,8 +114,8 @@ The verifying examples here come in two languages and two forms:
 ## Ed25519 input guard
 
 `ed25519_guard.py` is a byte-identical copy of `tanilo_receipt_verify/ed25519_guard.py` from
-[`tanilo-receipt-verify` 0.2.2](https://pypi.org/project/tanilo-receipt-verify/0.2.2/)
-(sha256 `e3b3084e13dbd16a5e0d10ec372176f0b3b334f1088f82665ba21629539b68cf`).
+[`tanilo-receipt-verify` 0.2.3](https://pypi.org/project/tanilo-receipt-verify/0.2.3/)
+(sha256 `8222e828d7e6f12331f901535707371bc87bf85e21037a481731234ec6d8ea45`).
 `ed25519_guard.mjs` is its JavaScript port, written to apply the same decoding, checks and
 reason codes; on 62 shared key and signature pairs it returns the same reason as the Python
 file.

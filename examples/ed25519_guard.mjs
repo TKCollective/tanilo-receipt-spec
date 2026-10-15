@@ -3,7 +3,7 @@
 // signature.
 //
 // JavaScript port of tanilo_receipt_verify/ed25519_guard.py as released in
-// tanilo-receipt-verify 0.2.2 (tag v0.2.2). ed25519_guard.py beside this
+// tanilo-receipt-verify 0.2.3 (tag v0.2.3). ed25519_guard.py beside this
 // file is a byte-identical copy of that module. Same decoding, same checks,
 // same reason codes; the reason texts are identical too, except the two
 // input-type reasons, which name the JavaScript type. Pure BigInt arithmetic,
