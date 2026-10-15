@@ -157,8 +157,8 @@ async function verifyOne(payload, jws, jwksByIssuer, opts = {}) {
 
     const signingInput = Buffer.from(sigEntry.protected + '.' + payloadB64, 'ascii');
     const sigBytes = b64uDecode(sigEntry.signature);
-    // Small-order key or R, non-canonical encoding, S >= L: rejected before the
-    // library is asked (see ../ed25519_guard.mjs); a failed verification with its reason.
+    // Small-order key or R, non-canonical encoding, S >= L, mixed-order key or R: rejected before the
+    // library verifies the signature (see ../ed25519_guard.mjs); a failed verification with its reason.
     const guard = checkEd25519(rawPublicKeyBytes(pubKey), new Uint8Array(sigBytes));
     if (guard) return { ok: false, reason: 'signature_invalid', guard, kid, issuer };
     const valid = nodeVerify(null, signingInput, pubKey, sigBytes);

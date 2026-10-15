@@ -215,8 +215,8 @@ def verify_one(
 
         signing_input = (sig_entry["protected"] + "." + payload_b64).encode("ascii")
         sig_bytes = b64u_decode(sig_entry["signature"])
-        # Small-order key or R, non-canonical encoding, S >= L: rejected before
-        # the library is asked; a failed verification with its reason.
+        # Small-order key or R, non-canonical encoding, S >= L, mixed-order key or R: rejected before
+        # the library verifies the signature; a failed verification with its reason.
         guard = check_ed25519(pub_key.public_bytes(Encoding.Raw, PublicFormat.Raw), sig_bytes)
         if guard is not None:
             return {"ok": False, "reason": "signature_invalid", "guard": guard, "kid": kid, "issuer": issuer}

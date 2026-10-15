@@ -114,10 +114,10 @@ The verifying examples here come in two languages and two forms:
 ## Ed25519 input guard
 
 `ed25519_guard.py` is a byte-identical copy of `tanilo_receipt_verify/ed25519_guard.py` from
-[`tanilo-receipt-verify` 0.2.1](https://pypi.org/project/tanilo-receipt-verify/0.2.1/)
-(sha256 `2fb65a919a4aecf83d1345b319de2a984fe8c8e0b5d198433093343a0b3243e3`).
+[`tanilo-receipt-verify` 0.2.2](https://pypi.org/project/tanilo-receipt-verify/0.2.2/)
+(sha256 `e3b3084e13dbd16a5e0d10ec372176f0b3b334f1088f82665ba21629539b68cf`).
 `ed25519_guard.mjs` is its JavaScript port, written to apply the same decoding, checks and
-reason codes; on 53 shared key and signature pairs it returns the same reason as the Python
+reason codes; on 62 shared key and signature pairs it returns the same reason as the Python
 file.
 
 Before the library verifies the signature, the guard requires the public key to decode per
@@ -131,11 +131,7 @@ Under normal RFC 8032 signing, small-order R is negligibly unlikely but not impo
 0.2.1 intentionally rejects equation-valid signatures with small-order R, including ones a key
 holder constructs deliberately.
 
-Not checked: a mixed-order key or R (a point outside the prime-order subgroup that is not
-itself small-order; Taming case 3). RFC 8032 does not require blanket rejection of mixed-order
-points. Passing the guard leaves signature verification to the library; in
-[our recorded run](https://github.com/TKCollective/tanilo-receipt-verify/tree/4d3e9ac/docs/evidence/small-order-2026-10-13),
-it accepted case 3 and rejected cases 4 and 5.
+After those checks, a mixed-order key or R (outside the prime-order subgroup but not itself small-order) is refused with `mixed_order_key` or `mixed_order_r`.
 
 The guard is called by `verify_detached_node.mjs`, `verify_detached_python.py`, and by
 `verify.mjs` and `verify.py` under `v0.3-composed/` and `v0.4-composed/`. `verify_node.mjs`

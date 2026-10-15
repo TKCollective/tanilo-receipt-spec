@@ -1,15 +1,16 @@
 // ed25519_guard.mjs: Ed25519 input guard (small-order points, non-canonical
-// encodings, S range), run before the library verifies the signature.
+// encodings, S range, mixed-order points), run before the library verifies the
+// signature.
 //
 // JavaScript port of tanilo_receipt_verify/ed25519_guard.py as released in
-// tanilo-receipt-verify 0.2.1 (commit 0618def). ed25519_guard.py beside this
+// tanilo-receipt-verify 0.2.2 (tag v0.2.2). ed25519_guard.py beside this
 // file is a byte-identical copy of that module. Same decoding, same checks,
 // same reason codes; the reason texts are identical too, except the two
 // input-type reasons, which name the JavaScript type. Pure BigInt arithmetic,
 // no dependency. It never throws: a wrong input type, a wrong length or
 // malformed bytes return a reason instead.
 //
-// From the 0.2.1 module, unchanged:
+// From the 0.2.1 module, unchanged, and the 0.2.2 addition after it:
 //
 //   With the identity public key, the signature R = identity, S = 0 satisfies
 //   the verification equation for every message. For other small-order keys,
@@ -36,25 +37,40 @@
 //   preaction-governance-conformance at 90b5032. This release adds
 //   corresponding input restrictions to Tanilo's verifier.
 //
+//   Mixed-order points (0.2.2). A mixed-order point is neither small-order nor
+//   in the prime-order subgroup: [L]P is not the identity. Whether a signature
+//   under a mixed-order key, or with a mixed-order R, verifies depends on
+//   whether the verifier uses the cofactorless or the cofactored equation of
+//   RFC 8032 section 5.1.7, so two conforming verifiers can disagree. This
+//   module refuses both, after every other check. Like the small-order R rule,
+//   this is a stricter acceptance policy than the RFC 8032 verification
+//   equation: some equation-valid signatures with a mixed-order A or R are
+//   refused. It is not a fix for a forgery under an ordinary key.
+//
 // Checks, before the library verifies the signature:
 //   - the public key must decode to a point on the curve (RFC 8032 section
 //     5.1.3, including its rule that x = 0 with the sign bit set is invalid),
 //     must be canonically encoded (y < p), and must not be a small-order point
 //     (order 1, 2, 4 or 8, whatever its encoding);
 //   - the signature's R must decode and must not be a small-order point;
-//   - the signature's S must satisfy 0 <= S < L (RFC 8032 section 5.1.7).
+//   - the signature's S must satisfy 0 <= S < L (RFC 8032 section 5.1.7);
+//   - then, after all of the above: [L]A must be the identity, and [L]R must
+//     be the identity, where L, the order of the base point (the prime-order
+//     subgroup), is 2^252 + 27742317777372353535851937790883648493 (RFC 8032
+//     section 5.1). The point is multiplied by L itself; the scalar is never
+//     reduced mod L, which would multiply by zero and pass every point.
 //
 //   checkEd25519(publicKey: Uint8Array, signature: Uint8Array) -> string | null
 //
 // Returns null when the pair may go to the library, otherwise a reason that
-// starts with one of: key_type, key_length, key_not_on_curve,
-// noncanonical_key_encoding, small_order_key, signature_type,
-// signature_length, r_not_on_curve, noncanonical_r_encoding, small_order_r,
-// signature_s_out_of_range. Not checked: a mixed-order key or R (outside the
-// prime-order subgroup but not itself small-order).
+// starts with one of, in the order they are checked: key_type, key_length,
+// key_not_on_curve, small_order_key, noncanonical_key_encoding,
+// signature_type, signature_length, r_not_on_curve, small_order_r,
+// noncanonical_r_encoding, signature_s_out_of_range, mixed_order_key,
+// mixed_order_r.
 
 const P = (1n << 255n) - 19n;
-export const L = (1n << 252n) + 27742317777372353535851937790883648493n;
+export const L = (1n << 252n) + 27742317777372353535851937790883648493n;   // L, the order of the base point (the prime-order subgroup); RFC 8032 section 5.1
 const mod = (a) => ((a % P) + P) % P;
 const inv = (x) => modpow(mod(x), P - 2n);
 function modpow(b, e) { let r = 1n; b = mod(b); while (e > 0n) { if (e & 1n) r = mod(r * b); b = mod(b * b); e >>= 1n; } return r; }
@@ -128,8 +144,46 @@ export function checkSignature(sig) {
   return null;
 }
 
-// The key is checked first, so a small-order key with a small-order R reports small_order_key.
-export function checkEd25519(publicKey, signature) { return checkPublicKey(publicKey) || checkSignature(signature); }
+// The scalar for the subgroup check: L, the order of the base point (the prime-order subgroup); RFC 8032 section
+// 5.1. Used as it is, never reduced mod L ([L mod L]P = [0]P is the identity for every point, so a reduced scalar
+// would pass everything).
+export const L_ORDER_SCALAR = (1n << 252n) + 27742317777372353535851937790883648493n;
+const D2 = mod(2n * D);
+
+// Extended twisted Edwards addition, a = -1 (Hisil, Wong, Carter, Dawson 2008, "add-2008-hwcd-3").
+// Complete for Ed25519 (d is not a square), so it also doubles and handles the identity.
+function extAdd([x1, y1, z1, t1], [x2, y2, z2, t2]) {
+  const a = mod((y1 - x1) * (y2 - x2)), b = mod((y1 + x1) * (y2 + x2)), c = mod(t1 * D2 * t2), d = mod(z1 * 2n * z2);
+  const e = b - a, f = d - c, g = d + c, h = b + a;
+  return [mod(e * f), mod(g * h), mod(f * g), mod(e * h)];
+}
+
+// True when [k]pt is the identity. k is used exactly as given (no reduction).
+export function mulIsIdentity(k, [x, y]) {
+  let result = [0n, 1n, 1n, 0n], addend = [x, y, 1n, mod(x * y)];
+  while (k > 0n) { if (k & 1n) result = extAdd(result, addend); addend = extAdd(addend, addend); k >>= 1n; }
+  return mod(result[0]) === 0n && mod(result[1] - result[2]) === 0n;
+}
+
+// True when [L]pt is the identity: pt is in the prime-order subgroup (or is the identity).
+export function isTorsionFree(pt) { return mulIsIdentity(L_ORDER_SCALAR, pt); }
+
+// The subgroup checks, for a pair that has passed checkPublicKey and checkSignature: null when [L]A and [L]R are
+// both the identity. Never throws.
+export function checkMixedOrder(publicKey, signature) {
+  try {
+    const A = decodePoint(publicKey).point, R = decodePoint(signature.subarray(0, 32)).point;
+    if (!A || !R) return null;   // not reached after the earlier checks; those already returned a reason
+    if (!isTorsionFree(A)) return "mixed_order_key: the public key is a mixed-order point ([L]A is not the identity: it has a small-order component); whether a signature under it verifies depends on the verifier's equation (cofactored or cofactorless, RFC 8032 section 5.1.7), so this verifier's acceptance policy rejects it (stricter than the RFC 8032 verification equation)";
+    if (!isTorsionFree(R)) return "mixed_order_r: the signature's R is a mixed-order point ([L]R is not the identity: it has a small-order component); whether the signature verifies depends on the verifier's equation (cofactored or cofactorless, RFC 8032 section 5.1.7), so this verifier's acceptance policy rejects it (stricter than the RFC 8032 verification equation)";
+    return null;
+  } catch { return "mixed_order_check_failed: the subgroup check could not run on these bytes"; }
+}
+
+// The key is checked first, so a small-order key with a small-order R reports small_order_key. The mixed-order
+// checks run last, after every earlier check has passed; a mixed-order key with a mixed-order R reports
+// mixed_order_key.
+export function checkEd25519(publicKey, signature) { return checkPublicKey(publicKey) || checkSignature(signature) || checkMixedOrder(publicKey, signature); }
 
 // The raw public key bytes of a Node KeyObject (or an OKP JWK): what the guard checks.
 // Returns null, never throws, when the input is not an Ed25519 public key; checkPublicKey(null)

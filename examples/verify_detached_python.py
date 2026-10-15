@@ -95,7 +95,7 @@ def main() -> None:
     keys = local_jwks.get("public_only", {}).get("keys") or local_jwks["keys"]
     pub_jwk = next(k for k in keys if k["kid"] == header["kid"])
     pk = Ed25519PublicKey.from_public_bytes(b64u_dec(pub_jwk["x"]))
-    # Small-order key or R, non-canonical encoding, S >= L: rejected before the library is asked.
+    # Small-order key or R, non-canonical encoding, S >= L, mixed-order key or R: rejected before the library verifies the signature.
     guard = check_ed25519(b64u_dec(pub_jwk["x"]), b64u_dec(detached["signature"]))
     if guard is not None:
         raise SystemExit(f"=== DETACHED VERIFICATION FAILED ===\n{guard}")

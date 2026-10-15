@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { createPublicKey, verify as nodeVerify, createHash, generateKeyPairSync, sign as nodeSign } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { checkEd25519, checkPublicKey, checkSignature, decodePoint, encodePoint, pointMul, isSmallOrder, rawPublicKeyBytes, L, IDENTITY } from "./ed25519_guard.mjs";
+import { checkEd25519, checkPublicKey, checkSignature, checkMixedOrder, decodePoint, encodePoint, pointAdd, pointMul, isSmallOrder, isTorsionFree, mulIsIdentity, rawPublicKeyBytes, L, L_ORDER_SCALAR, IDENTITY } from "./ed25519_guard.mjs";
 
 const hex = (h) => new Uint8Array(Buffer.from(h, "hex"));
 const keyObj = (raw) => createPublicKey({ key: { kty: "OKP", crv: "Ed25519", x: Buffer.from(raw).toString("base64url") }, format: "jwk" });
@@ -91,20 +91,76 @@ test("an ordinary key passes the guard", () => {
   assert.equal(checkPublicKey(raw), null);
 });
 
-// Cases 3, 4 and 5 of the published set have a mixed-order key and R that are not small-order.
-// The guard does not check for mixed order (RFC 8032 does not require rejecting it), so it lets
-// all three through to the library, which decides them.
-const TAMING_NOT_CHECKED = [
+// Cases 3, 4 and 5 of the published set have a mixed-order key (and, in 3 and 4, a mixed-order R) that is not
+// small-order. Since tanilo-receipt-verify 0.2.2 the guard refuses them after every other check: the key is
+// checked first, so all three report mixed_order_key.
+const TAMING_MIXED = [
   [3, "9bd9f44f4dcc75bd531b56b2cd280b0bb38fc1cd6d1230e14861d861de092e79", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "9046a64750444938de19f227bb80485e92b83fdb4b6506c160484c016cc1852f87909e14428a7a1d62e9f22f3d3ad7802db02eb2e688b6c52fcd6648a98bd009"],
   [4, "e47d62c63f830dc7a6851a0b1f33ae4bb2f507fb6cffec4011eaccd55b53f56c", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "160a1cb0dc9c0258cd0a7d23e94d8fa878bcb1925f2c64246b2dee1796bed5125ec6bc982a269b723e0668e540911a9a6a58921d6925e434ab10aa7940551a09"],
   [5, "e47d62c63f830dc7a6851a0b1f33ae4bb2f507fb6cffec4011eaccd55b53f56c", "cdb267ce40c5cd45306fa5d2f29731459387dbf9eb933b7bd5aed9a765b88d4d", "21122a84e0b5fca4052f5b1235c80a537878b38f3142356b2c2384ebad4668b7e40bc836dac0f71076f9abe3a53f9c03c1ceeeddb658d0030494ace586687405"],
 ];
-for (const [c, msg, pbk, sig] of TAMING_NOT_CHECKED) {
-  test(`Taming case ${c}: mixed-order, not checked by the guard (passes through to the library)`, () => {
+for (const [c, msg, pbk, sig] of TAMING_MIXED) {
+  test(`Taming case ${c}: mixed-order, refused with mixed_order_key`, () => {
     console.log(`  node:crypto ${process.version} says ${nodeVerify(null, hex(msg), keyObj(hex(pbk)), hex(sig))} for case ${c}`);
-    assert.equal(checkEd25519(hex(pbk), hex(sig)), null);
+    assert.match(checkEd25519(hex(pbk), hex(sig)), /^mixed_order_key: /);
   });
 }
+
+// The three mixed-order vectors of babyblueviper1/preaction-governance-conformance at 9d4cf2c
+// (examples/acceptance-record-cold/vectors.json, CC0-1.0): key and signature bytes. Each signs the JWS signing
+// input protected + "." + payload of its vector.
+const ACC_MIXED = [
+  ["acc-mixed-order-key-accepted-by-both-equations", "74f605310fae8fce7c6d7cd3c6154a3ff4735a934376c90ea383c9b04b3fbda9", "25a407cb7b6819b74bcbd083be86d6b5af4211ab5f28ebb6dfc8b9a98cb57a34c39ff58a07ae0abcf92cfaaefc46086ea9791926affa4d9a1a5e90361fb76c01", "mixed_order_key"],
+  ["acc-mixed-order-key-equations-disagree", "74f605310fae8fce7c6d7cd3c6154a3ff4735a934376c90ea383c9b04b3fbda9", "ae97aae7812ccb754b737035d4dcc923a07c922c5585858649b833bcfaa47e201f3f31e5ea4f5432901986acf026758a6b74d808b5c7cc60e68d4ba877cc1301", "mixed_order_key"],
+  ["acc-mixed-order-r-real-key", "ed317809ac58d24080d4c457e2f2f7ba328dc9202da711231e5e0e13e2779ff8", "fdd065dff29bc6bf96c4780589d39a3fa325de753781106c98daedb44957c9bd2b32faf6c95ae3d55830e70c6dc103390c88a2733c79f9def33ed1fb41107a02", "mixed_order_r"],
+];
+for (const [id, pbk, sig, expected] of ACC_MIXED) {
+  test(`${id}: refused with ${expected}`, () => {
+    assert.match(checkEd25519(hex(pbk), hex(sig)), new RegExp("^" + expected + ": "));
+  });
+}
+
+const B = decodePoint(hex("5866666666666666666666666666666666666666666666666666666666666666")).point;
+const T8 = decodePoint(hex("c7176a703d4dd84fba3c0b760d10670f2a2053fa2c39ccc64ec7fd7792ac03fa")).point;   // order 8
+
+test("the subgroup check multiplies by L itself; the mod-L mistake would pass every point, and is caught here", () => {
+  const mixed = pointAdd(B, T8);
+  assert.equal(L_ORDER_SCALAR, L);
+  assert.equal(L_ORDER_SCALAR, (1n << 252n) + 27742317777372353535851937790883648493n);
+  assert.equal(isTorsionFree(B), true);
+  assert.equal(isTorsionFree(pointMul(12345n, B)), true);
+  assert.equal(isTorsionFree(mixed), false);
+  assert.equal(isTorsionFree(T8), false);
+  // The mistake: reducing the scalar mod L gives 0, and [0]P is the identity for every point.
+  const reduced = L_ORDER_SCALAR % L;
+  assert.equal(reduced, 0n);
+  assert.equal(mulIsIdentity(reduced, mixed), true);
+  const guardWithTheMistake = (pk) => (mulIsIdentity(reduced, decodePoint(pk).point) ? null : "mixed_order_key");
+  const [, , pk3, sig3] = TAMING_MIXED[0];
+  assert.equal(guardWithTheMistake(hex(pk3)), null);                      // the mistake lets Taming case 3 through
+  assert.match(checkEd25519(hex(pk3), hex(sig3)), /^mixed_order_key: /);   // the guard does not
+});
+
+test("the extended-coordinate multiplication agrees with the affine one", () => {
+  const pts = { B, T8, "B+T8": pointAdd(B, T8), "5B": pointMul(5n, B) };
+  for (const k of [0n, 1n, 2n, 7n, 8n, 9n, (1n << 128n) + 3n, L - 1n, L, L + 1n, 8n * L, 8n * L - 1n]) {
+    for (const [name, pt] of Object.entries(pts)) {
+      const q = pointMul(k, pt);
+      assert.equal(mulIsIdentity(k, pt), q[0] === IDENTITY[0] && q[1] === IDENTITY[1], `${name} * ${k}`);
+    }
+  }
+});
+
+test("the 0.2.1 reasons keep their order; the per-part checks do not look at the subgroup", () => {
+  const [, , pk3, sig3] = TAMING_MIXED[0];
+  const one = new Uint8Array(32); one[0] = 1;
+  assert.match(checkEd25519(hex(pk3), new Uint8Array([...hex(SMALL[0]), ...one])), /^small_order_r/);
+  const le = (v) => { const o = new Uint8Array(32); for (let i = 0; i < 32; i++) { o[i] = Number(v & 255n); v >>= 8n; } return o; };
+  assert.match(checkEd25519(hex(pk3), new Uint8Array([...hex(sig3).subarray(0, 32), ...le(L)])), /^signature_s_out_of_range/);
+  assert.equal(checkPublicKey(hex(pk3)), null);
+  assert.equal(checkSignature(hex(sig3)), null);
+  assert.equal(checkMixedOrder(null, null), "mixed_order_check_failed: the subgroup check could not run on these bytes");
+});
 
 test("wrong input types are reasons, not exceptions", () => {
   for (const bad of [null, undefined, "0100", 1, [1, 2, 3], {}, 3.5]) {
@@ -140,7 +196,15 @@ test("the JavaScript port and ed25519_guard.py give the same reason for the same
   const one = new Uint8Array(32); one[0] = 1;
   for (const h of [...SMALL, ...SMALL_NONCANONICAL]) { pairs.push([h, "00".repeat(64)]); pairs.push(["f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43", h + Buffer.from(one).toString("hex")]); }
   for (const [, , pbk, sig] of TAMING) pairs.push([pbk, sig]);
-  for (const [, , pbk, sig] of TAMING_NOT_CHECKED) pairs.push([pbk, sig]);
+  for (const [, , pbk, sig] of TAMING_MIXED) pairs.push([pbk, sig]);
+  for (const [, pbk, sig] of ACC_MIXED) pairs.push([pbk, sig]);
+  // generated mixed-order keys and R: [k]B + T8, and a prime-order key with such an R
+  for (const k of [3n, 1000003n, L - 2n]) {
+    const mixed = Buffer.from(encodePoint(pointAdd(pointMul(k, B), T8))).toString("hex");
+    const prime = Buffer.from(encodePoint(pointMul(k, B))).toString("hex");
+    pairs.push([mixed, prime + "01" + "00".repeat(31)]);
+    pairs.push([prime, mixed + "01" + "00".repeat(31)]);
+  }
   for (const n of [0, 31, 33]) pairs.push(["ab".repeat(n), "cd".repeat(64)]);
   for (const n of [0, 63, 65]) pairs.push(["f7badec5b8abeaf699583992219b7b223f1df3fbbea919844e3f7c554a43dd43", "cd".repeat(n)]);
   pairs.push(["ff".repeat(32), "ff".repeat(64)]);

@@ -61,7 +61,7 @@ const signingInput = Buffer.concat([
   payloadBytes,
 ]);
 
-// Small-order key or R, non-canonical encoding, S >= L: rejected before the library is asked.
+// Small-order key or R, non-canonical encoding, S >= L, mixed-order key or R: rejected before the library verifies the signature.
 const guard = checkEd25519(rawPublicKeyBytes(publicKey), new Uint8Array(b64uDec(detached.signature)));
 if (guard) {
   console.error('=== DETACHED VERIFICATION FAILED ===');
