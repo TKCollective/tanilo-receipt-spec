@@ -87,8 +87,9 @@ The verifying examples here come in two languages and two forms:
 1. **The public key is live.** `GET https://tanilo.io/.well-known/jwks.json`
    returns an RFC 7517 JWK Set of Ed25519 keys that includes the sample's
    signing key, `ao-receipt-2026-04-ed25519-f2753b7c`, alongside the current
-   signer, the composed-envelope signers and the fixture-suite key for the
-   detached sample. Every key is labeled by `kid`.
+   signer and the composed-envelope signers. Every key is labeled by `kid`.
+   The fixture-suite key for the detached sample is served separately, at
+   `https://tanilo.io/.well-known/jwks-test.json` (see the correction below).
 2. **The attached sample was signed with a production key.**
    `sample_receipt_attached_jws.json` was signed with the matching private
    half of `ao-receipt-2026-04-ed25519-f2753b7c`; that private half lives only
@@ -102,8 +103,39 @@ The verifying examples here come in two languages and two forms:
    can run `generate_detached_fixture.py` and get byte-identical output to
    the committed fixture, or `verify_detached_python.py` / `.mjs` and confirm
    the committed bytes verify. No production key is ever exposed by this
-   design; production kids are in the same JWKS but their private halves are
-   not published.
+   design; production kids are in the production JWKS and their private
+   halves are not published.
+
+   *Correction, 2026-10-16.* The fixture key was listed in the production key
+   set (`/.well-known/jwks.json`) with `tanilo_status: "fixture"`: in the
+   agentoracle.co set from 29 July 2026 and in the tanilo.io and
+   api.tanilo.io sets from 2 October 2026. The file comment in
+   `jwks-fixture-detached.json` still says so. A signature under a publicly
+   available private key does not establish that Tanilo issued the receipt,
+   because anyone can create such a signature. A verifier that did not read
+   that status accepted a signature under the fixture key as valid against
+   the production set; every release of `tanilo-receipt-verify` before 0.2.4
+   (and agentoracle-receipt-verify 0.1.0) did. The production signer code
+   reviewed does not select this fixture key, and the fixture's private key
+   has never appeared in the API repository's history. That finding does not
+   establish that no receipt signed with the public fixture key was accepted
+   by a relying party. The key is served separately at the test-key endpoints
+   and remains in the repository's fixture file; it is no longer included in
+   the live production key sets. `tanilo-receipt-verify` 0.2.4 refuses it
+   unless the caller passes `allow_test_keys=True`. The fixture file, the
+   detached sample and the two detached verifiers are unchanged: they read
+   the key from `jwks-fixture-detached.json`, never from the live key set.
+   What to do: upgrade to 0.2.4, fetch the key set again, and treat any
+   receipt that verified only through the kid
+   `ao-fixture-detached-rfc7797-2026-07-ed25519-0f8bf2a5` as not verified. A
+   key identifier alone does not establish that a receipt is genuine.
+   Reverify the receipt using an authenticated production key set and the
+   applicable verification policy. Historical receipts may use other
+   documented production keys. If you retained only an overall verification
+   status, reverify the original receipts rather than assuming they used a
+   production key. Investigate any decisions that relied on receipts accepted
+   solely through the fixture key. Removing the key does not retroactively
+   change previously stored verification results.
 4. **Standard libraries verify the attached form.** Both `jose` (Node, 9k+
    GitHub stars) and `joserfc` (Python, Authlib) verify cleanly with no
    custom parsing.
