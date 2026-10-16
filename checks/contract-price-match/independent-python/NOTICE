@@ -1,0 +1,5 @@
+Independent Python implementation of contract-price-match/v0.1
+Copyright 2026 invinoveritas (https://invinoveritas.dev)
+
+Licensed under the Apache License, Version 2.0 (see LICENSE in this folder).
+Written from the published rule text, not from contract-price.js.
