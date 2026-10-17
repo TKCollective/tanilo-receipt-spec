@@ -40,7 +40,7 @@ def _t(s):
     return datetime.strptime(s.replace("Z", "+0000"), "%Y-%m-%dT%H:%M:%S.%f%z" if "." in s else "%Y-%m-%dT%H:%M:%S%z")
 
 
-_DEC = re.compile(r"^\d+(\.\d+)?$")                       # no sign, separator or exponent
+_DEC = re.compile(r"^(0|[1-9]\d{0,17})(\.\d{1,8})?$")      # no sign, separator, exponent or leading zero; <=18 digits, then <=8
 _CUR = re.compile(r"^[A-Z]{3}$")
 _TS = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$")
 _OFFER = {"unit_price", "currency", "unit", "quantity", "seller", "sku", "offered_at"}
@@ -90,6 +90,15 @@ def validate(inp):
         for k in _TERM_REQ:
             if k not in t:
                 return f"{p}.{k}"
+        ps = t["product_scope"]
+        if not isinstance(ps, dict) or set(ps) != {"skus"}:
+            return f"{p}.product_scope"
+        skus = ps["skus"]
+        if not isinstance(skus, list) or not skus or len(set(map(str, skus))) != len(skus):
+            return f"{p}.product_scope.skus"                # non-empty, no product listed twice
+        for j, x in enumerate(skus):
+            if not isinstance(x, str) or x == "":
+                return f"{p}.product_scope.skus[{j}]"
         if ("price_per_unit" in t) == ("tiers" in t):
             return p                                        # exactly one of price_per_unit / tiers
         if "price_per_unit" in t and not (isinstance(t["price_per_unit"], str) and _DEC.match(t["price_per_unit"])):
