@@ -11,7 +11,7 @@ check: same input, same rule, same result.
 |---|---|
 | `contract-price.js` | The rule, `contract-price-match/v0.1`. Pure: no network, no clock, no randomness. |
 | `contract-price-jcs.js` | Canonical JSON (RFC 8785) for the values the rule hashes. |
-| `contract-price.test.mjs` | The test suite: 82 cases, including the USD 2.00 against USD 1.00 example. |
+| `contract-price.test.mjs` | The test suite: 97 cases, including the USD 2.00 against USD 1.00 example and 15 boundary cases (see the record at the end). |
 | `contract-price.vectors.json` | Each case as an input and the exact result. Use it to check another implementation. |
 | `SHA256SUMS` | SHA-256 of the four files above. |
 | `LICENSE`, `NOTICE` | Apache License 2.0 and its notice, for the code and this README. |
@@ -82,9 +82,10 @@ The first step that cannot continue decides the reason. Later steps are not run.
 
 Details that decide edge cases:
 
-- **Amounts and quantities** are decimal strings: up to 18 digits, then optionally a point and 1 to 8 digits.
-- **Times** are UTC and end in `Z`, with seconds and optionally 1 to 3 fractional digits. They are compared to the millisecond. A time with an explicit offset such as `+02:00` is unsupported by this Z-only schema.
-- **`supersedes`** is a single string: the `version` of one term of the same `agreement_id`. A term can replace one version, not several. It has effect only while the superseding term is itself in effect at the offer time. When a superseding term has ended, the term it replaced applies again if it is still in effect. Precedence is not carried across a term that is not in effect: if version 3 replaces version 2 and version 2 replaced version 1, and version 2 has ended, versions 1 and 3 are both left and the result is `precedence_unresolved`.
+- **Amounts and quantities** are decimal strings: up to 18 digits, then optionally a point and 1 to 8 digits. The same limits apply to every amount and quantity: the offer's `unit_price` and `quantity`, a term's `price_per_unit`, and a tier's `min_quantity`, `max_quantity` and `price_per_unit`. No leading zeros: `"01.00"` is invalid; a value below 1 starts with a single `0`, as in `"0.50"`. A point must have digits on both sides: `"1."` and `".50"` are invalid. Input outside these forms is refused (no result), not rounded or re-read.
+- **Times** are UTC and end in `Z`, with seconds and optionally 1 to 3 fractional digits. They are compared to the millisecond. A time with an explicit offset such as `+02:00` is unsupported by this Z-only schema. A leap second (`:60`) is invalid, as is any time that does not exist on the calendar.
+- **`product_scope.skus`** must be a non-empty array of distinct product identifiers. An empty list and a repeated identifier are both invalid input (no result), not a scope that matches nothing.
+- **`supersedes`** is a single string: the `version` of one term of the same `agreement_id`. A term can replace one version, not several. A term may not name its own version (invalid input). `supersedes: null` is treated as absent, exactly as if the member were left out. It has effect only while the superseding term is itself in effect at the offer time. When a superseding term has ended, the term it replaced applies again if it is still in effect. Precedence is not carried across a term that is not in effect: if version 3 replaces version 2 and version 2 replaced version 1, and version 2 has ended, versions 1 and 3 are both left and the result is `precedence_unresolved`.
 - **Two terms whose dates do not both contain the offer time never compete.** Nothing replaces anything in that case; only the term in effect is considered.
 - **`terms_sha256`** is the SHA-256 of the canonical JSON of the `terms` array in the order supplied. Member order inside an object does not matter; the order of the array does. **`offer_sha256`** and each **`term_sha256`** are over the canonical JSON of that object.
 
@@ -109,6 +110,19 @@ The identifier in a receipt (`evidence.rule_id`) tells you which rule to
 replay. This folder holds `contract-price-match/v0.1`.
 
 Documentation: https://tanilo.io/docs/contract-price-check
+
+## Record
+
+**2026-10-17.** The 82-case result recorded by the independent Python implementation in `independent-python/` (run at repository revision `2596aa9`, vectors SHA-256 `7d73d07f…a338`: all 82 agree) stands as the historical measurement; that folder's `RESULTS.txt` and README are unchanged. Cases `cpm-083` to `cpm-097` were added on this date. They are the fifteen single-field changes from `cpm-001` listed by that implementation's author (babyblueviper1, in the discussion of pull request #12), with expected results produced by `contract-price.js`; the rule itself is unchanged and keeps the identifier `contract-price-match/v0.1`. Run against both implementations at `f3d24c9`, eleven of the fifteen agreed and four differed; in each of the four the published rule keeps its behaviour and the README above now states it explicitly:
+
+| Case | Input | `contract-price.js` | Python implementation (at `f3d24c9`) |
+|---|---|---|---|
+| `cpm-083` | `unit_price` `"01.00"` | invalid `offer.unit_price` (no leading zeros) | verified |
+| `cpm-092` | `product_scope.skus` `[]` | invalid `terms[0].product_scope.skus` (must be non-empty) | indeterminate `no_applicable_term` |
+| `cpm-093` | the same sku listed twice | invalid `terms[0].product_scope.skus` (no duplicates) | verified |
+| `cpm-095` | `unit_price` with thirty fractional digits | invalid `offer.unit_price` (at most 8 fractional digits) | verified |
+
+The other readings the list raised are also now written down: `"1."` and `".50"` invalid, a leap second invalid, self-supersession invalid, `supersedes: null` treated as absent. `cpm.py` would need the digit limits, the leading-zero rule and the non-empty, distinct `skus` rule to agree on all 97; until then `independent-python/run_vectors.py` reports those four cases.
 
 ## Licence
 
