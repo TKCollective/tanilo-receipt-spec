@@ -147,6 +147,22 @@ const CASES = [
   ["invalid: offer without a seller", { offer: (() => { const o = offer(); delete o.seller; return o; })(), terms: [FLAT] }, { invalid: "offer.seller" }],
   ["invalid: lower-case currency code", { offer: offer({ currency: "usd" }), terms: [FLAT] }, { invalid: "offer.currency" }],
   ["invalid: terms is not an array", { offer: offer(), terms: FLAT }, { invalid: "terms" }],
+  // ── boundary list from the independent Python implementation (PR #12 comment, 2026-10-16): single-field changes from cpm-001 ──
+  ["boundary 1: leading zero in the price (\"01.00\")", { offer: offer({ unit_price: "01.00" }), terms: [FLAT] }, { invalid: "offer.unit_price" }],
+  ["boundary 2: point with nothing after it (\"1.\")", { offer: offer({ unit_price: "1." }), terms: [FLAT] }, { invalid: "offer.unit_price" }],
+  ["boundary 3: point with nothing before it (\".50\")", { offer: offer({ unit_price: ".50" }), terms: [FLAT] }, { invalid: "offer.unit_price" }],
+  ["boundary 4: quantity \"1.0\" equals 1", { offer: offer({ quantity: "1.0" }), terms: [FLAT] }, { state: "verified", expected: "1.00", term: ["MSA-2026-014", "1"] }],
+  ["boundary 5: currency with a leading space", { offer: offer({ currency: " USD" }), terms: [FLAT] }, { invalid: "offer.currency" }],
+  ["boundary 6: offered_at with three fractional digits", { offer: offer({ offered_at: "2026-10-01T12:00:00.000Z" }), terms: [FLAT] }, { state: "verified", expected: "1.00" }],
+  ["boundary 7: offered_at equals effective_to in another spelling (end excluded)", { offer: offer({ offered_at: "2027-01-01T00:00:00.000Z" }), terms: [FLAT] }, { state: "indeterminate", reason: "effective_interval_unresolved" }],
+  ["boundary 8: leap second in offered_at", { offer: offer({ offered_at: "2026-12-31T23:59:60Z" }), terms: [FLAT] }, { invalid: "offer.offered_at" }],
+  ["boundary 9: a term that supersedes its own version", { offer: offer(), terms: [term({ supersedes: "1" })] }, { invalid: "terms[0].supersedes" }],
+  ["boundary 10: empty product list", { offer: offer(), terms: [term({ product_scope: { skus: [] } })] }, { invalid: "terms[0].product_scope.skus" }],
+  ["boundary 11: the same product listed twice", { offer: offer(), terms: [term({ product_scope: { skus: ["api.weather.v1", "api.weather.v1"] } })] }, { invalid: "terms[0].product_scope.skus" }],
+  ["boundary 12: seller in NFC form against a term in NFD form (no normalization)", { offer: offer({ seller: "caf\u00e9.example" }), terms: [term({ seller: "cafe\u0301.example" })] }, { state: "indeterminate", reason: "no_applicable_term" }],
+  ["boundary 13: thirty fractional digits", { offer: offer({ unit_price: "1." + "0".repeat(30) }), terms: [FLAT] }, { invalid: "offer.unit_price" }],
+  ["boundary 14: quantity with seven fractional digits (\"0.0000001\")", { offer: offer({ quantity: "0.0000001" }), terms: [FLAT] }, { state: "verified", expected: "1.00" }],
+  ["boundary 15: supersedes null is treated as absent", { offer: offer(), terms: [term({ supersedes: null })] }, { state: "verified", expected: "1.00", term: ["MSA-2026-014", "1"] }],
 ];
 
 let pass = 0, fail = 0;

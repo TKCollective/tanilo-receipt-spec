@@ -9006,6 +9006,1039 @@
         "invalid": true,
         "member": "terms"
       }
+    },
+    {
+      "id": "cpm-083",
+      "name": "boundary 1: leading zero in the price (\"01.00\")",
+      "input": {
+        "offer": {
+          "unit_price": "01.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.unit_price"
+      }
+    },
+    {
+      "id": "cpm-084",
+      "name": "boundary 2: point with nothing after it (\"1.\")",
+      "input": {
+        "offer": {
+          "unit_price": "1.",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.unit_price"
+      }
+    },
+    {
+      "id": "cpm-085",
+      "name": "boundary 3: point with nothing before it (\".50\")",
+      "input": {
+        "offer": {
+          "unit_price": ".50",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.unit_price"
+      }
+    },
+    {
+      "id": "cpm-086",
+      "name": "boundary 4: quantity \"1.0\" equals 1",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1.0",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-f6cc0b945f3666e638e9d20f6ec047bcaca64a0e701b58bee3427bfdc0ca5394",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1.0",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1.0"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-087",
+      "name": "boundary 5: currency with a leading space",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": " USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.currency"
+      }
+    },
+    {
+      "id": "cpm-088",
+      "name": "boundary 6: offered_at with three fractional digits",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00.000Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-2e24e6c55f6966fe2aeb07a219ef70b7d71cb6d57d23333a3ea7146d8fa11c38",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00.000Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-089",
+      "name": "boundary 7: offered_at equals effective_to in another spelling (end excluded)",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2027-01-01T00:00:00.000Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "effective_interval_unresolved",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-9395d99652299e52a9c930bc1d1803e95b12335f0a5144332cf3cf93e0af3144",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2027-01-01T00:00:00.000Z"
+          },
+          "state": "indeterminate",
+          "reason": "effective_interval_unresolved",
+          "reason_text": "no supplied term for this seller and product is in effect at the offer time",
+          "matched_term": null,
+          "expected": null,
+          "terms_in_scope": [
+            {
+              "agreement_id": "MSA-2026-014",
+              "version": "1",
+              "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+              "effective_from": "2026-01-01T00:00:00Z",
+              "effective_to": "2027-01-01T00:00:00Z"
+            }
+          ],
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-090",
+      "name": "boundary 8: leap second in offered_at",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-12-31T23:59:60Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.offered_at"
+      }
+    },
+    {
+      "id": "cpm-091",
+      "name": "boundary 9: a term that supersedes its own version",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "supersedes": "1"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "terms[0].supersedes"
+      }
+    },
+    {
+      "id": "cpm-092",
+      "name": "boundary 10: empty product list",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": []
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "terms[0].product_scope.skus"
+      }
+    },
+    {
+      "id": "cpm-093",
+      "name": "boundary 11: the same product listed twice",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1",
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "terms[0].product_scope.skus"
+      }
+    },
+    {
+      "id": "cpm-094",
+      "name": "boundary 12: seller in NFC form against a term in NFD form (no normalization)",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "café.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "café.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "indeterminate",
+        "reason": "no_applicable_term",
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-e9c01de8ffcc7f1e325c121a723b197347baafda62cf4772d43f530bdb0af319",
+          "offer_sha256": "sha256-cc504baf973c4089e267ca18387e1af95462d7d642127f3230aa79bb33828641",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "café.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "indeterminate",
+          "reason": "no_applicable_term",
+          "reason_text": "no supplied term covers this seller and product",
+          "matched_term": null,
+          "expected": null,
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-095",
+      "name": "boundary 13: thirty fractional digits",
+      "input": {
+        "offer": {
+          "unit_price": "1.000000000000000000000000000000",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "invalid": true,
+        "member": "offer.unit_price"
+      }
+    },
+    {
+      "id": "cpm-096",
+      "name": "boundary 14: quantity with seven fractional digits (\"0.0000001\")",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "0.0000001",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z"
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-c54df11cd47e11c89a9e94bc454b65e866256fec335eb4d57855458a983a730e",
+          "offer_sha256": "sha256-9e2ab4f2e7654ded0af81c24e876b80f4bd5495b2e204813e3678ad503e3ee4f",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "0.0000001",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "0.0000001"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-18b6f61e9c130da5cab054d0b2e45e6fde9459c498ebd18f8641d19af11a3a94"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cpm-097",
+      "name": "boundary 15: supersedes null is treated as absent",
+      "input": {
+        "offer": {
+          "unit_price": "1.00",
+          "currency": "USD",
+          "unit": "call",
+          "quantity": "1",
+          "seller": "seller.example",
+          "sku": "api.weather.v1",
+          "offered_at": "2026-10-01T12:00:00Z"
+        },
+        "terms": [
+          {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "seller": "seller.example",
+            "product_scope": {
+              "skus": [
+                "api.weather.v1"
+              ]
+            },
+            "currency": "USD",
+            "unit": "call",
+            "price_per_unit": "1.00",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "supersedes": null
+          }
+        ]
+      },
+      "result": {
+        "state": "verified",
+        "reason": null,
+        "evidence": {
+          "rule_id": "contract-price-match/v0.1",
+          "terms_source": "caller_supplied",
+          "terms_count": 1,
+          "terms_sha256": "sha256-77af5d8e8aeb1fc84f4a79252d453ea4fd54497e539e89ba7e33b85db6f374a3",
+          "offer_sha256": "sha256-3ce1da537566b1a8ec214719a731086b8a7371099b4179e1e30db50bfb9e4402",
+          "offer": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1",
+            "seller": "seller.example",
+            "sku": "api.weather.v1",
+            "offered_at": "2026-10-01T12:00:00Z"
+          },
+          "state": "verified",
+          "reason": null,
+          "reason_text": null,
+          "matched_term": {
+            "agreement_id": "MSA-2026-014",
+            "version": "1",
+            "term_sha256": "sha256-8ee455586eefb9126a75c0eb34c581e8930500341e881bbbb8acb4f1de2216b1",
+            "effective_from": "2026-01-01T00:00:00Z",
+            "effective_to": "2027-01-01T00:00:00Z",
+            "pricing": "flat",
+            "tier": null
+          },
+          "expected": {
+            "price_per_unit": "1.00",
+            "currency": "USD",
+            "unit": "call"
+          },
+          "offered": {
+            "unit_price": "1.00",
+            "currency": "USD",
+            "unit": "call",
+            "quantity": "1"
+          },
+          "steps": [
+            {
+              "step": "scope",
+              "rule": "term.seller equals offer.seller and term.product_scope.skus contains offer.sku (exact strings)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-8ee455586eefb9126a75c0eb34c581e8930500341e881bbbb8acb4f1de2216b1"
+                }
+              ]
+            },
+            {
+              "step": "effective_at_offer_time",
+              "rule": "effective_from <= offered_at < effective_to (end exclusive; no effective_to means no end)",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-8ee455586eefb9126a75c0eb34c581e8930500341e881bbbb8acb4f1de2216b1"
+                }
+              ]
+            },
+            {
+              "step": "declared_precedence",
+              "rule": "a term is set aside when another in-effect term of the same agreement names its version in supersedes; precedence is never inferred from version numbers or dates",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-8ee455586eefb9126a75c0eb34c581e8930500341e881bbbb8acb4f1de2216b1"
+                }
+              ]
+            },
+            {
+              "step": "exactly_one_term",
+              "rule": "exactly one term must remain after declared precedence; currency and unit are not used to choose between terms",
+              "terms_remaining": [
+                {
+                  "agreement_id": "MSA-2026-014",
+                  "version": "1",
+                  "term_sha256": "sha256-8ee455586eefb9126a75c0eb34c581e8930500341e881bbbb8acb4f1de2216b1"
+                }
+              ]
+            },
+            {
+              "step": "currency",
+              "rule": "term.currency equals offer.currency; no conversion",
+              "matches": true
+            },
+            {
+              "step": "unit",
+              "rule": "term.unit equals offer.unit (exact string); no conversion",
+              "matches": true
+            },
+            {
+              "step": "price",
+              "rule": "the term carries one price for every quantity",
+              "pricing": "flat"
+            },
+            {
+              "step": "compare",
+              "rule": "offer.unit_price equals the term's price by exact decimal value (\"1\" equals \"1.00\"); no tolerance, no rounding"
+            }
+          ]
+        }
+      }
     }
   ]
 }
