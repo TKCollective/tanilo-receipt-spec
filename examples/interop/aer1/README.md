@@ -28,7 +28,7 @@ It does not show that the premise was true. The terms are supplied by the caller
 Needs Python 3 and the published verifier, version 0.2.0 or later.
 
 ```
-python3 -m pip install tanilo-receipt-verify==0.2.0
+python3 -m pip install tanilo-receipt-verify==0.2.4
 curl -sS -o receipt.json https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/e1206d1a54ae23d7e0f6fed55cd85ca7149275e2/examples/interop/aer1/receipt.jws.json
 curl -sS -o jwks.json https://tanilo.io/.well-known/jwks.json
 python3 -c "import json; from tanilo_receipt_verify import verify; r = verify(json.load(open('receipt.json')), jwks_by_issuer={'https://tanilo.io/.well-known/jwks.json': json.load(open('jwks.json'))}, jwks_is_complete=True); print(r.status, r.canonical_sha256, [s['kid'] for s in r.signers])"

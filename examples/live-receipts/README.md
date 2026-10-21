@@ -17,7 +17,7 @@ Receipts issued by the production service, kept here so published links can poin
 **Verify it offline.** The signature is checked against the published JWKS with no call to the service. Fetch the key set once, then verify:
 
 ```
-pip install tanilo-receipt-verify==0.1.2
+pip install tanilo-receipt-verify==0.2.4
 curl -s https://raw.githubusercontent.com/TKCollective/tanilo-receipt-spec/0f3b0cd8db5bb33c55aa73c1229c8398be96a37e/examples/live-receipts/evaluate-demo-2026-09-30.json -o receipt.json
 curl -s https://agentoracle.co/.well-known/jwks.json -o jwks.json
 python3 -c "import json; from tanilo_receipt_verify import verify; r=verify(json.load(open('receipt.json')), jwks_by_issuer={'https://agentoracle.co/.well-known/jwks.json': json.load(open('jwks.json'))}); print(r.status, r.canonical_sha256)"
@@ -82,7 +82,7 @@ PY
 **Verify it offline.** The receipt's `signature_meta.jwks_url` is `https://tanilo.io/.well-known/jwks.json`; the same key set is served at `https://api.tanilo.io/.well-known/jwks.json` and `https://agentoracle.co/.well-known/jwks.json`.
 
 ```
-pip install tanilo-receipt-verify==0.1.2
+pip install tanilo-receipt-verify==0.2.4
 curl -s https://tanilo.io/.well-known/jwks.json -o jwks.json
 python3 -c "import json; from tanilo_receipt_verify import verify; r=verify(json.load(open('evaluate-demo-2026-10-02.json')), jwks_by_issuer={'https://tanilo.io/.well-known/jwks.json': json.load(open('jwks.json'))}); print(r.status, r.canonical_sha256)"
 ```
