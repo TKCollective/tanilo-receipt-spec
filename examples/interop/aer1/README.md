@@ -25,7 +25,7 @@ It does not show that the premise was true. The terms are supplied by the caller
 
 ## Verify the signature offline
 
-Needs Python 3 and the published verifier, version 0.2.0 or later.
+Needs Python 3 and the published verifier, version 0.2.4 or later.
 
 ```
 python3 -m pip install tanilo-receipt-verify==0.2.4
