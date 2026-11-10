@@ -171,7 +171,7 @@ Historical example, in the shape issued in June 2026. Receipts issued since 2026
 
 Sibling blocks other than `v_gate` (for example an independent skill or screening block from a different issuer) MAY be present. `composed_decision` is computed over all of them.
 
-The payload above is the one `POST /evaluate` issues. Receipts from `POST /v1/verify-facts` use the same envelope, header and key with a different payload: no `composed_decision`, a `check_results` array, and `v_gate.deterministic_mapping_id`. Their fields and state vocabularies are described in [`profiles/shipped-receipts-v0.3.md`](profiles/shipped-receipts-v0.3.md).
+The payload above is a historical judgment receipt (`POST /evaluate`, June 2026). Current receipts are published as fixtures: a judgment receipt at [`examples/live-receipts/evaluate-demo-2026-10-02.json`](examples/live-receipts/evaluate-demo-2026-10-02.json) and a deterministic-check receipt at [`examples/interop/aer1/receipt.jws.json`](examples/interop/aer1/receipt.jws.json). Each comes with its verification steps in its directory's README. Receipts from `POST /v1/verify-facts` use the same envelope and protected header, signed by the same key, with a different payload: no `composed_decision`, a `check_results` array, and `v_gate.deterministic_mapping_id`. Their fields and state vocabularies are described in [`profiles/shipped-receipts-v0.3.md`](profiles/shipped-receipts-v0.3.md).
 
 ### `v_gate`
 
@@ -228,13 +228,19 @@ An implementation MUST refuse to sign rather than emit a malformed receipt. At m
 
 A consumer MUST perform, in order:
 
-1. **Resolve keys.** Fetch JWKS from the URL in `signature_meta`. Locate each `kid`.
-2. **Recompute canonical bytes.** Canonicalize `payload` per RFC 8785. SHA-256 it. Compare to `canonical_sha256` if the transport supplies one.
-3. **Verify every signature** in `signatures[]` over those bytes. A receipt is valid only if every signature present verifies.
-4. **Re-derive the decision.** Apply the mapping identified by `mapping_id` to `v_verdict`, `v_adversarial_result`, and `v_confidence`. Confirm the derived `v_recommendation` and `verdict` match what the receipt asserts. **A mismatch means the receipt is internally inconsistent and MUST be rejected**, even when signatures verify.
+1. **Choose the key set.** Use a key set you trust for the issuer you expect, configured in advance or obtained from a source you have authenticated. `signature_meta` names where the issuer publishes its keys; a URL named inside a receipt does not by itself make that key set trustworthy. Locate each signature's `kid` in your key set.
+2. **Verify every signature** in `signatures[]`. For each one, the signing input is the ASCII bytes of the received `protected` string, a literal `.`, and the received `payload` string ([RFC 7515 §5.2](https://datatracker.ietf.org/doc/html/rfc7515#section-5.2)). Use both encoded strings exactly as received; do not decode and re-encode either one. A receipt is valid only if every signature present verifies.
+3. **Recompute the payload digest**, as a separate check. Base64url-decode the received `payload` string, parse it, canonicalize it per RFC 8785, and take the SHA-256. Compare it to `canonical_sha256` if the transport supplies one. In receipts from the reference implementation the decoded payload bytes are already the RFC 8785 bytes.
+4. **Re-derive the decision**, according to the receipt's shape:
+   - **Judgment receipts** (`POST /evaluate`; the payload carries `composed_decision`). Apply the judgment mapping identified by `v_gate.mapping_id` and `v_gate.mapping_hash` (see [Decision mapping](#decision-mapping)) to `v_gate.v_verdict`, `v_gate.v_adversarial_result` and `v_gate.v_confidence`. Confirm that the derived `v_gate.v_recommendation` and `v_gate.verdict` match what the receipt asserts.
+   - **Deterministic-check receipts** (`POST /v1/verify-facts`; the payload carries `check_mode: "deterministic"`). Use the recorded check outcomes. `check_results` must hold 1 to 20 entries; an empty or missing array is malformed (see [Guardrails on signing](#guardrails-on-signing)) and is never read as `act`. Given 1 to 20 entries, `v_gate.verdict` must be `act` if every entry has `outcome: "pass"`, and `halt` otherwise. See [`profiles/shipped-receipts-v0.3.md`](profiles/shipped-receipts-v0.3.md).
+
+   **A mismatch means the receipt is internally inconsistent and MUST be rejected**, even when signatures verify.
 5. **Apply local policy.** Signature validity is not authorization. A consumer decides which recommendations it accepts.
 
 Step 4 is what makes the receipt recomputable rather than merely authentic. Skipping it reduces the format to a signed assertion.
+
+`tanilo-receipt-verify==0.2.4` returning `valid` covers steps 2 and 3, against the key sets you pass in: every signature verified, and the payload digest matched `canonical_sha256` when the envelope carried one. It does not perform step 4 for either shape. In particular, it does not recompute the deterministic gate from `check_results`.
 
 ---
 
