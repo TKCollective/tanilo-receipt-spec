@@ -9,7 +9,7 @@ Two receipt shapes share one envelope. Both are JWS general serializations whose
 | Judgment receipt | `POST /evaluate` | [README, Receipt envelope](../README.md#receipt-envelope) and [Decision mapping](../README.md#decision-mapping) | [`examples/live-receipts/evaluate-demo-2026-10-02.json`](../examples/live-receipts/evaluate-demo-2026-10-02.json) |
 | Deterministic-check receipt | `POST /v1/verify-facts` | this page, below | [`examples/interop/aer1/receipt.jws.json`](../examples/interop/aer1/receipt.jws.json) |
 
-At API commit `ed63fc06` the judgment builder also emits two top-level members that the README's payload table does not list: `sources` and `sources_used` (each an array, empty when absent). The published judgment fixture carries both.
+At API commit `ed63fc06` the judgment builder also emits two optional top-level members, `sources` and `sources_used` (each an array, empty when absent), which the published judgment fixture carries. Judgment receipts carry `composed_decision` under `composed_decision_rule` `AND_PRESENT`. In receipts from the reference implementation `v_gate` is the only sibling block, so `composed_decision` equals `v_gate.verdict`. The recompute is step 4 of the [README's verification procedure](../README.md#verification-procedure).
 
 ## Protected header (both shapes)
 
@@ -108,7 +108,24 @@ In the order the service applies them at API commit `ed63fc06`:
 
 - **The gate:** `v_gate.verdict` from `check_results`. Given 1 to 20 entries, it is `act` only if every entry has `outcome: pass`. An empty or missing `check_results` is malformed.
 - **The canonical digest:** RFC 8785 over the decoded payload, and its SHA-256.
-- **The three-state checks:** the result itself, by replaying the rule on the offer, terms or cap the caller kept. The receipt carries their digests in `evidence`.
+- **Individual checks:** see the next section. Most need the caller's original inputs.
+
+### Replaying a check
+
+A receipt records each check's `evidence`; it does not always record the check's inputs. At API commit `ed63fc06`:
+
+| check type | `evidence` records | replaying the check needs |
+|---|---|---|
+| `spend_cap` | the offer and the cap in full, their digests, the computed total and remaining cap, and each rule step (every state) | nothing beyond the receipt |
+| `timestamp_validation` | the timestamp and the bounds, normalized (on `pass`) | nothing beyond the receipt, on `pass` |
+| `contract_price_match` | the offer in full and its digest; the terms only by digest (`terms_sha256`, and a digest per term named in the rule steps) (every state) | the original terms, which must match `terms_sha256` |
+| `hash_comparison` | the algorithm, the computed digest and the content length (on `pass`) | the original content |
+| `regex_match` | the pattern, the flags, and a digest and length of the value (on `pass`) | the original value |
+| `json_schema_conformance` | digests of the schema and the document, and the keywords applied (on `pass`) | the original schema and document |
+| `signature_verification` | the algorithm, the `kid`, a digest of the signing input and the signature length (on `pass`) | the original signing input, signature and public key |
+| `registry_lookup` | the registry, the identifier, the observed metadata, a digest of the response read and the time it was read (on `pass`) | cannot be replayed exactly: a new lookup reads the registry as it is now |
+
+A failed two-outcome check carries no `evidence`, only `failure_reason` and, when there is one, `failure_detail`. Replaying it needs the original inputs. In every case the replayed result can be compared with `outcome` (and `state`), but the inputs remain the caller's: the receipt does not show they were genuine.
 
 `tanilo-receipt-verify==0.2.4` returning `valid` means every signature verified against the key sets you passed in, and that the canonical digest matched `canonical_sha256` when the envelope carried one. It does not recompute the gate from `check_results`.
 
@@ -134,6 +151,6 @@ These are not decided. Nothing on this page should be read as settling them.
 2. **A `state` member for every check.** Whether the six two-outcome check types gain one, and with which values.
 3. **Composition fields in deterministic receipts.** Whether deterministic receipts should carry `composed_decision` and `composed_decision_rule`. Today the conjunction over checks is expressed only by `v_gate.verdict`.
 4. **Content address for the check catalog.** `v_gate.deterministic_mapping_id` has no published content hash. `v_gate.mapping_hash` in these receipts refers to the judgment mapping, not to the check catalog.
-5. **Members outside these tables.** At API commit `ed63fc06` the deterministic builder emits no top-level members beyond those listed above. Judgment receipts also carry `sources` and `sources_used`. Nothing yet says how a receiver should treat an unrecognized member, or whether a separately signed object (for example an authorization disposition, or a reference to an earlier receipt) has a place in this envelope. That discussion is in [tanilo-ietf-id issue #1](https://github.com/TKCollective/tanilo-ietf-id/issues/1).
+5. **Members outside these tables.** At API commit `ed63fc06` the deterministic builder emits no top-level members beyond those listed above. Judgment receipts also carry `sources` and `sources_used`. Nothing yet says how a receiver should treat an unrecognized member, whether such a member counts as a sibling block under `AND_PRESENT`, or whether a separately signed object (for example an authorization disposition, or a reference to an earlier receipt) has a place in this envelope. That discussion is in [tanilo-ietf-id issue #1](https://github.com/TKCollective/tanilo-ietf-id/issues/1).
 6. **More than one signature.** Deterministic receipts carry one signature. The README's verification procedure requires every present signature to verify. A policy for co-signed deterministic receipts is not defined.
 7. **`subject` contents.** Only `subject.claim_hash` is required, and it is not recomputed. Whether other members may appear, and whether `claim_hash` should be recomputable from the checks, is not settled.
