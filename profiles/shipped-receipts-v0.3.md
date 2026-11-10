@@ -34,7 +34,7 @@ At API commit `ed63fc06` the deterministic builder emits exactly these payload m
 
 | member | value |
 |---|---|
-| `agent_id` | the caller's `agent_id` as sent, not authenticated. When the caller sends none, or a falsy value (empty string, `null`, `0`, `false`): `urn:tanilo:verify-facts:anonymous`. Receipts from the builder before the 13 October 2026 (UTC) mapping cutover carry `did:ao:verify-facts:anonymous` instead; the identifier changed in the same deployment as `v_gate.mapping_id`, so a receipt with `agentoracle-v0.3-2026-05-30` carries the older identifier |
+| `agent_id` | the caller's `agent_id` as sent, not authenticated. When the caller sends none, or a falsy value (empty string, `null`, `0`, `false`): `urn:tanilo:verify-facts:anonymous`. Before the 13 October 2026 (UTC) mapping cutover this default was `did:ao:verify-facts:anonymous`. The change affected only that default, and shipped in the same deployment as `v_gate.mapping_id`: an anonymous receipt with `agentoracle-v0.3-2026-05-30` carries the older identifier. A non-empty string `agent_id` supplied by the caller is signed as sent on either side of the change |
 | `check_mode` | `deterministic` |
 | `check_results` | one entry per requested check, in request order, 1 to 20 entries; see below. A request with no checks or more than 20 gets HTTP 400 and no receipt |
 | `check_types_applied` | the distinct check types in `check_results`, sorted |
@@ -127,7 +127,7 @@ A receipt records each check's `evidence`; it does not always record the check's
 
 A failed two-outcome check carries no `evidence`, only `failure_reason` and, when there is one, `failure_detail`. Replaying it needs the original inputs. In every case the replayed result can be compared with `outcome` (and `state`), but the inputs remain the caller's: the receipt does not show they were genuine.
 
-`tanilo-receipt-verify==0.2.4` returning `valid` means every signature verified against the key sets you passed in, and that the canonical digest matched `canonical_sha256` when the envelope carried one. It does not recompute the gate from `check_results`.
+`tanilo-receipt-verify==0.2.4` returning `valid` means every signature verified against the key sets you passed in, and that the recomputed payload digest matched the envelope's `canonical_sha256` if that was a non-empty string. The verifier always recomputes the digest, but compares it only against a non-empty `canonical_sha256`; an empty string, or no member, skips the comparison. It does not recompute the gate from `check_results`.
 
 As with every receipt, a valid signature shows which key signed. It does not show that caller-supplied inputs were genuine, and it does not authorize an action.
 

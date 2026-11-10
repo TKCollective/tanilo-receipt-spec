@@ -245,7 +245,7 @@ A consumer MUST perform, in order:
 
 Step 4 is what makes the receipt recomputable rather than merely authentic. Skipping it reduces the format to a signed assertion.
 
-`tanilo-receipt-verify==0.2.4` returning `valid` covers steps 2 and 3, against the key sets you pass in: every signature verified, and the payload digest matched `canonical_sha256` when the envelope carried one. It does not perform step 4 for either shape. In particular, it does not recompute the deterministic gate from `check_results`.
+`tanilo-receipt-verify==0.2.4` returning `valid` covers steps 2 and 3, against the key sets you pass in: every signature verified, and the recomputed payload digest matched the envelope's `canonical_sha256` if that was a non-empty string. The verifier always recomputes the digest, but compares it only against a non-empty `canonical_sha256`; an empty string, or no member, skips the comparison. It does not perform step 4 for either shape. In particular, it does not recompute the deterministic gate from `check_results`.
 
 ---
 
