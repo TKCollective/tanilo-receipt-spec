@@ -171,6 +171,8 @@ Historical example, in the shape issued in June 2026. Receipts issued since 2026
 
 Sibling blocks other than `v_gate` (for example an independent skill or screening block from a different issuer) MAY be present. `composed_decision` is computed over all of them.
 
+The payload above is the one `POST /evaluate` issues. Receipts from `POST /v1/verify-facts` use the same envelope, header and key with a different payload: no `composed_decision`, a `check_results` array, and `v_gate.deterministic_mapping_id`. Their fields and state vocabularies are described in [`profiles/shipped-receipts-v0.3.md`](profiles/shipped-receipts-v0.3.md).
+
 ### `v_gate`
 
 | Field | Required | Notes |
